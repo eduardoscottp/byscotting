@@ -89,121 +89,274 @@ function Node({ x, y, lit, dormant }: { x: number; y: number; lit: boolean; dorm
   );
 }
 
-export default function ProcessFlow({ steps, hint, tone = "dark" }: { steps: readonly Step[]; hint: string; tone?: "dark" | "light" }) {
+export default function ProcessFlow({
+  steps,
+  hint,
+  loop,
+  tone = "dark",
+}: {
+  steps: readonly Step[];
+  hint: string;
+  loop: string;
+  tone?: "dark" | "light";
+}) {
   const wrapRef = useRef<HTMLDivElement>(null);
   const reduced = useReducedMotion();
   const narrow = useIsNarrow();
   const progress = useDrawProgress(wrapRef, reduced);
-  const [open, setOpen] = useState<number | null>(null);
+  const [open, setOpen] = useState(0);
 
   const light = tone === "light";
-  const labelClass = light ? "fill-white font-display font-bold" : "fill-ink font-display font-bold";
-  const noteClass = light ? "fill-white/65 font-body" : "fill-ink/60 font-body";
+  const labelClass = light ? "fill-white/55 font-display font-bold" : "fill-ink/45 font-display font-bold";
+  const litLabelClass = light ? "fill-white font-display font-bold" : "fill-ink font-display font-bold";
   const railColor = light ? "rgba(255,255,255,.22)" : SOFT;
 
   const n = steps.length;
-  const H = { w: 900, h: 150, x0: 90, x1: 810, y: 52 };
-  const V = { w: 330, h: 620, x: 44, y0: 46, y1: 574 };
 
-  const line = narrow ? `M ${V.x} ${V.y0} V ${V.y1}` : `M ${H.x0} ${H.y} H ${H.x1}`;
+  /* El proceso es un ciclo ABIERTO: los pasos se reparten cada 360/n grados
+     desde las 12 en sentido horario, pero el arco no cierra. Queda un hueco
+     entre el ultimo paso y el primero, y el trazo termina en una flecha que
+     apunta al ultimo — asi se lee que tiene principio y final. */
+  const C = { w: 600, h: 560, cx: 300, cy: 275, r: 175, lr: 211 };
 
-  const points = Array.from({ length: n }, (_, i) => {
-    const t = i / (n - 1);
-    return narrow
-      ? { x: V.x, y: V.y0 + t * (V.y1 - V.y0) }
-      : { x: H.x0 + t * (H.x1 - H.x0), y: H.y };
+  const at = (deg: number, radius = C.r) => {
+    const a = (deg * Math.PI) / 180;
+    return { x: C.cx + radius * Math.cos(a), y: C.cy + radius * Math.sin(a), cos: Math.cos(a), sin: Math.sin(a) };
+  };
+
+  const START = -90; // Detecto, a las 12
+  const LAST = START + ((n - 1) * 360) / n; // el ultimo paso
+  const STROKE_END = LAST - 18; // el trazo se corta antes para dejar sitio a la flecha
+  const ARROW_AT = LAST - 7; // punta de la flecha, justo antes del ultimo nodo
+
+  const a0 = at(START);
+  const a1 = at(STROKE_END);
+  const arc = `M ${a0.x} ${a0.y} A ${C.r} ${C.r} 0 ${STROKE_END - START > 180 ? 1 : 0} 1 ${a1.x} ${a1.y}`;
+  const tip = at(ARROW_AT);
+
+  const seats = Array.from({ length: n }, (_, i) => {
+    const p = at(START + (i * 360) / n);
+    const l = at(START + (i * 360) / n, C.lr);
+    return {
+      x: p.x,
+      y: p.y,
+      lx: l.x,
+      ly: l.y + (p.sin < -0.7 ? -10 : p.sin > 0.7 ? 20 : 7),
+      anchor: p.cos > 0.3 ? ("start" as const) : p.cos < -0.3 ? ("end" as const) : ("middle" as const),
+    };
   });
 
-  return (
-    <div ref={wrapRef} className="w-full">
-      <div className="overflow-x-auto">
-        <svg
-          viewBox={narrow ? `0 0 ${V.w} ${V.h}` : `0 0 ${H.w} ${H.h}`}
-          className={`block h-auto w-full ${narrow ? "" : "min-w-[640px]"}`}
-          style={{ overflow: "visible" }}
-          role="img"
-          aria-label={steps.map((s) => s.label).join(", ")}
-        >
-          <defs>
-            <linearGradient id="scottingFlow" x1="0" y1="0" x2={narrow ? "0" : "1"} y2={narrow ? "1" : "0"}>
-              <stop offset="0" stopColor={light ? "#4C7BFF" : "#0038FC"} />
-              <stop offset="1" stopColor={TEAL} />
-            </linearGradient>
-          </defs>
-
-          <path d={line} fill="none" stroke={railColor} strokeWidth={6} strokeLinecap="round" opacity={light ? 1 : 0.45} />
-          <path
-            d={line}
-            fill="none"
-            stroke="url(#scottingFlow)"
-            strokeWidth={6}
-            strokeLinecap="round"
-            pathLength={1}
-            strokeDasharray={1}
-            strokeDashoffset={1 - progress}
-          />
-
-          {points.map((p, i) => {
+  /* En vertical el flujo va en HTML, no en SVG: el <text> de SVG no salta de
+     línea y las notas largas se salían del ancho del teléfono sin scroll. */
+  if (narrow) {
+    return (
+      <div ref={wrapRef} className="w-full">
+        <ol className="flex flex-col gap-8">
+          {steps.map((s, i) => {
             const lit = progress >= i / (n - 1) - 0.001;
+            const seg = Math.max(0, Math.min(1, (progress - i / (n - 1)) * (n - 1)));
             return (
-              <g key={steps[i].label}>
-                <Node x={p.x} y={p.y} lit={lit} dormant={railColor} />
-                {narrow ? (
+              <li key={s.label} className="relative pl-12">
+                {i < n - 1 && (
                   <>
-                    <text x={p.x + 34} y={p.y - 1} fontSize={19} className={labelClass}>
-                      {steps[i].label}
-                    </text>
-                    <text x={p.x + 34} y={p.y + 22} fontSize={13.5} className={noteClass}>
-                      {steps[i].note}
-                    </text>
-                  </>
-                ) : (
-                  <>
-                    <text
-                      x={p.x}
-                      y={p.y + 48}
-                      fontSize={19}
-                      textAnchor="middle"
-                      className={labelClass}
-                    >
-                      {steps[i].label}
-                    </text>
-                    <text
-                      x={p.x}
-                      y={p.y + 72}
-                      fontSize={12.5}
-                      textAnchor="middle"
-                      className={noteClass}
-                      opacity={open === i ? 1 : 0}
-                      style={{ transition: "opacity .2s ease-out" }}
-                    >
-                      {steps[i].note}
-                    </text>
-                    <rect
-                      x={p.x - 78}
-                      y={p.y - 32}
-                      width={156}
-                      height={96}
-                      fill="transparent"
-                      tabIndex={0}
-                      role="button"
-                      aria-label={`${steps[i].label}. ${steps[i].note}`}
-                      className="cursor-pointer focus:outline-none focus-visible:stroke-teal"
-                      strokeWidth={2}
-                      onMouseEnter={() => setOpen(i)}
-                      onMouseLeave={() => setOpen((cur) => (cur === i ? null : cur))}
-                      onFocus={() => setOpen(i)}
-                      onBlur={() => setOpen((cur) => (cur === i ? null : cur))}
+                    <span
+                      aria-hidden="true"
+                      className="absolute left-[10px] top-8 h-[calc(100%+10px)] w-[6px] rounded-full"
+                      style={{ background: railColor, opacity: light ? 1 : 0.45 }}
+                    />
+                    <span
+                      aria-hidden="true"
+                      className="absolute left-[10px] top-8 w-[6px] rounded-full"
+                      style={{
+                        height: `calc((100% + 10px) * ${seg})`,
+                        background: `linear-gradient(${light ? "#4C7BFF" : "#0038FC"}, ${TEAL})`,
+                      }}
                     />
                   </>
                 )}
-              </g>
+
+                <span
+                  aria-hidden="true"
+                  className="absolute left-0 top-1 h-[26px] w-[26px] rounded-full"
+                  style={{
+                    background: lit ? TEAL : "transparent",
+                    opacity: lit ? 0.16 : 0,
+                    transition: "opacity .3s ease-out",
+                  }}
+                />
+                <span
+                  aria-hidden="true"
+                  className="absolute top-[9px] rounded-full"
+                  style={{
+                    left: lit ? "4px" : "6px",
+                    height: lit ? "18px" : "14px",
+                    width: lit ? "18px" : "14px",
+                    background: lit ? TEAL : railColor,
+                    transition: "all .3s ease-out",
+                  }}
+                />
+
+                <p
+                  className={`font-display text-xl font-bold tracking-[-0.02em] ${
+                    light ? "text-white" : "text-ink"
+                  }`}
+                >
+                  {s.label}
+                </p>
+                <p
+                  className={`mt-1.5 font-body text-[1.05rem] leading-relaxed ${
+                    light ? "text-white/70" : "text-ink/65"
+                  }`}
+                >
+                  {s.note}
+                </p>
+              </li>
             );
           })}
-        </svg>
-      </div>
+        </ol>
 
-      {!narrow && <p className={`mt-4 text-center font-body text-sm ${light ? "text-white/45" : "text-ink/45"}`}>{hint}</p>}
+        {/* el ciclo se cierra: del ultimo paso se vuelve al primero */}
+        <div className="relative mt-7 pl-12">
+          <span
+            aria-hidden="true"
+            className="absolute left-[10px] -top-7 h-9 w-[6px] rounded-full"
+            style={{ background: railColor, opacity: light ? 1 : 0.45 }}
+          />
+          <span
+            aria-hidden="true"
+            className={`absolute left-0 top-0 flex h-[26px] w-[26px] items-center justify-center rounded-full text-[17px] font-bold ${
+              light ? "bg-white/10 text-teal" : "bg-blue/10 text-blue"
+            }`}
+          >
+            ↻
+          </span>
+          <p className={`pt-1 font-body text-[0.95rem] ${light ? "text-white/50" : "text-ink/45"}`}>
+            {loop}
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  /* Ciclo abierto: el arco se dibuja desde las 12 en sentido horario y termina
+     en flecha sobre el ultimo paso. El texto vive al lado, en HTML, no dentro
+     del SVG, porque el <text> de SVG no salta de linea. */
+  return (
+    <div
+      ref={wrapRef}
+      className="grid items-center gap-10 md:grid-cols-[minmax(0,460px)_1fr] md:gap-16"
+    >
+      <svg
+        viewBox={`0 0 ${C.w} ${C.h}`}
+        className="block h-auto w-full"
+        role="img"
+        aria-label={steps.map((s) => s.label).join(" → ") + " → " + loop}
+      >
+        <defs>
+          <linearGradient id="scottingFlow" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0" stopColor={light ? "#4C7BFF" : "#0038FC"} />
+            <stop offset="1" stopColor={TEAL} />
+          </linearGradient>
+        </defs>
+
+        <path
+          d={arc}
+          fill="none"
+          stroke={railColor}
+          strokeWidth={6}
+          strokeLinecap="round"
+          opacity={light ? 1 : 0.45}
+        />
+        <path
+          d={arc}
+          fill="none"
+          stroke="url(#scottingFlow)"
+          strokeWidth={6}
+          strokeLinecap="round"
+          pathLength={1}
+          strokeDasharray={1}
+          strokeDashoffset={1 - progress}
+        />
+
+        {/* el trazo termina apuntando al ultimo paso */}
+        <path
+          d="M 0 0 L -19 -10 L -19 10 Z"
+          fill={TEAL}
+          transform={`translate(${tip.x} ${tip.y}) rotate(${ARROW_AT + 90})`}
+          opacity={Math.max(0, Math.min(1, (progress - 0.82) / 0.14))}
+        />
+
+        {/* la vuelta al ciclo, en el centro */}
+        <text
+          x={C.cx}
+          y={C.cy - 6}
+          fontSize={17}
+          textAnchor="middle"
+          className={light ? "fill-white/40 font-body" : "fill-ink/35 font-body"}
+        >
+          {loop}
+        </text>
+        <text
+          x={C.cx}
+          y={C.cy + 26}
+          fontSize={30}
+          textAnchor="middle"
+          className={light ? "fill-teal font-display font-bold" : "fill-blue font-display font-bold"}
+        >
+          ↻
+        </text>
+
+        {seats.map((p, i) => {
+          // el arco cubre (n-1)/n de la vuelta, asi que el paso i cae en i/(n-1)
+          const lit = progress >= i / (n - 1) - 0.001;
+          return (
+            <g key={steps[i].label}>
+              <Node x={p.x} y={p.y} lit={lit} dormant={railColor} />
+              <text
+                x={p.lx}
+                y={p.ly}
+                fontSize={23}
+                textAnchor={p.anchor}
+                className={open === i ? litLabelClass : labelClass}
+                style={{ transition: "fill .2s ease-out" }}
+              >
+                {steps[i].label}
+              </text>
+              <circle
+                cx={p.x}
+                cy={p.y}
+                r={40}
+                fill="transparent"
+                tabIndex={0}
+                role="button"
+                aria-label={`${steps[i].label}. ${steps[i].note}`}
+                className="cursor-pointer focus:outline-none focus-visible:stroke-teal"
+                strokeWidth={2}
+                onMouseEnter={() => setOpen(i)}
+                onFocus={() => setOpen(i)}
+              />
+            </g>
+          );
+        })}
+      </svg>
+
+      <div className="flex min-h-[224px] flex-col gap-3">
+        <p
+          className={`font-display text-base font-semibold tracking-[0.02em] ${
+            light ? "text-teal" : "text-blue"
+          }`}
+        >
+          {String(open + 1).padStart(2, "0")} · {steps[open].label}
+        </p>
+        <p
+          className={`max-w-[26ch] font-display text-2xl font-medium leading-snug tracking-[-0.02em] md:text-[2rem] ${
+            light ? "text-white" : "text-ink"
+          }`}
+        >
+          {steps[open].note}
+        </p>
+        <p className={`mt-2 font-body text-sm ${light ? "text-white/40" : "text-ink/40"}`}>{hint}</p>
+      </div>
     </div>
   );
 }

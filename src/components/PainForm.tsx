@@ -6,7 +6,7 @@ const ENDPOINT = import.meta.env.VITE_FORM_ENDPOINT as string | undefined;
 type Status = "idle" | "sending" | "done";
 
 export default function PainForm({ t, lang }: { t: Copy["form"]; lang: Lang }) {
-  const [chip, setChip] = useState<string | null>(null);
+  const [chips, setChips] = useState<string[]>([]);
   const [detail, setDetail] = useState("");
   const [name, setName] = useState("");
   const [contact, setContact] = useState("");
@@ -15,15 +15,15 @@ export default function PainForm({ t, lang }: { t: Copy["form"]; lang: Lang }) {
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (!chip) return setError(t.chipRequired);
+    if (chips.length === 0) return setError(t.chipRequired);
     if (!contact.trim()) return setError(t.contactRequired);
     setError(null);
 
-    const payload = { chip, detail, name, contact, lang, at: new Date().toISOString() };
+    const payload = { chips, detail, name, contact, lang, at: new Date().toISOString() };
 
     // Sin endpoint configurado, el mensaje se abre en WhatsApp para que nada se pierda.
     if (!ENDPOINT) {
-      const lines = [`${t.title}`, `→ ${chip}`, detail && `“${detail}”`, name && `— ${name}`]
+      const lines = [`${t.title}`, ...chips.map((c) => `→ ${c}`), detail && `“${detail}”`, name && `— ${name}`]
         .filter(Boolean)
         .join("\n");
       window.open(`https://wa.me/${WHATSAPP}?text=${encodeURIComponent(lines)}`, "_blank", "noopener");
@@ -55,16 +55,17 @@ export default function PainForm({ t, lang }: { t: Copy["form"]; lang: Lang }) {
     <form onSubmit={onSubmit} className="flex flex-col gap-7" noValidate>
       <fieldset className="flex flex-col gap-3 border-0 p-0">
         <legend className="sr-only">{t.title}</legend>
+        <p className="font-body text-sm text-ink/50">{t.chipsHint}</p>
         <div className="flex flex-wrap gap-2.5">
           {t.chips.map((c) => {
-            const active = chip === c;
+            const active = chips.includes(c);
             return (
               <button
                 key={c}
                 type="button"
                 aria-pressed={active}
                 onClick={() => {
-                  setChip(c);
+                  setChips((cur) => (cur.includes(c) ? cur.filter((x) => x !== c) : [...cur, c]));
                   setError(null);
                 }}
                 className={`rounded-full border px-4 py-2.5 font-body text-sm transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal ${

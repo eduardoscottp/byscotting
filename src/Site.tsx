@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { copy, waLink, EMAIL, type Lang } from "@/copy";
+import { copy, waLink, type Lang } from "@/copy";
 import ProcessFlow from "@/components/ProcessFlow";
 import PainForm from "@/components/PainForm";
 import StickyWhatsApp from "@/components/StickyWhatsApp";
@@ -10,6 +10,7 @@ import wordmarkBlue from "@/assets/scotting-wordmark-blue.png";
 import wordmarkWhite from "@/assets/scotting-wordmark-white.png";
 import eduardo from "@/assets/eduardo.jpg";
 import workPicktennt from "@/assets/work-picktennt.jpg";
+import picktenntDemo from "@/assets/picktennt-demo.gif";
 import workSotillo from "@/assets/work-sotillo.jpg";
 import workKeenkaya from "@/assets/work-keenkaya.jpg";
 // Provisionales — se reemplazan por las tomas 01 y 03. Ver brand/FOTOS-TEMPORALES.md
@@ -58,8 +59,14 @@ function Eyebrow({ children, tone = "dark" }: { children: React.ReactNode; tone?
 
 export default function Site({ lang }: { lang: Lang }) {
   const t = copy[lang];
-  const caseImages = [workPicktennt, mockCase2, workSotillo];
+  const caseImages = [picktenntDemo, mockCase2, workSotillo];
   const caseShots = [undefined, t.photos.prospector, undefined];
+  // el demo es cuadrado; recortarlo a 4/3 le comeria la pantalla, asi que se
+  // limita por alto para que no sobresalga de la columna de texto de al lado
+  const caseRatios = ["1 / 1", "4 / 3", "4 / 3"];
+  // alto fijo, no max-h: con w-auto y carga diferida la imagen no tiene ancho
+  // intrinseco todavia y la caja colapsa a cero antes de que el GIF cargue
+  const caseFit = ["md:h-[350px] md:w-auto md:justify-self-start", "", ""];
 
   useEffect(() => {
     document.documentElement.lang = t.htmlLang;
@@ -71,9 +78,9 @@ export default function Site({ lang }: { lang: Lang }) {
     <div className="min-h-screen bg-warm font-body text-ink antialiased">
       {/* ---------- Header ---------- */}
       <header className="sticky top-0 z-40 border-b border-ink/[0.06] bg-warm/85 backdrop-blur">
-        <div className="mx-auto flex max-w-[1180px] items-center justify-between px-6 py-4">
+        <div className="mx-auto flex max-w-[1180px] items-center justify-between px-6 py-3.5">
           <a href={lang === "es" ? "/" : "/en"} className="shrink-0">
-            <img src={wordmarkBlue} alt="scotting" className="h-6 w-auto md:h-7" />
+            <img src={wordmarkBlue} alt="scotting" className="h-8 w-auto md:h-9" />
           </a>
           <nav className="flex items-center gap-6">
             <a href="#servicios" className="hidden text-sm text-ink/65 transition-colors hover:text-blue sm:inline">
@@ -121,9 +128,6 @@ export default function Site({ lang }: { lang: Lang }) {
 
           <div className="animate-rise mt-1 flex flex-wrap items-center gap-x-7 gap-y-4" style={{ animationDelay: ".46s" }}>
             <WaButton lang={lang} label={t.hero.cta} context={t.hero.headline} />
-            <a href="#trabajo" className="text-base text-ink/60 underline-offset-4 transition-colors hover:text-blue hover:underline">
-              {t.hero.secondary} ↓
-            </a>
           </div>
         </div>
 
@@ -211,9 +215,9 @@ export default function Site({ lang }: { lang: Lang }) {
               src={caseImages[i]}
               alt={item.name}
               shot={caseShots[i] ?? ""}
-              ratio="4 / 3"
+              ratio={caseRatios[i]}
               mark="/node-network.svg"
-              className="shadow-[0_18px_50px_-24px_rgba(15,23,42,0.35)]"
+              className={`shadow-[0_18px_50px_-24px_rgba(15,23,42,0.35)] ${caseFit[i]}`}
             />
 
             <div className="flex flex-col gap-7">
@@ -262,11 +266,12 @@ export default function Site({ lang }: { lang: Lang }) {
               {t.process.title}
             </h2>
             <p className="max-w-2xl text-lg leading-relaxed text-white/70">{t.process.body}</p>
+            <p className="font-display text-lg font-semibold text-teal md:text-xl">{t.process.cycle}</p>
           </div>
 
           <Spine tone="light" height={64} />
 
-          <ProcessFlow steps={t.process.steps} hint={t.process.hint} tone="light" />
+          <ProcessFlow steps={t.process.steps} hint={t.process.hint} loop={t.process.loop} tone="light" />
         </div>
       </section>
 
@@ -280,12 +285,6 @@ export default function Site({ lang }: { lang: Lang }) {
             height={760}
             loading="lazy"
             className="w-56 rounded-[26px] object-cover md:w-full"
-          />
-          <img
-            src="/node-ring.svg"
-            alt=""
-            aria-hidden="true"
-            className="absolute -right-6 -top-6 hidden w-20 md:block"
           />
           <figcaption className="text-sm text-ink/55">{t.about.caption}</figcaption>
         </figure>
@@ -400,13 +399,12 @@ export default function Site({ lang }: { lang: Lang }) {
       <footer className="bg-ink py-12 text-white/70">
         <div className="mx-auto flex max-w-[1180px] flex-col gap-6 px-6 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex flex-col gap-3">
-            <img src={wordmarkWhite} alt="scotting" className="h-6 w-auto" />
+            {/* self-start es obligatorio: en un flex column el img se estira al
+                ancho del contenedor y w-auto no lo impide. Eso lo deformaba. */}
+            <img src={wordmarkWhite} alt="scotting" className="h-8 w-auto self-start" />
             <p className="text-sm text-white/50">{t.footer.tagline}</p>
           </div>
           <div className="flex flex-col gap-1.5 text-sm sm:text-right">
-            <a href={`mailto:${EMAIL}`} className="transition-colors hover:text-teal">
-              {EMAIL}
-            </a>
             <p className="text-white/50">{t.footer.location}</p>
             <p className="text-white/35">
               © {new Date().getFullYear()} Scotting. {t.footer.rights}

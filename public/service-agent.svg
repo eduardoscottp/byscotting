@@ -1,12 +1,11 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" fill="none" role="img" aria-label="Agentes de inteligencia artificial">
   <title>Scotting · agentes de IA</title>
   <g stroke="#0038FC" stroke-width="9" stroke-linecap="round" fill="none">
-    <path d="M60 58 V32" />
-    <path d="M60 62 L36 86" />
-    <path d="M60 62 L84 86" />
+    <rect x="24" y="38" width="72" height="62" rx="20" />
+    <path d="M60 38 V24" />
+    <path d="M47 85 H73" />
   </g>
-  <circle cx="60" cy="60" r="13" fill="#0038FC" />
-  <circle cx="60" cy="26" r="9" fill="#01DECB" />
-  <circle cx="31" cy="91" r="9" fill="#01DECB" />
-  <circle cx="89" cy="91" r="9" fill="#DAF41E" />
+  <circle cx="60" cy="17" r="7" fill="#01DECB" />
+  <circle cx="46" cy="66" r="7.5" fill="#01DECB" />
+  <circle cx="74" cy="66" r="7.5" fill="#01DECB" />
 </svg>

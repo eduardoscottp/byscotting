@@ -1,7 +1,6 @@
 export type Lang = "es" | "en";
 
 export const WHATSAPP = "17865779275";
-export const EMAIL = "eduardo@byscotting.com";
 
 export const copy = {
   es: {
@@ -24,13 +23,12 @@ export const copy = {
         "Construyo sistemas y automatizaciones para negocios que ya están andando.",
       ],
       cta: "Hablemos por WhatsApp",
-      secondary: "Ver lo que he construido",
     },
 
     services: {
       eyebrow: "Servicios",
       title: "Tres formas de empezar.",
-      lead: "Puedes entrar por donde te haga sentido. Casi siempre empezamos por la primera.",
+      lead: "Empezamos por donde más necesites apoyo. Casi siempre, por la primera.",
       items: [
         {
           name: "Consultoría 1 a 1 en tecnología",
@@ -106,23 +104,26 @@ export const copy = {
       eyebrow: "Cómo trabajo",
       title: "La automatización es mi paso 4. No el primero.",
       body: "Muchos llegan con una herramienta bajo el brazo y te la venden antes de mirar cómo trabajas. Yo primero miro. A veces lo que necesitas no es automatizar nada — es cambiar el orden de dos pasos.",
-      hint: "Toca un paso para ver de qué se trata.",
+      hint: "Pasa por cada paso para ver de qué se trata.",
+      cycle: "No es una línea que termina en la entrega. Es un ciclo.",
       steps: [
         { label: "Detecto", note: "Miro cómo trabajas hoy. Sin cambiar nada todavía." },
         { label: "Analizo", note: "Qué cuesta tiempo, qué cuesta errores, qué cuesta dinero." },
-        { label: "Soluciono", note: "A veces es software. A veces es cambiar el orden." },
-        { label: "Automatizo", note: "Solo lo que ya sabemos que funciona." },
-        { label: "Mejoro", note: "Me quedo. Lo que se construye se afina." },
+        { label: "Soluciono", note: "Diseño y construyo la solución. A veces es software, a veces es cambiar el orden." },
+        { label: "Automatizo", note: "Implemento solo lo que ya sabemos que funciona." },
+        { label: "Mejoro", note: "Evalúo lo que quedó andando, corrijo, y el ciclo empieza otra vez." },
       ],
+      loop: "Y vuelve a empezar",
     },
 
     about: {
       eyebrow: "Quién soy",
       title: "Soy Eduardo Scott.",
       paragraphs: [
-        "Ingeniero. 15 años construyendo software, la mayoría resolviendo problemas de empresas que ya estaban funcionando.",
-        "Vivo en Miami. Estoy aquí, no del otro lado. Entiendo lo que pasa acá porque me pasa a mí también.",
-        "Y no desaparezco cuando entrego. Lo que construyo lo sigo afinando contigo.",
+        "Soy ingeniero. Quince años en software, los últimos ocho trabajando con datos y liderando equipos de tecnología en empresas de Estados Unidos y Latinoamérica.",
+        "Casi todo mi trabajo ha sido el mismo: entrar a una empresa que ya estaba funcionando y construir la herramienta que le faltaba para dejar de perder tiempo y dinero.",
+        "Vivo en Miami. Mis clientes están a veinte minutos, no a nueve horas de diferencia. Si algo se rompe un martes a las 6, lo hablamos ese martes.",
+        "Y lo que entrego lo sigo tocando meses después. Nunca ha sido un extra — es como trabajo.",
       ],
       photoAlt: "Eduardo Scott, en Miami",
       caption: "Eduardo Scott · Miami, Florida",
@@ -181,6 +182,7 @@ export const copy = {
         "Mi página web",
         "Otra cosa",
       ],
+      chipsHint: "Puedes escoger varias.",
       detailLabel: "Cuéntame en una línea",
       detailOptional: "opcional",
       nameLabel: "Nombre",
@@ -224,13 +226,12 @@ export const copy = {
         "I build systems and automation for businesses that are already running.",
       ],
       cta: "Let's talk on WhatsApp",
-      secondary: "See what I've built",
     },
 
     services: {
       eyebrow: "Services",
       title: "Three ways to start.",
-      lead: "Come in wherever it makes sense. Most people start with the first one.",
+      lead: "We start wherever you need the most help. Usually with the first one.",
       items: [
         {
           name: "One-on-one tech consulting",
@@ -306,23 +307,26 @@ export const copy = {
       eyebrow: "How I work",
       title: "Automation is my step four. Not my first.",
       body: "Plenty of people show up with a tool already in hand and sell it before looking at how you work. I look first. Sometimes what you need isn't automation at all — it's swapping the order of two steps.",
-      hint: "Tap a step to see what it means.",
+      hint: "Hover any step to see what it means.",
+      cycle: "It is not a line that ends at delivery. It is a cycle.",
       steps: [
         { label: "Detect", note: "I look at how you work today. Nothing changes yet." },
         { label: "Analyze", note: "What costs time, what costs errors, what costs money." },
-        { label: "Solve", note: "Sometimes it's software. Sometimes it's the order." },
-        { label: "Automate", note: "Only what we already know works." },
-        { label: "Improve", note: "I stay. What gets built gets tuned." },
+        { label: "Solve", note: "I design and build the solution. Sometimes it's software, sometimes it's the order." },
+        { label: "Automate", note: "I roll out only what we already know works." },
+        { label: "Improve", note: "I check what's actually running, fix it, and the cycle starts again." },
       ],
+      loop: "And it starts again",
     },
 
     about: {
       eyebrow: "Who I am",
       title: "I'm Eduardo Scott.",
       paragraphs: [
-        "Engineer. 15 years building software, most of it solving problems for companies that were already running.",
-        "I live in Miami. I'm here, not on the other side. I understand what happens here because it happens to me too.",
-        "And I don't disappear after delivery. What I build, I keep tuning with you.",
+        "I'm an engineer. Fifteen years in software, the last eight working with data and leading technology teams at companies in the United States and Latin America.",
+        "Almost all of my work has been the same: walking into a company that was already running and building the tool it was missing so it would stop losing time and money.",
+        "I live in Miami. My clients are twenty minutes away, not nine time zones. If something breaks on a Tuesday at six, we talk about it that Tuesday.",
+        "And what I hand over I keep working on months later. It has never been an extra — it's how I work.",
       ],
       photoAlt: "Eduardo Scott, in Miami",
       caption: "Eduardo Scott · Miami, Florida",
@@ -381,6 +385,7 @@ export const copy = {
         "My website",
         "Something else",
       ],
+      chipsHint: "Pick as many as you like.",
       detailLabel: "Tell me in one line",
       detailOptional: "optional",
       nameLabel: "Name",
