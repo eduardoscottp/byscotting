@@ -113,10 +113,10 @@ export default function ProcessFlow({
 
   const n = steps.length;
 
-  /* El proceso es un ciclo ABIERTO: los pasos se reparten cada 360/n grados
-     desde las 12 en sentido horario, pero el arco no cierra. Queda un hueco
-     entre el ultimo paso y el primero, y el trazo termina en una flecha que
-     apunta al ultimo — asi se lee que tiene principio y final. */
+  /* El ciclo cierra: los pasos se reparten cada 360/n grados desde las 12 en
+     sentido horario y la circunferencia da la vuelta completa. En el ultimo
+     tramo (del ultimo paso de vuelta al primero) el trazo termina en una
+     flecha que apunta al primer paso: ahi se ve que el ciclo reinicia. */
   const C = { w: 600, h: 560, cx: 300, cy: 275, r: 175, lr: 211 };
 
   const at = (deg: number, radius = C.r) => {
@@ -125,13 +125,13 @@ export default function ProcessFlow({
   };
 
   const START = -90; // Detecto, a las 12
-  const LAST = START + ((n - 1) * 360) / n; // el ultimo paso
-  const STROKE_END = LAST - 18; // el trazo se corta antes para dejar sitio a la flecha
-  const ARROW_AT = LAST - 7; // punta de la flecha, justo antes del ultimo nodo
+  const SWEEP = 348; // casi la vuelta entera; los 12 grados que faltan son la flecha
+  const STROKE_END = START + SWEEP;
+  const ARROW_AT = START + 354; // punta, entrando en Detecto
 
   const a0 = at(START);
   const a1 = at(STROKE_END);
-  const arc = `M ${a0.x} ${a0.y} A ${C.r} ${C.r} 0 ${STROKE_END - START > 180 ? 1 : 0} 1 ${a1.x} ${a1.y}`;
+  const arc = `M ${a0.x} ${a0.y} A ${C.r} ${C.r} 0 ${SWEEP > 180 ? 1 : 0} 1 ${a1.x} ${a1.y}`;
   const tip = at(ARROW_AT);
 
   const seats = Array.from({ length: n }, (_, i) => {
@@ -238,9 +238,9 @@ export default function ProcessFlow({
     );
   }
 
-  /* Ciclo abierto: el arco se dibuja desde las 12 en sentido horario y termina
-     en flecha sobre el ultimo paso. El texto vive al lado, en HTML, no dentro
-     del SVG, porque el <text> de SVG no salta de linea. */
+  /* El arco se dibuja desde las 12 en sentido horario, cierra la vuelta y
+     termina en flecha entrando al primer paso. El texto vive al lado, en HTML,
+     no dentro del SVG, porque el <text> de SVG no salta de linea. */
   return (
     <div
       ref={wrapRef}
@@ -278,12 +278,12 @@ export default function ProcessFlow({
           strokeDashoffset={1 - progress}
         />
 
-        {/* el trazo termina apuntando al ultimo paso */}
+        {/* el trazo cierra apuntando de vuelta al primer paso */}
         <path
           d="M 0 0 L -19 -10 L -19 10 Z"
           fill={TEAL}
           transform={`translate(${tip.x} ${tip.y}) rotate(${ARROW_AT + 90})`}
-          opacity={Math.max(0, Math.min(1, (progress - 0.82) / 0.14))}
+          opacity={Math.max(0, Math.min(1, (progress - 0.9) / 0.1))}
         />
 
         {/* la vuelta al ciclo, en el centro */}
@@ -307,8 +307,8 @@ export default function ProcessFlow({
         </text>
 
         {seats.map((p, i) => {
-          // el arco cubre (n-1)/n de la vuelta, asi que el paso i cae en i/(n-1)
-          const lit = progress >= i / (n - 1) - 0.001;
+          // el paso i cae en (i*360/n)/SWEEP del trazo
+          const lit = progress >= (i * 360) / n / SWEEP - 0.001;
           return (
             <g key={steps[i].label}>
               <Node x={p.x} y={p.y} lit={lit} dormant={railColor} />
