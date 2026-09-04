@@ -120,7 +120,8 @@ export const copy = {
       eyebrow: "Quién soy",
       title: "Soy Eduardo Scott.",
       paragraphs: [
-        "Soy ingeniero. Quince años en software, los últimos ocho trabajando con datos y liderando equipos de tecnología en empresas de Estados Unidos y Latinoamérica.",
+        "Soy ingeniero. 15 años en software, los últimos 8 trabajando con datos y liderando equipos de tecnología en empresas de Estados Unidos y Latinoamérica.",
+        "He trabajado en los dos extremos: la página web de un negocio de barrio, y una empresa de adtech de más de 40 millones de dólares al año, donde fui manager y construí las herramientas del equipo de ventas.",
         "Casi todo mi trabajo ha sido el mismo: entrar a una empresa que ya estaba funcionando y construir la herramienta que le faltaba para dejar de perder tiempo y dinero.",
         "Vivo en Miami. Mis clientes están a veinte minutos, no a nueve horas de diferencia. Si algo se rompe un martes a las 6, lo hablamos ese martes.",
         "Y lo que entrego lo sigo tocando meses después. Nunca ha sido un extra — es como trabajo.",
@@ -323,7 +324,8 @@ export const copy = {
       eyebrow: "Who I am",
       title: "I'm Eduardo Scott.",
       paragraphs: [
-        "I'm an engineer. Fifteen years in software, the last eight working with data and leading technology teams at companies in the United States and Latin America.",
+        "I'm an engineer. 15 years in software, the last 8 working with data and leading technology teams at companies in the United States and Latin America.",
+        "I've worked at both ends: a neighborhood business's website, and an adtech company doing over $40 million a year, where I was a manager and built the sales team's tools.",
         "Almost all of my work has been the same: walking into a company that was already running and building the tool it was missing so it would stop losing time and money.",
         "I live in Miami. My clients are twenty minutes away, not nine time zones. If something breaks on a Tuesday at six, we talk about it that Tuesday.",
         "And what I hand over I keep working on months later. It has never been an extra — it's how I work.",

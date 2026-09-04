@@ -214,26 +214,8 @@ export default function ProcessFlow({
             );
           })}
         </ol>
-
-        {/* el ciclo se cierra: del ultimo paso se vuelve al primero */}
-        <div className="relative mt-7 pl-12">
-          <span
-            aria-hidden="true"
-            className="absolute left-[10px] -top-7 h-9 w-[6px] rounded-full"
-            style={{ background: railColor, opacity: light ? 1 : 0.45 }}
-          />
-          <span
-            aria-hidden="true"
-            className={`absolute left-0 top-0 flex h-[26px] w-[26px] items-center justify-center rounded-full text-[17px] font-bold ${
-              light ? "bg-white/10 text-teal" : "bg-blue/10 text-blue"
-            }`}
-          >
-            ↻
-          </span>
-          <p className={`pt-1 font-body text-[0.95rem] ${light ? "text-white/50" : "text-ink/45"}`}>
-            {loop}
-          </p>
-        </div>
+        {/* El cierre del ciclo aqui iba con un icono que no funcionaba en
+            pantalla estrecha. En movil el ciclo lo dice la linea de la seccion. */}
       </div>
     );
   }

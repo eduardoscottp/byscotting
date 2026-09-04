@@ -66,7 +66,9 @@ export default function Site({ lang }: { lang: Lang }) {
   const caseRatios = ["1 / 1", "4 / 3", "4 / 3"];
   // alto fijo, no max-h: con w-auto y carga diferida la imagen no tiene ancho
   // intrinseco todavia y la caja colapsa a cero antes de que el GIF cargue
-  const caseFit = ["md:h-[350px] md:w-auto md:justify-self-start", "", ""];
+  // max-w en movil: sin tope, a 767px de ancho el GIF se estiraba a 719px y
+  // se veia blando. Con el tope, 800x800 de origen siempre cubre 2x.
+  const caseFit = ["max-w-[400px] md:h-[350px] md:max-w-none md:w-auto md:justify-self-start", "", ""];
 
   useEffect(() => {
     document.documentElement.lang = t.htmlLang;
