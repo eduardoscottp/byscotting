@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" fill="none" role="img" aria-label="Nodos conectados">
+  <title>Scotting · red de nodos</title>
+  <g stroke="#0038FC" stroke-width="10" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M44 44 H128 a28 28 0 0 1 28 28 V156" />
+    <path d="M44 156 V72 a28 28 0 0 1 28-28 H156" />
+  </g>
+  <circle cx="44" cy="44" r="13" fill="#0038FC" />
+  <circle cx="156" cy="44" r="13" fill="#0038FC" />
+  <circle cx="44" cy="156" r="13" fill="#0038FC" />
+  <circle cx="156" cy="156" r="13" fill="#01DECB" />
+</svg>

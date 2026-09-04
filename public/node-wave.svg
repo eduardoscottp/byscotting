@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 100" fill="none" role="img" aria-label="Flujo de trabajo">
+  <title>Scotting · flujo</title>
+  <defs>
+    <linearGradient id="scottingWave" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#DAF41E" />
+      <stop offset="1" stop-color="#01DECB" />
+    </linearGradient>
+  </defs>
+  <path d="M18 68 C 48 68 52 32 82 32 S 116 68 146 68 S 180 32 222 32"
+        stroke="url(#scottingWave)" stroke-width="16" stroke-linecap="round" fill="none" />
+</svg>

@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" fill="none" role="img" aria-label="Progreso completo">
+  <title>Scotting · progreso completo</title>
+  <g transform="rotate(-90 100 100)" fill="none" stroke-width="14" stroke-linecap="round">
+    <circle cx="100" cy="100" r="70" stroke="#0038FC" stroke-dasharray="200 240" stroke-dashoffset="0" />
+    <circle cx="100" cy="100" r="70" stroke="#01DECB" stroke-dasharray="120 320" stroke-dashoffset="-212" />
+    <circle cx="100" cy="100" r="70" stroke="#DAF41E" stroke-dasharray="84 356" stroke-dashoffset="-344" />
+  </g>
+</svg>

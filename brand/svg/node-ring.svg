@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" fill="none" role="img" aria-label="Proceso en curso">
+  <title>Scotting · proceso en curso</title>
+  <circle cx="100" cy="100" r="70" fill="none" stroke="#0038FC" stroke-width="14"
+          stroke-linecap="round" stroke-dasharray="330 110" transform="rotate(-90 100 100)" />
+  <circle cx="100" cy="30" r="16" fill="#01DECB" />
+</svg>

@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 100" fill="none" role="img" aria-label="Avanzar">
+  <title>Scotting · avanzar</title>
+  <g stroke="#0038FC" stroke-width="12" stroke-linecap="round" stroke-linejoin="round" fill="none">
+    <path d="M22 50 H158" />
+    <path d="M156 22 L192 50 L156 78" />
+  </g>
+  <circle cx="22" cy="50" r="11" fill="#0038FC" />
+  <circle cx="90" cy="50" r="11" fill="#01DECB" />
+</svg>

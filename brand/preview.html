@@ -1,0 +1,481 @@
+<title>Vectores Scotting</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700&family=DM+Sans:wght@400;500&display=swap">
+
+<style>
+  :root {
+    --blue:   #0038FC;
+    --teal:   #01DECB;
+    --lime:   #DAF41E;
+    --soft:   #B9D4FB;
+    --navy:   #0F172A;
+
+    --ground:  #FAF8F4;
+    --surface: #FFFFFF;
+    --tile:    #F5FAFF;
+    --ink:     #0F172A;
+    --ink-mid: #4A566E;
+    --ink-dim: #7A879F;
+    --line:    #E3E7F0;
+    --accent:  #0038FC;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --ground:  #0A0F1E;
+      --surface: #121A2E;
+      --tile:    #18223A;
+      --ink:     #EDF2FC;
+      --ink-mid: #A7B4CC;
+      --ink-dim: #75839D;
+      --line:    #24304A;
+      --accent:  #4C7BFF;
+    }
+  }
+
+  :root[data-theme="dark"] {
+    --ground:  #0A0F1E;
+    --surface: #121A2E;
+    --tile:    #18223A;
+    --ink:     #EDF2FC;
+    --ink-mid: #A7B4CC;
+    --ink-dim: #75839D;
+    --line:    #24304A;
+    --accent:  #4C7BFF;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    background: var(--ground);
+    color: var(--ink);
+    font-family: "DM Sans", Inter, "Helvetica Neue", Arial, sans-serif;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .wrap {
+    max-width: 1080px;
+    margin: 0 auto;
+    padding: 56px 24px 96px;
+    display: flex;
+    flex-direction: column;
+    gap: 64px;
+  }
+
+  h1, h2, h3 {
+    font-family: Inter, "Plus Jakarta Sans", "Helvetica Neue", Arial, sans-serif;
+    letter-spacing: -0.02em;
+    text-wrap: balance;
+    margin: 0;
+  }
+  h1 { font-weight: 700; font-size: clamp(2rem, 5vw, 2.9rem); line-height: 1.08; }
+  h2 { font-weight: 700; font-size: 1.35rem; line-height: 1.2; }
+  h3 { font-weight: 600; font-size: 1rem; line-height: 1.3; }
+  p  { margin: 0; }
+
+  .eyebrow {
+    font-family: Inter, sans-serif;
+    font-weight: 600;
+    font-size: .68rem;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    color: var(--accent);
+  }
+
+  .lede { color: var(--ink-mid); max-width: 60ch; font-size: 1.05rem; }
+  .note { color: var(--ink-dim); font-size: .85rem; max-width: 68ch; }
+
+  header { display: flex; flex-direction: column; gap: 14px; }
+
+  /* ---- paleta ---- */
+  .palette { display: flex; flex-wrap: wrap; gap: 10px; }
+  .swatch {
+    flex: 1 1 140px;
+    border-radius: 16px;
+    padding: 14px 16px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-height: 92px;
+    justify-content: flex-end;
+    border: 1px solid transparent;
+  }
+  .swatch b { font-family: Inter, sans-serif; font-weight: 600; font-size: .82rem; }
+  .swatch span { font-size: .74rem; font-variant-numeric: tabular-nums; opacity: .75; }
+
+  /* ---- secciones ---- */
+  section { display: flex; flex-direction: column; gap: 20px; }
+  .sec-head { display: flex; flex-direction: column; gap: 6px; }
+
+  .flow-stage {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 24px;
+    padding: 32px 28px 24px;
+    overflow-x: auto;
+  }
+  .flow-stage svg { display: block; width: 100%; min-width: 620px; height: auto; overflow: visible; }
+  @media (max-width: 700px) { .flow-stage { padding: 24px 16px; } }
+
+  .replay {
+    align-self: flex-start;
+    font-family: Inter, sans-serif;
+    font-weight: 600;
+    font-size: .8rem;
+    color: #fff;
+    background: var(--blue);
+    border: 0;
+    border-radius: 999px;
+    padding: 9px 20px;
+    cursor: pointer;
+    transition: filter .2s ease;
+  }
+  .replay:hover { filter: brightness(.92); }
+  .replay:focus-visible { outline: 3px solid var(--teal); outline-offset: 2px; }
+
+  .step-label { font-family: Inter, sans-serif; font-weight: 700; fill: var(--ink); }
+  .step-note  { font-family: "DM Sans", sans-serif; fill: var(--ink-mid); }
+  .rail       { stroke: var(--soft); opacity: .45; }
+
+  /* ---- rejilla de vectores ---- */
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(268px, 1fr));
+    gap: 18px;
+  }
+  .asset {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 20px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+  .tiles { display: grid; grid-template-columns: 1fr 1fr; }
+  .tile {
+    aspect-ratio: 4 / 3;
+    display: grid;
+    place-items: center;
+    padding: 20px;
+  }
+  .tile.light { background: var(--tile); }
+  .tile.blue  { background: var(--blue); }
+  .tile svg { width: 100%; height: 100%; max-height: 108px; }
+  .asset-body { padding: 16px 18px 18px; display: flex; flex-direction: column; gap: 5px; }
+  .asset-body code {
+    font-family: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+    font-size: .72rem;
+    color: var(--ink-dim);
+    word-break: break-all;
+  }
+  .use { font-size: .86rem; color: var(--ink-mid); }
+
+  .rules { display: grid; gap: 10px; padding: 0; margin: 0; list-style: none; }
+  .rules li {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    font-size: .92rem;
+    color: var(--ink-mid);
+  }
+  .rules b { font-family: Inter, sans-serif; color: var(--ink); font-weight: 600; }
+  .dot { width: 9px; height: 9px; border-radius: 999px; background: var(--teal); margin-top: 8px; flex: 0 0 auto; }
+
+  hr { border: 0; border-top: 1px solid var(--line); margin: 0; }
+
+  @media (prefers-reduced-motion: reduce) {
+    * { transition: none !important; }
+  }
+</style>
+
+<div class="wrap">
+
+  <header>
+    <p class="eyebrow">Sistema gráfico · byscotting.com</p>
+    <h1>Vectores de marca</h1>
+    <p class="lede">
+      Siete piezas del sistema de nodos, ahora en SVG. Hasta hoy el brand book solo tenía PNG,
+      que no se pueden animar ni escalar — esto cierra ese pendiente. Cada marca se muestra sobre
+      fondo claro y sobre azul pleno, que son los dos fondos que permite la guía.
+    </p>
+  </header>
+
+  <section>
+    <div class="sec-head">
+      <p class="eyebrow">Paleta usada</p>
+      <p class="note">Sin colores fuera de esta lista. Turquesa y lima son acentos, nunca bloques planos.</p>
+    </div>
+    <div class="palette">
+      <div class="swatch" style="background:#0038FC;color:#fff"><b>Electric Blue</b><span>#0038FC</span></div>
+      <div class="swatch" style="background:#01DECB;color:#062B28"><b>Signal Teal</b><span>#01DECB</span></div>
+      <div class="swatch" style="background:#DAF41E;color:#2A3105"><b>Volt Lime</b><span>#DAF41E</span></div>
+      <div class="swatch" style="background:#B9D4FB;color:#0F172A"><b>Soft Blue</b><span>#B9D4FB</span></div>
+      <div class="swatch" style="background:#0F172A;color:#F5FAFF"><b>Ink Navy</b><span>#0F172A</span></div>
+    </div>
+  </section>
+
+  <hr>
+
+  <section>
+    <div class="sec-head">
+      <p class="eyebrow">Pieza principal · animada</p>
+      <h2>Mi proceso</h2>
+      <p class="note">
+        La línea se dibuja sola y cada nodo se enciende cuando la línea lo alcanza. Pasa el cursor
+        sobre un paso para ver su frase. Fíjate en el orden: <b>automatizo es el paso 4</b> — la
+        animación misma es el argumento.
+      </p>
+    </div>
+
+    <div class="flow-stage">
+      <svg id="flow" viewBox="0 0 900 152" role="img"
+           aria-label="Mi proceso: detecto, analizo, soluciono, automatizo, mejoro">
+        <defs>
+          <linearGradient id="flowGrad" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0" stop-color="#0038FC"/>
+            <stop offset="1" stop-color="#01DECB"/>
+          </linearGradient>
+        </defs>
+        <path class="rail" d="M90 52 H810" fill="none" stroke-width="6" stroke-linecap="round"/>
+        <path id="flowLine" d="M90 52 H810" fill="none" stroke="url(#flowGrad)" stroke-width="6"
+              stroke-linecap="round" pathLength="1" stroke-dasharray="1" stroke-dashoffset="1"/>
+        <g id="flowNodes"></g>
+      </svg>
+    </div>
+    <button class="replay" id="replay" type="button">Ver de nuevo</button>
+  </section>
+
+  <hr>
+
+  <section>
+    <div class="sec-head">
+      <p class="eyebrow">Sistema de nodos</p>
+      <h2>Las siete marcas</h2>
+      <p class="note">Archivos en <code>coding/scotting/brand/svg/</code>. Trazo redondeado, grosor generoso, todo escalable.</p>
+    </div>
+
+    <div class="grid" id="assets"></div>
+  </section>
+
+  <hr>
+
+  <section>
+    <div class="sec-head">
+      <p class="eyebrow">Reglas que siguen</p>
+      <h2>Por qué están hechos así</h2>
+    </div>
+    <ul class="rules">
+      <li><span class="dot"></span><span><b>Puntas redondeadas siempre.</b> Cada línea usa <code>stroke-linecap: round</code>, igual que el lazo del logotipo.</span></li>
+      <li><span class="dot"></span><span><b>Un solo degradado.</b> Azul → turquesa, el único que permite la guía. No hay otros.</span></li>
+      <li><span class="dot"></span><span><b>Lima con cuentagotas.</b> Aparece en dos piezas y nunca como bloque plano.</span></li>
+      <li><span class="dot"></span><span><b>El logo no se tocó.</b> Estos son el sistema gráfico, no el logotipo — ese se sigue usando desde los PNG originales.</span></li>
+      <li><span class="dot"></span><span><b>Sin texto adentro.</b> Cada marca funciona sola, en cualquier tamaño, en cualquier idioma.</span></li>
+    </ul>
+  </section>
+
+</div>
+
+<script>
+  const STEPS = [
+    { label: "Detecto",    note: "Miro cómo trabajas hoy." },
+    { label: "Analizo",    note: "Qué cuesta tiempo, errores y dinero." },
+    { label: "Soluciono",  note: "A veces es software. A veces es el orden." },
+    { label: "Automatizo", note: "Solo lo que ya sabemos que funciona." },
+    { label: "Mejoro",     note: "Me quedo. Lo construido se afina." }
+  ];
+
+  const NS = "http://www.w3.org/2000/svg";
+  const nodesGroup = document.getElementById("flowNodes");
+  const line = document.getElementById("flowLine");
+  const X0 = 90, X1 = 810, Y = 52;
+
+  const nodeEls = STEPS.map((step, i) => {
+    const t = i / (STEPS.length - 1);
+    const x = X0 + t * (X1 - X0);
+    const g = document.createElementNS(NS, "g");
+
+    const halo = document.createElementNS(NS, "circle");
+    halo.setAttribute("cx", x); halo.setAttribute("cy", Y);
+    halo.setAttribute("r", 20); halo.setAttribute("fill", "#01DECB");
+    halo.setAttribute("opacity", "0");
+    halo.style.transition = "r .3s ease-out, opacity .3s ease-out";
+
+    const dot = document.createElementNS(NS, "circle");
+    dot.setAttribute("cx", x); dot.setAttribute("cy", Y);
+    dot.setAttribute("r", 9); dot.setAttribute("fill", "#B9D4FB");
+    dot.style.transition = "r .3s ease-out, fill .3s ease-out";
+
+    const label = document.createElementNS(NS, "text");
+    label.setAttribute("class", "step-label");
+    label.setAttribute("x", x); label.setAttribute("y", Y + 48);
+    label.setAttribute("font-size", "19"); label.setAttribute("text-anchor", "middle");
+    label.textContent = step.label;
+
+    const note = document.createElementNS(NS, "text");
+    note.setAttribute("class", "step-note");
+    note.setAttribute("x", x); note.setAttribute("y", Y + 72);
+    note.setAttribute("font-size", "12.5"); note.setAttribute("text-anchor", "middle");
+    note.setAttribute("opacity", "0");
+    note.style.transition = "opacity .2s ease-out";
+    note.textContent = step.note;
+
+    const hit = document.createElementNS(NS, "rect");
+    hit.setAttribute("x", x - 78); hit.setAttribute("y", Y - 32);
+    hit.setAttribute("width", 156); hit.setAttribute("height", 96);
+    hit.setAttribute("fill", "transparent");
+    hit.setAttribute("tabindex", "0");
+    hit.setAttribute("role", "button");
+    hit.setAttribute("aria-label", step.label + ". " + step.note);
+    hit.style.cursor = "pointer";
+
+    const show = () => note.setAttribute("opacity", "1");
+    const hide = () => note.setAttribute("opacity", "0");
+    hit.addEventListener("mouseenter", show);
+    hit.addEventListener("mouseleave", hide);
+    hit.addEventListener("focus", show);
+    hit.addEventListener("blur", hide);
+
+    g.append(halo, dot, label, note, hit);
+    nodesGroup.appendChild(g);
+    return { halo, dot };
+  });
+
+  function setProgress(p) {
+    line.setAttribute("stroke-dashoffset", String(1 - p));
+    nodeEls.forEach((n, i) => {
+      const lit = p >= i / (STEPS.length - 1) - 0.001;
+      n.halo.setAttribute("r", lit ? 26 : 20);
+      n.halo.setAttribute("opacity", lit ? "0.16" : "0");
+      n.dot.setAttribute("r", lit ? 13 : 9);
+      n.dot.setAttribute("fill", lit ? "#01DECB" : "#B9D4FB");
+    });
+  }
+
+  const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  let raf = null;
+
+  function play() {
+    if (reduced) { setProgress(1); return; }
+    if (raf) cancelAnimationFrame(raf);
+    const start = performance.now();
+    const tick = (now) => {
+      const t = Math.min(1, (now - start) / 2400);
+      setProgress(1 - Math.pow(1 - t, 3));
+      if (t < 1) raf = requestAnimationFrame(tick);
+    };
+    raf = requestAnimationFrame(tick);
+  }
+
+  setProgress(reduced ? 1 : 0);
+  play();
+  document.getElementById("replay").addEventListener("click", play);
+
+  /* ---------- rejilla de vectores ---------- */
+  const ASSETS = [
+    {
+      file: "node-network.svg", name: "Red de nodos",
+      use: "Sistemas, integraciones, arquitectura. Reemplaza a Scotting 1.",
+      svg: (id, c) => `
+        <svg viewBox="0 0 200 200" fill="none" aria-hidden="true">
+          <g stroke="${c.blue}" stroke-width="10" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M44 44 H128 a28 28 0 0 1 28 28 V156"/>
+            <path d="M44 156 V72 a28 28 0 0 1 28-28 H156"/>
+          </g>
+          <circle cx="44" cy="44" r="13" fill="${c.blue}"/>
+          <circle cx="156" cy="44" r="13" fill="${c.blue}"/>
+          <circle cx="44" cy="156" r="13" fill="${c.blue}"/>
+          <circle cx="156" cy="156" r="13" fill="#01DECB"/>
+        </svg>`
+    },
+    {
+      file: "node-bridge.svg", name: "Puente",
+      use: "Conexión entre dos sistemas. Antes y después. Reemplaza a Scotting 2.",
+      svg: (id, c) => `
+        <svg viewBox="0 0 220 120" fill="none" aria-hidden="true">
+          <defs><linearGradient id="br${id}" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0" stop-color="${c.blue}"/><stop offset="1" stop-color="#01DECB"/>
+          </linearGradient></defs>
+          <rect x="52" y="42" width="116" height="36" rx="18" fill="url(#br${id})"/>
+          <circle cx="60" cy="60" r="38" fill="${c.blue}"/>
+          <circle cx="160" cy="60" r="38" fill="#01DECB"/>
+        </svg>`
+    },
+    {
+      file: "node-ring.svg", name: "Anillo abierto",
+      use: "Proceso en curso, ciclo, algo que todavía se está afinando. Reemplaza a Scotting 3.",
+      svg: (id, c) => `
+        <svg viewBox="0 0 200 200" fill="none" aria-hidden="true">
+          <circle cx="100" cy="100" r="70" fill="none" stroke="${c.blue}" stroke-width="14"
+                  stroke-linecap="round" stroke-dasharray="330 110" transform="rotate(-90 100 100)"/>
+          <circle cx="100" cy="30" r="16" fill="#01DECB"/>
+        </svg>`
+    },
+    {
+      file: "node-ring-full.svg", name: "Anillo completo",
+      use: "Progreso terminado, métricas, dashboard. Reemplaza a Scotting 4.",
+      svg: (id, c) => `
+        <svg viewBox="0 0 200 200" fill="none" aria-hidden="true">
+          <g transform="rotate(-90 100 100)" fill="none" stroke-width="14" stroke-linecap="round">
+            <circle cx="100" cy="100" r="70" stroke="${c.blue}" stroke-dasharray="200 240"/>
+            <circle cx="100" cy="100" r="70" stroke="#01DECB" stroke-dasharray="120 320" stroke-dashoffset="-212"/>
+            <circle cx="100" cy="100" r="70" stroke="#DAF41E" stroke-dasharray="84 356" stroke-dashoffset="-344"/>
+          </g>
+        </svg>`
+    },
+    {
+      file: "node-wave.svg", name: "Onda de flujo",
+      use: "Flujo de trabajo, secuencia, automatización corriendo. Reemplaza a Scotting 5.",
+      svg: (id, c) => `
+        <svg viewBox="0 0 240 100" fill="none" aria-hidden="true">
+          <defs><linearGradient id="wv${id}" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0" stop-color="#DAF41E"/><stop offset="1" stop-color="#01DECB"/>
+          </linearGradient></defs>
+          <path d="M18 68 C 48 68 52 32 82 32 S 116 68 146 68 S 180 32 222 32"
+                stroke="url(#wv${id})" stroke-width="16" stroke-linecap="round" fill="none"/>
+        </svg>`
+    },
+    {
+      file: "node-growth.svg", name: "Crecimiento",
+      use: "Escalar, mejorar poco a poco, empezar pequeño. Reemplaza a Scotting 6.",
+      svg: (id, c) => `
+        <svg viewBox="0 0 240 120" fill="none" aria-hidden="true">
+          <circle cx="22" cy="100" r="6" fill="${c.soft}"/>
+          <circle cx="68" cy="92" r="10" fill="${c.blue}"/>
+          <circle cx="118" cy="80" r="14" fill="${c.blue}"/>
+          <circle cx="170" cy="64" r="18" fill="${c.blue}"/>
+          <circle cx="216" cy="44" r="22" fill="#01DECB"/>
+        </svg>`
+    },
+    {
+      file: "arrow-forward.svg", name: "Flecha de avance",
+      use: "Siguiente paso y botones. Reemplaza a Scotting arrow foward.",
+      svg: (id, c) => `
+        <svg viewBox="0 0 240 100" fill="none" aria-hidden="true">
+          <g stroke="${c.blue}" stroke-width="12" stroke-linecap="round" stroke-linejoin="round" fill="none">
+            <path d="M22 50 H158"/><path d="M156 22 L192 50 L156 78"/>
+          </g>
+          <circle cx="22" cy="50" r="11" fill="${c.blue}"/>
+          <circle cx="90" cy="50" r="11" fill="#01DECB"/>
+        </svg>`
+    }
+  ];
+
+  const ON_LIGHT = { blue: "#0038FC", soft: "#B9D4FB" };
+  const ON_BLUE  = { blue: "#FFFFFF", soft: "#B9D4FB" };
+
+  document.getElementById("assets").innerHTML = ASSETS.map((a, i) => `
+    <article class="asset">
+      <div class="tiles">
+        <div class="tile light">${a.svg("L" + i, ON_LIGHT)}</div>
+        <div class="tile blue">${a.svg("B" + i, ON_BLUE)}</div>
+      </div>
+      <div class="asset-body">
+        <h3>${a.name}</h3>
+        <p class="use">${a.use}</p>
+        <code>${a.file}</code>
+      </div>
+    </article>
+  `).join("");
+</script>

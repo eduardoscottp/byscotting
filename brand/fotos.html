@@ -1,0 +1,394 @@
+<title>Lista de fotos Scotting</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700&family=DM+Sans:wght@400;500&display=swap">
+
+<style>
+  :root {
+    --blue: #0038FC;
+    --teal: #01DECB;
+    --lime: #DAF41E;
+    --soft: #B9D4FB;
+
+    --ground:  #FAF8F4;
+    --surface: #FFFFFF;
+    --tile:    #F5FAFF;
+    --ink:     #0F172A;
+    --ink-mid: #4A566E;
+    --ink-dim: #7B889F;
+    --line:    #E4E8F1;
+    --accent:  #0038FC;
+    --warn:    #B4400A;
+    --warn-bg: #FDF0E8;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --ground:  #0A0F1E;
+      --surface: #121A2E;
+      --tile:    #18223A;
+      --ink:     #EDF2FC;
+      --ink-mid: #A9B6CD;
+      --ink-dim: #78869F;
+      --line:    #253150;
+      --accent:  #6E93FF;
+      --warn:    #FFB48A;
+      --warn-bg: #2A1A12;
+    }
+  }
+
+  :root[data-theme="dark"] {
+    --ground:  #0A0F1E;
+    --surface: #121A2E;
+    --tile:    #18223A;
+    --ink:     #EDF2FC;
+    --ink-mid: #A9B6CD;
+    --ink-dim: #78869F;
+    --line:    #253150;
+    --accent:  #6E93FF;
+    --warn:    #FFB48A;
+    --warn-bg: #2A1A12;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    background: var(--ground);
+    color: var(--ink);
+    font-family: "DM Sans", Inter, "Helvetica Neue", Arial, sans-serif;
+    line-height: 1.58;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .wrap {
+    max-width: 780px;
+    margin: 0 auto;
+    padding: 44px 20px 88px;
+    display: flex;
+    flex-direction: column;
+    gap: 44px;
+  }
+
+  h1, h2, h3 {
+    font-family: Inter, "Plus Jakarta Sans", "Helvetica Neue", Arial, sans-serif;
+    letter-spacing: -0.025em;
+    text-wrap: balance;
+    margin: 0;
+  }
+  h1 { font-weight: 700; font-size: clamp(1.9rem, 6vw, 2.6rem); line-height: 1.06; }
+  h2 { font-weight: 700; font-size: 1.1rem; }
+  h3 { font-weight: 600; font-size: 1.05rem; letter-spacing: -0.015em; }
+  p  { margin: 0; }
+
+  .eyebrow {
+    font-family: Inter, sans-serif;
+    font-weight: 600;
+    font-size: .66rem;
+    letter-spacing: .16em;
+    text-transform: uppercase;
+    color: var(--accent);
+  }
+
+  header { display: flex; flex-direction: column; gap: 12px; }
+  .lede { color: var(--ink-mid); max-width: 58ch; }
+
+  section { display: flex; flex-direction: column; gap: 16px; }
+
+  .band {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid var(--ink);
+  }
+  .band .count { font-family: Inter, sans-serif; font-weight: 600; font-size: .8rem; color: var(--ink-dim); margin-left: auto; }
+
+  /* ---- una toma ---- */
+  .shot {
+    display: grid;
+    grid-template-columns: 84px 1fr;
+    gap: 18px;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 18px;
+    padding: 18px;
+  }
+  @media (max-width: 520px) {
+    .shot { grid-template-columns: 64px 1fr; gap: 14px; padding: 15px; }
+  }
+
+  /* la caja muestra la proporción real del encuadre */
+  .ratio {
+    width: 100%;
+    background: var(--tile);
+    border: 1px solid var(--soft);
+    border-radius: 8px;
+    display: grid;
+    place-items: center;
+    font-family: Inter, sans-serif;
+    font-weight: 600;
+    font-size: .62rem;
+    color: var(--accent);
+    align-self: start;
+  }
+  .r45 { aspect-ratio: 4 / 5; }
+  .r11 { aspect-ratio: 1 / 1; }
+  .r43 { aspect-ratio: 4 / 3; }
+  .r32 { aspect-ratio: 3 / 2; }
+
+  .shot-body { display: flex; flex-direction: column; gap: 9px; min-width: 0; }
+  .shot-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px; }
+  .num {
+    font-family: Inter, sans-serif; font-weight: 700; font-size: .78rem;
+    color: var(--accent); font-variant-numeric: tabular-nums;
+  }
+  .where {
+    font-family: Inter, sans-serif; font-weight: 600; font-size: .62rem;
+    letter-spacing: .1em; text-transform: uppercase; color: var(--ink-dim);
+    border: 1px solid var(--line); border-radius: 999px; padding: 2px 9px;
+  }
+  .specs { display: flex; flex-direction: column; gap: 5px; margin: 0; padding: 0; list-style: none; }
+  .specs li {
+    display: flex; gap: 9px; align-items: flex-start;
+    font-size: .92rem; color: var(--ink-mid);
+  }
+  .tick { color: var(--teal); font-weight: 700; flex: 0 0 auto; line-height: 1.5; }
+
+  /* ---- reglas y prohibiciones ---- */
+  .rules, .nope { display: grid; gap: 9px; margin: 0; padding: 0; list-style: none; }
+  .rules li, .nope li { display: flex; gap: 11px; align-items: flex-start; font-size: .95rem; }
+  .rules li { color: var(--ink-mid); }
+  .dot { width: 8px; height: 8px; border-radius: 999px; background: var(--teal); margin-top: 8px; flex: 0 0 auto; }
+
+  .nope {
+    background: var(--warn-bg);
+    border-radius: 18px;
+    padding: 20px 22px;
+  }
+  .nope li { color: var(--warn); }
+  .cross { flex: 0 0 auto; font-weight: 700; }
+
+  .plan {
+    background: var(--surface);
+    border-left: 3px solid var(--lime);
+    border-radius: 0 14px 14px 0;
+    padding: 18px 22px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .plan b { font-family: Inter, sans-serif; font-weight: 600; }
+</style>
+
+<div class="wrap">
+
+  <header>
+    <p class="eyebrow">byscotting.com · producción</p>
+    <h1>Lista de fotos</h1>
+    <p class="lede">
+      Nueve tomas. Las tres primeras son las que faltan para que la página deje de verse vacía —
+      el resto la sube de nivel. Con el celular alcanza; el único que pide modo retrato es el
+      número 2. Mándamelas sin editar, yo las recorto y las optimizo.
+    </p>
+  </header>
+
+  <section>
+    <div class="band">
+      <h2>Prioridad 1 — sin estas no hay página</h2>
+      <span class="count">3 tomas</span>
+    </div>
+
+    <article class="shot">
+      <div class="ratio r45">4:5</div>
+      <div class="shot-body">
+        <div class="shot-head">
+          <span class="num">01</span>
+          <h3>Retrato trabajando</h3>
+          <span class="where">Hero</span>
+        </div>
+        <ul class="specs">
+          <li><span class="tick">›</span> En tu escritorio o en un café, trabajando en la laptop.</li>
+          <li><span class="tick">›</span> De perfil o tres cuartos. <b>No mires a la cámara.</b></li>
+          <li><span class="tick">›</span> Luz de ventana, de día. Sin flash.</li>
+          <li><span class="tick">›</span> Camisa o polo, sin saco.</li>
+          <li><span class="tick">›</span> Deja aire arriba y a los lados — el encuadre respira.</li>
+          <li><span class="tick">›</span> La pantalla desenfocada, que no se lea nada.</li>
+        </ul>
+      </div>
+    </article>
+
+    <article class="shot">
+      <div class="ratio r11">1:1</div>
+      <div class="shot-body">
+        <div class="shot-head">
+          <span class="num">02</span>
+          <h3>Retrato mirando a cámara</h3>
+          <span class="where">Quién soy</span>
+        </div>
+        <ul class="specs">
+          <li><span class="tick">›</span> Medio cuerpo, de la cintura para arriba.</li>
+          <li><span class="tick">›</span> A la cámara, relajado, media sonrisa. Nada de pose.</li>
+          <li><span class="tick">›</span> Fondo simple: una pared clara. No una oficina cargada.</li>
+          <li><span class="tick">›</span> Luz natural de un lado.</li>
+          <li><span class="tick">›</span> Esta reemplaza la foto formal que traes de idddeas.</li>
+        </ul>
+      </div>
+    </article>
+
+    <article class="shot">
+      <div class="ratio r43">4:3</div>
+      <div class="shot-body">
+        <div class="shot-head">
+          <span class="num">03</span>
+          <h3>Captura del agente de prospección</h3>
+          <span class="where">Caso 2</span>
+        </div>
+        <ul class="specs">
+          <li><span class="tick">›</span> Screenshot de la herramienta corriendo, con la lista de leads.</li>
+          <li><span class="tick">›</span> <b>Tapa o cambia cualquier dato de cliente real.</b> Usa datos de prueba.</li>
+          <li><span class="tick">›</span> Es la única prueba visual que tiene ese caso hoy.</li>
+        </ul>
+      </div>
+    </article>
+  </section>
+
+  <section>
+    <div class="band">
+      <h2>Prioridad 2 — la suben de nivel</h2>
+      <span class="count">4 tomas</span>
+    </div>
+
+    <article class="shot">
+      <div class="ratio r32">3:2</div>
+      <div class="shot-body">
+        <div class="shot-head">
+          <span class="num">04</span>
+          <h3>Tú con un cliente</h3>
+          <span class="where">Cómo trabajo</span>
+        </div>
+        <ul class="specs">
+          <li><span class="tick">›</span> Dos personas en la misma mesa, mirando una laptop.</li>
+          <li><span class="tick">›</span> Que se vea que están resolviendo algo juntos, no presentando.</li>
+          <li><span class="tick">›</span> Puede ser un amigo. No hace falta que sea un cliente real.</li>
+          <li><span class="tick">›</span> Prueba visual de “yo te acompaño”.</li>
+        </ul>
+      </div>
+    </article>
+
+    <article class="shot">
+      <div class="ratio r32">3:2</div>
+      <div class="shot-body">
+        <div class="shot-head">
+          <span class="num">05</span>
+          <h3>Miami de verdad</h3>
+          <span class="where">Quién soy</span>
+        </div>
+        <ul class="specs">
+          <li><span class="tick">›</span> Una calle, una fachada, un local de barrio.</li>
+          <li><span class="tick">›</span> Doral, Hialeah, Kendall. Un negocio hispano real.</li>
+          <li><span class="tick">›</span> Prueba visual de “estoy aquí, no del otro lado”.</li>
+        </ul>
+      </div>
+    </article>
+
+    <article class="shot">
+      <div class="ratio r11">1:1</div>
+      <div class="shot-body">
+        <div class="shot-head">
+          <span class="num">06</span>
+          <h3>El “a mano”</h3>
+          <span class="where">Casos</span>
+        </div>
+        <ul class="specs">
+          <li><span class="tick">›</span> Un cuaderno con notas a mano, papeles, una carpeta, un Excel impreso.</li>
+          <li><span class="tick">›</span> Sobre una mesa, luz natural, desde arriba.</li>
+          <li><span class="tick">›</span> Es tu titular hecho imagen. Vale más de lo que parece.</li>
+        </ul>
+      </div>
+    </article>
+
+    <article class="shot">
+      <div class="ratio r43">4:3</div>
+      <div class="shot-body">
+        <div class="shot-head">
+          <span class="num">07</span>
+          <h3>Manos y pantalla</h3>
+          <span class="where">Comodín</span>
+        </div>
+        <ul class="specs">
+          <li><span class="tick">›</span> Tus manos escribiendo, o el teléfono con WhatsApp abierto.</li>
+          <li><span class="tick">›</span> Detalle cerrado, sin cara. Sirve en cualquier sección.</li>
+        </ul>
+      </div>
+    </article>
+  </section>
+
+  <section>
+    <div class="band">
+      <h2>Prioridad 3 — cuando puedas</h2>
+      <span class="count">2 tomas</span>
+    </div>
+
+    <article class="shot">
+      <div class="ratio r11">1:1</div>
+      <div class="shot-body">
+        <div class="shot-head">
+          <span class="num">08</span>
+          <h3>Escritorio desde arriba</h3>
+          <span class="where">Textura</span>
+        </div>
+        <ul class="specs">
+          <li><span class="tick">›</span> Laptop, cuaderno, café. Ordenado pero usado, no de revista.</li>
+          <li><span class="tick">›</span> Rellena huecos sin que se sienta de banco de imágenes.</li>
+        </ul>
+      </div>
+    </article>
+
+    <article class="shot">
+      <div class="ratio r32">3:2</div>
+      <div class="shot-body">
+        <div class="shot-head">
+          <span class="num">09</span>
+          <h3>Explicando algo</h3>
+          <span class="where">Formación</span>
+        </div>
+        <ul class="specs">
+          <li><span class="tick">›</span> Tú señalando una pantalla y alguien mirando.</li>
+          <li><span class="tick">›</span> Para el curso y el acompañamiento 1 a 1.</li>
+        </ul>
+      </div>
+    </article>
+  </section>
+
+  <section>
+    <div class="band"><h2>Reglas para todas</h2></div>
+    <ul class="rules">
+      <li><span class="dot"></span><span><b>Luz natural, siempre.</b> De mañana o al final de la tarde. Nunca flash ni luz de techo.</span></li>
+      <li><span class="dot"></span><span><b>Tonos claros.</b> Ambientes luminosos, nada oscuro ni dramático.</span></li>
+      <li><span class="dot"></span><span><b>Que se sienta un negocio pequeño real</b>, no una torre de oficinas.</span></li>
+      <li><span class="dot"></span><span><b>Horizontal</b> para las de contexto, <b>vertical o cuadrada</b> para los retratos.</span></li>
+      <li><span class="dot"></span><span><b>Sin editar.</b> No les pongas filtros — yo las proceso.</span></li>
+    </ul>
+  </section>
+
+  <section>
+    <div class="band"><h2>Lo que no queremos</h2></div>
+    <ul class="nope">
+      <li><span class="cross">✕</span><span>Gente en traje señalando una pantalla.</span></li>
+      <li><span class="cross">✕</span><span>Apretones de manos, equipos aplaudiendo, gráficas flotando.</span></li>
+      <li><span class="cross">✕</span><span>South Beach al atardecer, el skyline, palmeras de postal.</span></li>
+      <li><span class="cross">✕</span><span>Cualquier cosa que parezca banco de imágenes.</span></li>
+      <li><span class="cross">✕</span><span>Datos de clientes reales visibles en una pantalla.</span></li>
+    </ul>
+  </section>
+
+  <section>
+    <div class="band"><h2>Cómo sacarlas rápido</h2></div>
+    <div class="plan">
+      <p><b>Una sesión de 90 minutos con luz de mañana cubre 1, 2, 6, 7 y 8.</b></p>
+      <p>Necesitas: alguien que dispare, tu laptop, un cuaderno con notas a mano y una pared clara.</p>
+      <p>La 3 la sacas hoy mismo desde tu computadora. La 4, 5 y 9 salen solas en la semana.</p>
+    </div>
+  </section>
+
+</div>

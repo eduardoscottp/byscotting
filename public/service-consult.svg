@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" fill="none" role="img" aria-label="Consultoría uno a uno">
+  <title>Scotting · consultoría 1 a 1</title>
+  <g stroke="#0038FC" stroke-width="9" stroke-linecap="round" fill="none">
+    <path d="M60 22 A38 38 0 0 1 98 60" />
+    <path d="M60 98 A38 38 0 0 1 22 60" />
+  </g>
+  <circle cx="60" cy="60" r="14" fill="#01DECB" />
+</svg>

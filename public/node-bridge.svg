@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 220 120" fill="none" role="img" aria-label="Dos sistemas conectados">
+  <title>Scotting · puente entre sistemas</title>
+  <defs>
+    <linearGradient id="scottingBridge" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#0038FC" />
+      <stop offset="1" stop-color="#01DECB" />
+    </linearGradient>
+  </defs>
+  <rect x="52" y="42" width="116" height="36" rx="18" fill="url(#scottingBridge)" />
+  <circle cx="60" cy="60" r="38" fill="#0038FC" />
+  <circle cx="160" cy="60" r="38" fill="#01DECB" />
+</svg>
