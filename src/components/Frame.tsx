@@ -3,8 +3,25 @@
  * de marca que dice exactamente qué foto va ahí. El sitio se ve intencional
  * hoy y la foto entra sin tocar el diseño.
  */
+import { useEffect, useState } from "react";
+
+/** Igual que en ProcessFlow: si el visitante pide menos movimiento, el video
+ *  no arranca solo y se le dan controles para que lo vea si quiere. */
+function useReducedMotion() {
+  const [reduced, setReduced] = useState(false);
+  useEffect(() => {
+    const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const apply = () => setReduced(mq.matches);
+    apply();
+    mq.addEventListener("change", apply);
+    return () => mq.removeEventListener("change", apply);
+  }, []);
+  return reduced;
+}
+
 export default function Frame({
   src,
+  video,
   alt,
   shot,
   ratio = "4 / 5",
@@ -12,12 +29,32 @@ export default function Frame({
   className = "",
 }: {
   src?: string;
+  video?: string;
   alt?: string;
   shot: string;
   ratio?: string;
   mark?: string;
   className?: string;
 }) {
+  const reduced = useReducedMotion();
+
+  if (video) {
+    return (
+      <video
+        src={video}
+        aria-label={alt}
+        autoPlay={!reduced}
+        controls={reduced}
+        muted
+        loop
+        playsInline
+        preload="metadata"
+        className={`w-full rounded-[24px] object-cover ${className}`}
+        style={{ aspectRatio: ratio }}
+      />
+    );
+  }
+
   if (src) {
     return (
       <img

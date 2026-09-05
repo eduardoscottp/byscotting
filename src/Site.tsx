@@ -10,7 +10,7 @@ import wordmarkBlue from "@/assets/scotting-wordmark-blue.png";
 import wordmarkWhite from "@/assets/scotting-wordmark-white.png";
 import eduardo from "@/assets/eduardo.jpg";
 import workPicktennt from "@/assets/work-picktennt.jpg";
-import picktenntDemo from "@/assets/picktennt-demo.gif";
+import picktenntDemo from "@/assets/picktennt-demo.mp4";
 import workSotillo from "@/assets/work-sotillo.jpg";
 import workKeenkaya from "@/assets/work-keenkaya.jpg";
 // Provisionales — se reemplazan por las tomas 01 y 03. Ver brand/FOTOS-TEMPORALES.md
@@ -59,16 +59,11 @@ function Eyebrow({ children, tone = "dark" }: { children: React.ReactNode; tone?
 
 export default function Site({ lang }: { lang: Lang }) {
   const t = copy[lang];
-  const caseImages = [picktenntDemo, mockCase2, workSotillo];
+  const caseImages = [undefined, mockCase2, workSotillo];
+  // el demo de Picktennt es video, no imagen: la grabacion completa en 1440x900
+  const caseVideos = [picktenntDemo, undefined, undefined];
   const caseShots = [undefined, t.photos.prospector, undefined];
-  // el demo es cuadrado; recortarlo a 4/3 le comeria la pantalla, asi que se
-  // limita por alto para que no sobresalga de la columna de texto de al lado
-  const caseRatios = ["1 / 1", "4 / 3", "4 / 3"];
-  // alto fijo, no max-h: con w-auto y carga diferida la imagen no tiene ancho
-  // intrinseco todavia y la caja colapsa a cero antes de que el GIF cargue
-  // max-w en movil: sin tope, a 767px de ancho el GIF se estiraba a 719px y
-  // se veia blando. Con el tope, 800x800 de origen siempre cubre 2x.
-  const caseFit = ["max-w-[400px] md:h-[350px] md:max-w-none md:w-auto md:justify-self-start", "", ""];
+  const caseRatios = ["16 / 10", "4 / 3", "4 / 3"];
 
   useEffect(() => {
     document.documentElement.lang = t.htmlLang;
@@ -215,11 +210,12 @@ export default function Site({ lang }: { lang: Lang }) {
           >
             <Frame
               src={caseImages[i]}
+              video={caseVideos[i]}
               alt={item.name}
               shot={caseShots[i] ?? ""}
               ratio={caseRatios[i]}
               mark="/node-network.svg"
-              className={`shadow-[0_18px_50px_-24px_rgba(15,23,42,0.35)] ${caseFit[i]}`}
+              className="shadow-[0_18px_50px_-24px_rgba(15,23,42,0.35)]"
             />
 
             <div className="flex flex-col gap-7">
