@@ -143,12 +143,6 @@ export const copy = {
       ],
     },
 
-    photos: {
-      hero: "Tú trabajando en un café o tu escritorio en Miami. Luz natural, de lado, sin mirar a la cámara.",
-      prospector: "Captura de pantalla del agente de prospección corriendo, con la lista de leads.",
-      client: "Tú y un cliente mirando una laptop en la misma mesa.",
-      miami: "Un detalle de Miami que se sienta real: una calle, una fachada, un negocio de barrio.",
-    },
 
     work: {
       eyebrow: "Lo que he construido",
@@ -361,12 +355,6 @@ export const copy = {
       ],
     },
 
-    photos: {
-      hero: "You working at a café or your desk in Miami. Natural light, from the side, not looking at the camera.",
-      prospector: "Screenshot of the prospecting agent running, with the lead list.",
-      client: "You and a client looking at a laptop at the same table.",
-      miami: "A detail of Miami that feels real: a street, a storefront, a neighborhood business.",
-    },
 
     work: {
       eyebrow: "What I've built",

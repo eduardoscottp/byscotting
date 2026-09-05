@@ -14,8 +14,7 @@ import picktenntDemo from "@/assets/picktennt-demo.mp4";
 import agenteProspeccion from "@/assets/agente-prospeccion-clientes.mp4";
 import workPoolcontrol from "@/assets/work-poolcontrol.jpg";
 import workKeenkaya from "@/assets/work-keenkaya.jpg";
-// Provisional — se reemplaza por la toma 01. Ver brand/FOTOS-TEMPORALES.md
-import mockHero from "@/assets/mock-hero.jpg";
+import eduardoRecorte from "@/assets/eduardo-recorte.webp";
 
 function WaButton({
   lang,
@@ -62,7 +61,6 @@ export default function Site({ lang }: { lang: Lang }) {
   // los dos primeros casos son video real, no foto: grabaciones sin recortar en 16:10
   const caseImages = [undefined, undefined, workPoolcontrol];
   const caseVideos = [picktenntDemo, agenteProspeccion, undefined];
-  const caseShots = [undefined, undefined, undefined];
   const caseRatios = ["16 / 10", "16 / 10", "4 / 3"];
 
   useEffect(() => {
@@ -128,14 +126,14 @@ export default function Site({ lang }: { lang: Lang }) {
           </div>
         </div>
 
-        <div className="animate-rise relative" style={{ animationDelay: ".22s" }}>
-          <Frame src={mockHero} alt="" shot={t.photos.hero} ratio="4 / 5" mark="/node-growth.svg" />
-          {/* nodo suelto que ancla la foto al sistema */}
+        {/* Retrato recortado sobre el propio fondo de la pagina, sin marco */}
+        <div className="animate-rise relative flex justify-center" style={{ animationDelay: ".22s" }}>
           <img
-            src="/node-bridge.svg"
-            alt=""
-            aria-hidden="true"
-            className="absolute -bottom-7 -left-7 hidden w-28 md:block"
+            src={eduardoRecorte}
+            alt={t.about.photoAlt}
+            width={1100}
+            height={1657}
+            className="relative w-auto max-w-full object-contain md:max-h-[580px]"
           />
         </div>
       </section>
@@ -212,7 +210,7 @@ export default function Site({ lang }: { lang: Lang }) {
               src={caseImages[i]}
               video={caseVideos[i]}
               alt={item.name}
-              shot={caseShots[i] ?? ""}
+              shot=""
               ratio={caseRatios[i]}
               mark="/node-network.svg"
               className="shadow-[0_18px_50px_-24px_rgba(15,23,42,0.35)]"
