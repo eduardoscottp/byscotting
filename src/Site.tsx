@@ -11,11 +11,11 @@ import wordmarkWhite from "@/assets/scotting-wordmark-white.png";
 import eduardo from "@/assets/eduardo.jpg";
 import workPicktennt from "@/assets/work-picktennt.jpg";
 import picktenntDemo from "@/assets/picktennt-demo.mp4";
+import agenteProspeccion from "@/assets/agente-prospeccion-clientes.mp4";
 import workSotillo from "@/assets/work-sotillo.jpg";
 import workKeenkaya from "@/assets/work-keenkaya.jpg";
-// Provisionales — se reemplazan por las tomas 01 y 03. Ver brand/FOTOS-TEMPORALES.md
+// Provisional — se reemplaza por la toma 01. Ver brand/FOTOS-TEMPORALES.md
 import mockHero from "@/assets/mock-hero.jpg";
-import mockCase2 from "@/assets/mock-case2.jpg";
 
 function WaButton({
   lang,
@@ -59,11 +59,11 @@ function Eyebrow({ children, tone = "dark" }: { children: React.ReactNode; tone?
 
 export default function Site({ lang }: { lang: Lang }) {
   const t = copy[lang];
-  const caseImages = [undefined, mockCase2, workSotillo];
-  // el demo de Picktennt es video, no imagen: la grabacion completa en 1440x900
-  const caseVideos = [picktenntDemo, undefined, undefined];
-  const caseShots = [undefined, t.photos.prospector, undefined];
-  const caseRatios = ["16 / 10", "4 / 3", "4 / 3"];
+  // los dos primeros casos son video real, no foto: grabaciones sin recortar en 16:10
+  const caseImages = [undefined, undefined, workSotillo];
+  const caseVideos = [picktenntDemo, agenteProspeccion, undefined];
+  const caseShots = [undefined, undefined, undefined];
+  const caseRatios = ["16 / 10", "16 / 10", "4 / 3"];
 
   useEffect(() => {
     document.documentElement.lang = t.htmlLang;
@@ -301,6 +301,39 @@ export default function Site({ lang }: { lang: Lang }) {
       </section>
 
       <Spine />
+
+      {/* ---------- En qué creo: la frase que lo define, y cuatro reglas ---------- */}
+      <section className="mx-auto max-w-[1180px] px-6 py-20 md:py-28">
+        <Eyebrow>{t.beliefs.eyebrow}</Eyebrow>
+
+        <p className="mt-6 max-w-4xl text-balance font-display text-[2.4rem] font-bold uppercase leading-[1.02] tracking-[-0.035em] text-blue md:text-[4rem]">
+          {t.beliefs.opener}
+        </p>
+        <p className="mt-4 text-lg text-ink/55">{t.beliefs.openerNote}</p>
+
+        <ul className="relative mt-14 flex flex-col gap-9 pl-12 md:mt-16 md:gap-10">
+          {/* el hilo que une las cuatro, del mismo sistema de nodos */}
+          <span
+            aria-hidden="true"
+            className="absolute left-[10px] top-3 bottom-3 w-[3px] rounded-full bg-blue-soft"
+          />
+          {t.beliefs.items.map((line) => (
+            <li key={line} className="relative">
+              <span
+                aria-hidden="true"
+                className="absolute -left-12 top-[0.55em] h-[22px] w-[22px] rounded-full bg-teal/20"
+              />
+              <span
+                aria-hidden="true"
+                className="absolute -left-[41px] top-[calc(0.55em+5px)] h-3 w-3 rounded-full bg-teal"
+              />
+              <p className="max-w-3xl font-display text-[1.5rem] font-semibold leading-snug tracking-[-0.02em] md:text-[2rem]">
+                {line}
+              </p>
+            </li>
+          ))}
+        </ul>
+      </section>
 
       {/* ---------- Lo que he construido ---------- */}
       <section id="trabajo" className="scroll-mt-20 bg-ice py-20 md:py-28">
