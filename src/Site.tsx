@@ -12,7 +12,7 @@ import eduardo from "@/assets/eduardo.jpg";
 import workPicktennt from "@/assets/work-picktennt.jpg";
 import picktenntDemo from "@/assets/picktennt-demo.mp4";
 import agenteProspeccion from "@/assets/agente-prospeccion-clientes.mp4";
-import workSotillo from "@/assets/work-sotillo.jpg";
+import workPoolcontrol from "@/assets/work-poolcontrol.jpg";
 import workKeenkaya from "@/assets/work-keenkaya.jpg";
 // Provisional — se reemplaza por la toma 01. Ver brand/FOTOS-TEMPORALES.md
 import mockHero from "@/assets/mock-hero.jpg";
@@ -60,7 +60,7 @@ function Eyebrow({ children, tone = "dark" }: { children: React.ReactNode; tone?
 export default function Site({ lang }: { lang: Lang }) {
   const t = copy[lang];
   // los dos primeros casos son video real, no foto: grabaciones sin recortar en 16:10
-  const caseImages = [undefined, undefined, workSotillo];
+  const caseImages = [undefined, undefined, workPoolcontrol];
   const caseVideos = [picktenntDemo, agenteProspeccion, undefined];
   const caseShots = [undefined, undefined, undefined];
   const caseRatios = ["16 / 10", "16 / 10", "4 / 3"];
@@ -347,7 +347,7 @@ export default function Site({ lang }: { lang: Lang }) {
 
           <div className="grid gap-5 sm:grid-cols-3">
             {[
-              { src: workSotillo, name: "Sotillo & Asociados", url: "https://sotilloasociados.com" },
+              { src: workPoolcontrol, name: "Pool Control Solutions", url: "https://www.poolcontrolsolutions.com" },
               { src: workKeenkaya, name: "Keenkaya", url: "https://keenkaya.com" },
               { src: workPicktennt, name: "Picktennt", url: "https://picktennt.com" },
             ].map((site) => (

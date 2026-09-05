@@ -89,11 +89,11 @@ export const copy = {
           mark: "/node-growth.svg",
         },
         {
-          name: "Sitio de cliente",
+          name: "Pool Control Solutions",
           problem:
-            "Nuestro sitio se veía anticuado. No daba confianza, no tenía información, y no había forma clara de contactarnos.",
+            "Nos iba bien de boca en boca. Pero si alguien nos buscaba en Google, no aparecíamos por ningún lado.",
           solution:
-            "Rediseñé el sitio completo. Quiénes son, qué hacen, dónde están y cómo contactarlos, claro desde el primer segundo. Ahora tienen una base sobre la que sí vale la pena invertir en anuncios y campañas.",
+            "Les construí el sitio y escribí el contenido, el de la web y el de su ficha de Google. Armado alrededor de lo que la gente de verdad busca: mantenimiento de piscinas en Kendall, Doral, Pinecrest, Homestead.",
           mark: "/node-bridge.svg",
         },
       ],
@@ -158,6 +158,7 @@ export const copy = {
           label: "Sitios y presencia",
           mark: "/node-bridge.svg",
           items: [
+            { name: "Pool Control Solutions", url: "https://www.poolcontrolsolutions.com" },
             { name: "Sotillo & Asociados", url: "https://sotilloasociados.com" },
             { name: "Keenkaya", url: "https://keenkaya.com" },
             { name: "Picktennt", url: "https://picktennt.com" },
@@ -306,11 +307,11 @@ export const copy = {
           mark: "/node-growth.svg",
         },
         {
-          name: "A client's site",
+          name: "Pool Control Solutions",
           problem:
-            "Our site looked dated. It didn't build trust, it had no real information, and there was no clear way to reach us.",
+            "Word of mouth was working for us. But if somebody looked us up on Google, we were nowhere.",
           solution:
-            "I redesigned the whole thing. Who they are, what they do, where they are and how to reach them, clear from the first second. Now they have a base worth putting ad money behind.",
+            "I built the site and wrote the content, both for the site and for their Google listing. Built around what people actually search for: pool maintenance in Kendall, Doral, Pinecrest, Homestead.",
           mark: "/node-bridge.svg",
         },
       ],
@@ -375,6 +376,7 @@ export const copy = {
           label: "Sites and presence",
           mark: "/node-bridge.svg",
           items: [
+            { name: "Pool Control Solutions", url: "https://www.poolcontrolsolutions.com" },
             { name: "Sotillo & Asociados", url: "https://sotilloasociados.com" },
             { name: "Keenkaya", url: "https://keenkaya.com" },
             { name: "Picktennt", url: "https://picktennt.com" },
