@@ -8,7 +8,7 @@ import Spine from "@/components/Spine";
 import Frame from "@/components/Frame";
 import wordmarkBlue from "@/assets/scotting-wordmark-blue.png";
 import wordmarkWhite from "@/assets/scotting-wordmark-white.png";
-import eduardoQuienSoy from "@/assets/eduardo-quien-soy.webp";
+import eduardoQuienSoy from "@/assets/eduardo-scott-ingeniero-miami.webp";
 import workPicktennt from "@/assets/work-picktennt.jpg";
 import picktenntDemo from "@/assets/picktennt-demo.mp4";
 import agenteProspeccion from "@/assets/agente-prospeccion-clientes.mp4";
@@ -289,7 +289,7 @@ export default function Site({ lang }: { lang: Lang }) {
             src={eduardoQuienSoy}
             alt={t.about.photoAlt}
             width={1000}
-            height={1250}
+            height={1000}
             loading="lazy"
             className="w-56 rounded-[26px] object-cover md:w-full"
           />

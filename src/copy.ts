@@ -128,7 +128,7 @@ export const copy = {
         "Hoy hago lo mismo a otra escala: entro a un negocio que ya funciona y construyo la herramienta que le falta. Lo que entrego no lo dejo ahí, lo mantengo bajo mejora constante y con soporte.",
         "Vivo en Miami. Nos vemos por un café en Brickell o en Coral Gables, o lo conversamos después de una partida de pickleball en Tropical Park. Y si no quieres pelear con el tráfico, nos vemos en línea.",
       ],
-      photoAlt: "Eduardo Scott, en Miami",
+      photoAlt: "Eduardo Scott, ingeniero de software en Miami, trabajando en su escritorio",
       caption: "Eduardo Scott · Miami, Florida",
     },
 
@@ -341,7 +341,7 @@ export const copy = {
         "Today I do the same thing at a different scale: I walk into a business that already works and build the tool it's missing. What I hand over doesn't stop there. I keep it under constant improvement, with support.",
         "I live in Miami. We can meet over coffee in Brickell or Coral Gables, or talk it through after a pickleball game at Tropical Park. And if you'd rather not fight traffic, we meet online.",
       ],
-      photoAlt: "Eduardo Scott, in Miami",
+      photoAlt: "Eduardo Scott, software engineer in Miami, working at his desk",
       caption: "Eduardo Scott · Miami, Florida",
     },
 
