@@ -28,6 +28,7 @@ export const copy = {
     services: {
       eyebrow: "Servicios",
       title: "Tres formas de empezar.",
+      photoAlt: "Eduardo Scott en una consultoría de tecnología por videollamada desde Miami",
       lead: "Empezamos por donde más necesites apoyo. Casi siempre, por la primera.",
       items: [
         {
@@ -240,6 +241,7 @@ export const copy = {
     services: {
       eyebrow: "Services",
       title: "Three ways to start.",
+      photoAlt: "Eduardo Scott in a technology consulting video call from Miami",
       lead: "We start wherever you need the most help. Usually with the first one.",
       items: [
         {

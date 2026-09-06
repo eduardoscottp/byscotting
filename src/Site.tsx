@@ -8,11 +8,12 @@ import Spine from "@/components/Spine";
 import Frame from "@/components/Frame";
 import wordmarkBlue from "@/assets/scotting-wordmark-blue.png";
 import wordmarkWhite from "@/assets/scotting-wordmark-white.png";
-import eduardo from "@/assets/eduardo.jpg";
+import eduardoQuienSoy from "@/assets/eduardo-quien-soy.webp";
 import workPicktennt from "@/assets/work-picktennt.jpg";
 import picktenntDemo from "@/assets/picktennt-demo.mp4";
 import agenteProspeccion from "@/assets/agente-prospeccion-clientes.mp4";
 import workPoolcontrol from "@/assets/work-poolcontrol.jpg";
+import consultoria from "@/assets/consultoria-tecnologica-miami.webp";
 import workKeenkaya from "@/assets/work-keenkaya.jpg";
 import eduardoRecorte from "@/assets/eduardo-recorte.webp";
 
@@ -145,12 +146,22 @@ export default function Site({ lang }: { lang: Lang }) {
       {/* ---------- Servicios: el menú, concreto ---------- */}
       <section id="servicios" className="scroll-mt-20 bg-ice py-20 md:py-28">
         <div className="mx-auto flex max-w-[1180px] flex-col gap-12 px-6">
-          <div className="flex max-w-2xl flex-col gap-3">
-            <Eyebrow>{t.services.eyebrow}</Eyebrow>
-            <h2 className="text-balance font-display text-[2.1rem] font-bold leading-[1.05] tracking-[-0.03em] md:text-[3.2rem]">
-              {t.services.title}
-            </h2>
-            <p className="text-lg leading-relaxed text-ink/65">{t.services.lead}</p>
+          <div className="grid items-center gap-10 md:grid-cols-[1.05fr_0.95fr] md:gap-14">
+            <div className="flex flex-col gap-3">
+              <Eyebrow>{t.services.eyebrow}</Eyebrow>
+              <h2 className="text-balance font-display text-[2.1rem] font-bold leading-[1.05] tracking-[-0.03em] md:text-[3.2rem]">
+                {t.services.title}
+              </h2>
+              <p className="text-lg leading-relaxed text-ink/65">{t.services.lead}</p>
+            </div>
+            <img
+              src={consultoria}
+              alt={t.services.photoAlt}
+              width={1200}
+              height={800}
+              loading="lazy"
+              className="w-full rounded-card object-cover shadow-[0_18px_50px_-24px_rgba(15,23,42,0.35)]"
+            />
           </div>
 
           <div className="grid gap-6 md:grid-cols-3">
@@ -275,10 +286,10 @@ export default function Site({ lang }: { lang: Lang }) {
       <section className="mx-auto grid max-w-[1180px] items-center gap-12 px-6 py-20 md:grid-cols-[0.8fr_1.2fr] md:gap-20 md:py-28">
         <figure className="relative order-1 flex flex-col gap-4">
           <img
-            src={eduardo}
+            src={eduardoQuienSoy}
             alt={t.about.photoAlt}
-            width={760}
-            height={760}
+            width={1000}
+            height={1250}
             loading="lazy"
             className="w-56 rounded-[26px] object-cover md:w-full"
           />
