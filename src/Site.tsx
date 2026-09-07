@@ -291,7 +291,7 @@ export default function Site({ lang }: { lang: Lang }) {
             width={1000}
             height={1000}
             loading="lazy"
-            className="w-56 rounded-[26px] object-cover md:w-full"
+            className="w-full rounded-[26px] object-cover"
           />
           <figcaption className="text-sm text-ink/55">{t.about.caption}</figcaption>
         </figure>
