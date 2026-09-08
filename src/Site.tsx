@@ -15,7 +15,7 @@ import agenteProspeccion from "@/assets/agente-prospeccion-clientes.mp4";
 import workPoolcontrol from "@/assets/work-poolcontrol.jpg";
 import consultoria from "@/assets/consultoria-tecnologica-miami.webp";
 import workKeenkaya from "@/assets/work-keenkaya.jpg";
-import eduardoRecorte from "@/assets/eduardo-recorte.webp";
+import eduardoHero from "@/assets/eduardo-hero-oficina.webp";
 
 function WaButton({
   lang,
@@ -127,14 +127,15 @@ export default function Site({ lang }: { lang: Lang }) {
           </div>
         </div>
 
-        {/* Retrato recortado sobre el propio fondo de la pagina, sin marco */}
+        {/* Este retrato trae su propio fondo de oficina, por eso va enmarcado
+            y no suelto sobre la pagina como el recorte anterior. */}
         <div className="animate-rise relative flex justify-center" style={{ animationDelay: ".22s" }}>
           <img
-            src={eduardoRecorte}
+            src={eduardoHero}
             alt={t.about.photoAlt}
             width={1100}
-            height={1657}
-            className="relative w-auto max-w-full object-contain md:max-h-[580px]"
+            height={1651}
+            className="w-full rounded-[26px] object-cover object-top shadow-[0_18px_50px_-24px_rgba(15,23,42,0.35)] md:max-h-[580px]"
           />
         </div>
       </section>
