@@ -192,6 +192,19 @@ export default function Site({ lang }: { lang: Lang }) {
                     </li>
                   ))}
                 </ul>
+
+                {/* mt-auto alinea los tres botones abajo aunque las tarjetas
+                    tengan distinto alto. El contexto es el nombre del servicio,
+                    asi el mensaje de WhatsApp llega diciendo de cual se trata. */}
+                <a
+                  href={waLink(lang, s.name)}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="mt-auto inline-flex items-center gap-2 self-start rounded-full border border-ink/15 px-4 py-2 font-display text-sm font-semibold text-ink/75 transition-colors hover:border-blue hover:text-blue focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal"
+                >
+                  <WhatsAppIcon className="h-4 w-4" />
+                  {t.services.itemCta}
+                </a>
               </article>
             ))}
           </div>

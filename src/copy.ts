@@ -17,10 +17,10 @@ export const copy = {
       kickerBefore: "Hay algo en tu negocio que ",
       kickerAccent: "todavía haces a mano",
       kickerAfter: ".",
-      headline: "Tu negocio ya funciona. Vamos a quitarle lo manual.",
+      headline: "Tu negocio ya funciona. Vamos a automatizarlo.",
       body: [
         "Soy Eduardo Scott. Ingeniero, 15 años en software, aquí en Miami.",
-        "Construyo sistemas y automatizaciones para negocios que ya están andando.",
+        "Construyo sistemas y automatizaciones para potenciar negocios que ya están andando.",
       ],
       cta: "Hablemos por WhatsApp",
     },
@@ -30,6 +30,7 @@ export const copy = {
       title: "Tres formas de empezar.",
       photoAlt: "Eduardo Scott en una consultoría de tecnología por videollamada desde Miami",
       lead: "Empezamos por donde más necesites apoyo. Casi siempre, por la primera.",
+      itemCta: "Quiero saber más",
       items: [
         {
           name: "Consultoría 1 a 1 en tecnología",
@@ -69,7 +70,7 @@ export const copy = {
 
     cases: {
       eyebrow: "Qué hago",
-      title: "Un problema real. Lo que hice.",
+      title: "Un problema real. Una solución sencilla.",
       problemLabel: "El problema",
       solutionLabel: "Lo que hice",
       items: [
@@ -230,10 +231,10 @@ export const copy = {
       kickerBefore: "There's something in your business you ",
       kickerAccent: "still do by hand",
       kickerAfter: ".",
-      headline: "Your business already works. Let's cut out the grunt work.",
+      headline: "Your business already works. Let's automate it.",
       body: [
         "I'm Eduardo Scott. Engineer, fifteen years in software, based here in Miami.",
-        "I build systems and automation for businesses that are already up and running.",
+        "I build systems and automation that take a working business further.",
       ],
       cta: "Text me on WhatsApp",
     },
@@ -243,6 +244,7 @@ export const copy = {
       title: "Three ways I can help.",
       photoAlt: "Eduardo Scott on a tech consulting video call from his Miami office",
       lead: "We start wherever you need it most. Usually that's the first one.",
+      itemCta: "Tell me more",
       items: [
         {
           name: "One-on-one tech consulting",
@@ -282,7 +284,7 @@ export const copy = {
 
     cases: {
       eyebrow: "What I do",
-      title: "A real problem. What I built.",
+      title: "A real problem. A simple fix.",
       problemLabel: "The problem",
       solutionLabel: "What I built",
       items: [
