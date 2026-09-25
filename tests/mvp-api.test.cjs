@@ -47,6 +47,20 @@ test('lead requires a usable contact and valid submission identifier', async () 
   assert.equal((await saveLead({ ...lead, contact: 'hello' }, { env })).status, 400);
   assert.equal((await saveLead({ ...lead, submission_id: '' }, { env })).status, 400);
 });
+test('missing CRM configuration logs only the missing variable names', async () => {
+  const { saveLead } = await load();
+  const originalWarn = console.warn;
+  const calls = [];
+  console.warn = (...args) => calls.push(args);
+  try {
+    const result = await saveLead(lead, { env: { AIRTABLE_TOKEN: 'private-token' } });
+    assert.equal(result.status, 503);
+  } finally { console.warn = originalWarn; }
+  assert.deepEqual(calls, [[
+    'lead_capture_config_missing',
+    ['AIRTABLE_BASE_ID', 'AIRTABLE_LEADS_TABLE_ID', 'LEAD_SIGNING_SECRET'],
+  ]]);
+});
 test('lead uses CRM upsert with a stable payload-bound key and no arbitrary fields', async () => {
   const { saveLead } = await load();
   const payloads = [];

@@ -66,7 +66,16 @@ export async function saveLead(body, { env = process.env, fetch: request = globa
   if (!submission || !/^[a-f0-9-]{36}$/i.test(submission) || name === null || detail === null || (!email && !phone) || chips.some(c => !c)) return failure(400, 'invalid_inquiry');
   const messages = body.share_chat === true ? cleanMessages(body.messages) : undefined;
   if (body.share_chat === true && !messages) return failure(400, 'invalid_messages');
-  if (!env.AIRTABLE_TOKEN || !env.AIRTABLE_BASE_ID || !env.AIRTABLE_LEADS_TABLE_ID || (env.LEAD_SIGNING_SECRET?.length || 0) < 32) return failure(503, 'lead_capture_unavailable');
+  const missingConfig = [
+    !env.AIRTABLE_TOKEN && 'AIRTABLE_TOKEN',
+    !env.AIRTABLE_BASE_ID && 'AIRTABLE_BASE_ID',
+    !env.AIRTABLE_LEADS_TABLE_ID && 'AIRTABLE_LEADS_TABLE_ID',
+    (env.LEAD_SIGNING_SECRET?.length || 0) < 32 && 'LEAD_SIGNING_SECRET',
+  ].filter(Boolean);
+  if (missingConfig.length) {
+    console.warn('lead_capture_config_missing', missingConfig);
+    return failure(503, 'lead_capture_unavailable');
+  }
   const inquiry = { project: 'scotting', name, contact, detail, topics: chips, language: body.lang === 'es' ? 'es' : 'en', ...(messages ? { shared_chat: messages } : {}) };
   const attribution = sanitizeAttribution(body.attribution);
   // Bind the idempotency key to content so a changed payload cannot overwrite an unrelated inquiry.
