@@ -3,6 +3,8 @@ import { copy, waLink, type Lang } from "@/copy";
 import ProcessFlow from "@/components/ProcessFlow";
 import PainForm from "@/components/PainForm";
 import StickyWhatsApp from "@/components/StickyWhatsApp";
+import ChatWidget from "@/components/ChatWidget";
+import { initializeAttribution } from "@/lib/attribution";
 import WhatsAppIcon from "@/components/WhatsAppIcon";
 import Spine from "@/components/Spine";
 import Frame from "@/components/Frame";
@@ -34,7 +36,7 @@ function WaButton({
       : "bg-blue text-white hover:bg-blue-dark";
   return (
     <a
-      href={waLink(lang, context)}
+      href={waLink(lang, lang === "es" ? context : undefined)}
       target="_blank"
       rel="noopener noreferrer"
       className={`inline-flex items-center gap-2.5 rounded-full px-7 py-3.5 font-display text-base font-semibold transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal ${skin}`}
@@ -59,6 +61,7 @@ function Eyebrow({ children, tone = "dark" }: { children: React.ReactNode; tone?
 
 export default function Site({ lang }: { lang: Lang }) {
   const t = copy[lang];
+  useEffect(() => { initializeAttribution(import.meta.env.VITE_ATTRIBUTION_STORAGE === 'true'); }, [lang]);
   // los dos primeros casos son video real, no foto: grabaciones sin recortar en 16:10
   const caseImages = [undefined, undefined, workPoolcontrol];
   const caseVideos = [picktenntDemo, agenteProspeccion, undefined];
@@ -68,6 +71,11 @@ export default function Site({ lang }: { lang: Lang }) {
     document.documentElement.lang = t.htmlLang;
     document.title = t.title;
     document.querySelector('meta[name="description"]')?.setAttribute("content", t.metaDescription);
+    document.querySelector('meta[property="og:title"]')?.setAttribute("content", t.ogTitle);
+    document.querySelector('meta[property="og:description"]')?.setAttribute("content", t.ogDescription);
+    const pageUrl = `https://byscotting.com${t.htmlLang === "en" ? "/en" : "/"}`;
+    document.querySelector('meta[property="og:url"]')?.setAttribute("content", pageUrl);
+    document.querySelector('link[rel="canonical"]')?.setAttribute("href", pageUrl);
   }, [t]);
 
   return (
@@ -249,14 +257,14 @@ export default function Site({ lang }: { lang: Lang }) {
                 <h3 className="font-display text-xl font-semibold">{item.name}</h3>
               </div>
 
-              <blockquote className="border-l-2 border-ink/15 pl-6">
+              <div className="border-l-2 border-ink/15 pl-6">
                 <p className="font-display text-xl font-medium leading-snug tracking-[-0.015em] text-ink/75 md:text-[1.6rem]">
-                  “{item.problem}”
+                  {lang === "en" ? item.problem : `“${item.problem}”`}
                 </p>
-                <footer className="mt-3 font-display text-[0.68rem] font-semibold uppercase tracking-[0.16em] text-ink/40">
+                <p className="mt-3 font-display text-[0.68rem] font-semibold uppercase tracking-[0.16em] text-ink/40">
                   {t.cases.problemLabel}
-                </footer>
-              </blockquote>
+                </p>
+              </div>
 
               <div className="flex flex-col gap-2.5 rounded-[20px] bg-white p-6 ring-1 ring-ink/[0.07]">
                 <p className="font-display text-[0.68rem] font-semibold uppercase tracking-[0.16em] text-blue">
@@ -468,6 +476,7 @@ export default function Site({ lang }: { lang: Lang }) {
       </footer>
 
       <StickyWhatsApp lang={lang} label={t.sticky.label} />
+      <ChatWidget lang={lang} />
     </div>
   );
 }

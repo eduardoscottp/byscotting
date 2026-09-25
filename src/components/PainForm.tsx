@@ -1,9 +1,10 @@
 import { useState } from "react";
 import { WHATSAPP, type Copy, type Lang } from "@/copy";
+import { getAttribution, trackMetric } from "@/lib/attribution";
 
 const ENDPOINT = import.meta.env.VITE_FORM_ENDPOINT as string | undefined;
 
-type Status = "idle" | "sending" | "done";
+type Status = "idle" | "sending" | "done" | "whatsapp";
 
 export default function PainForm({ t, lang }: { t: Copy["form"]; lang: Lang }) {
   const [chips, setChips] = useState<string[]>([]);
@@ -12,6 +13,8 @@ export default function PainForm({ t, lang }: { t: Copy["form"]; lang: Lang }) {
   const [contact, setContact] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [status, setStatus] = useState<Status>("idle");
+  const [whatsappDraft, setWhatsappDraft] = useState("");
+  const [submissionId] = useState(crypto.randomUUID());
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -19,33 +22,51 @@ export default function PainForm({ t, lang }: { t: Copy["form"]; lang: Lang }) {
     if (!contact.trim()) return setError(t.contactRequired);
     setError(null);
 
-    const payload = { chips, detail, name, contact, lang, at: new Date().toISOString() };
+    const payload = { chips, detail, name, contact, lang, submission_id: submissionId, attribution: getAttribution(), at: new Date().toISOString() };
 
     // Sin endpoint configurado, el mensaje se abre en WhatsApp para que nada se pierda.
     if (!ENDPOINT) {
-      const lines = [`${t.title}`, ...chips.map((c) => `→ ${c}`), detail && `“${detail}”`, name && `— ${name}`]
+      const intro = lang === "en" ? "Hi Eduardo, I’d like help with:" : "Hola Eduardo, me gustaría recibir ayuda con:";
+      const lines = [intro, ...chips.map((c) => `→ ${c}`), detail && `“${detail}”`, name && `— ${name}`, contact]
         .filter(Boolean)
         .join("\n");
-      window.open(`https://wa.me/${WHATSAPP}?text=${encodeURIComponent(lines)}`, "_blank", "noopener");
-      setStatus("done");
+      const url = `https://wa.me/${WHATSAPP}?text=${encodeURIComponent(lines)}`;
+      setWhatsappDraft(url);
+      window.open(url, "_blank", "noopener,noreferrer");
+      setStatus("whatsapp");
       return;
     }
 
     setStatus("sending");
     try {
-      await fetch(ENDPOINT, {
+      const response = await fetch(ENDPOINT, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
       });
-    } finally {
+      if (!response.ok) throw new Error("Submission failed");
       setStatus("done");
+      trackMetric('generate_lead', lang, 'form');
+    } catch {
+      setError(t.failure);
+      setStatus("idle");
     }
+  }
+
+  if (status === "whatsapp") {
+    return (
+      <div className="flex flex-col items-center gap-5 rounded-card bg-white p-8 text-center" role="status">
+        <p className="font-display text-xl font-semibold text-ink md:text-2xl">{t.whatsappReady}</p>
+        <a href={whatsappDraft} target="_blank" rel="noopener noreferrer" className="rounded-full bg-blue px-6 py-3 font-display font-semibold text-white">
+          {t.whatsappRetry}
+        </a>
+      </div>
+    );
   }
 
   if (status === "done") {
     return (
-      <p className="rounded-card bg-white p-8 text-center font-display text-xl font-semibold text-ink md:text-2xl">
+      <p role="status" className="rounded-card bg-white p-8 text-center font-display text-xl font-semibold text-ink md:text-2xl">
         {t.success}
       </p>
     );
@@ -121,6 +142,9 @@ export default function PainForm({ t, lang }: { t: Copy["form"]; lang: Lang }) {
       {error && (
         <p role="alert" className="font-body text-sm text-blue">
           {error}
+          {error === t.failure && (
+            <> <a href={`https://wa.me/${WHATSAPP}`} target="_blank" rel="noopener noreferrer" className="underline">{t.whatsappRetry}</a></>
+          )}
         </p>
       )}
 
@@ -130,9 +154,8 @@ export default function PainForm({ t, lang }: { t: Copy["form"]; lang: Lang }) {
           disabled={status === "sending"}
           className="rounded-full bg-blue px-8 py-3.5 font-display text-base font-semibold text-white transition-colors hover:bg-blue-dark focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal disabled:opacity-60"
         >
-          {status === "sending" ? t.sending : t.submit}
+          {status === "sending" ? t.sending : ENDPOINT ? t.submit : t.whatsappContinue}
         </button>
-        <p className="font-body text-sm text-ink/55">{t.reassurance}</p>
       </div>
     </form>
   );

@@ -5,6 +5,8 @@ export const WHATSAPP = "17865779275";
 export const copy = {
   es: {
     htmlLang: "es",
+    ogTitle: "Scotting — Tu negocio ya funciona. Vamos a quitarle lo manual.",
+    ogDescription: "Sistemas y automatizaciones para negocios que ya están andando. Miami, Florida.",
     title: "Scotting — Sistemas y automatización para negocios que ya funcionan | Miami",
     metaDescription:
       "Soy Eduardo Scott. Ingeniero en Miami. Construyo sistemas y automatizaciones para negocios que ya están andando. La automatización es mi paso 4, no el primero.",
@@ -202,8 +204,12 @@ export const copy = {
       reassurance: "Te respondo yo, no un bot. Normalmente el mismo día.",
       chipRequired: "Escoge una opción para empezar.",
       contactRequired: "Déjame un WhatsApp o un correo para poder responderte.",
-      success: "Eso es exactamente lo que construyo. Te escribo hoy mismo.",
+      success: "Gracias por escribirme. Revisaré tu mensaje y me pondré en contacto contigo.",
       sending: "Enviando…",
+      failure: "No se pudo enviar tu mensaje. Inténtalo de nuevo o escríbeme por WhatsApp.",
+      whatsappContinue: "Continuar en WhatsApp",
+      whatsappReady: "Un paso más: envía tu mensaje en WhatsApp.",
+      whatsappRetry: "Abrir WhatsApp",
     },
 
     sticky: { label: "Escríbeme" },
@@ -219,153 +225,155 @@ export const copy = {
 
   en: {
     htmlLang: "en",
-    title: "Scotting — Systems and automation for businesses that are already running | Miami",
+    ogTitle: "Scotting | Less busywork. More time for what matters.",
+    ogDescription: "Websites, connected tools, and practical automation for your business. Work directly with Eduardo Scott in Miami.",
+    title: "Scotting | Business Automation & Websites in Miami",
     metaDescription:
-      "I'm Eduardo Scott, an engineer in Miami. I build custom systems and automation for businesses that are already up and running. Automation is step four, never step one.",
+      "Spend less time on busywork. Eduardo Scott builds websites, connects tools, and automates repetitive tasks for businesses in Miami. Let’s talk about yours.",
     switchTo: "Español",
     switchHref: "/",
 
-    nav: { services: "Services", work: "What I've built", contact: "Contact" },
+    nav: { services: "Services", work: "My work", contact: "Contact" },
 
     hero: {
-      kickerBefore: "There's something in your business you ",
-      kickerAccent: "still do by hand",
-      kickerAfter: ".",
-      headline: "Your business already works. Let's automate it.",
+      kickerBefore: "Still losing time to ",
+      kickerAccent: "busywork",
+      kickerAfter: "?",
+      headline: "Less busywork. More time for what matters.",
       body: [
-        "I'm Eduardo Scott. Engineer, fifteen years in software, based here in Miami.",
-        "I build systems and automation that take a working business further.",
+        "I’m Eduardo Scott, a Miami-based engineer with 15 years of experience in software.",
+        "I build websites, connect your tools, and automate repetitive tasks so you can spend more time on your customers and your business.",
       ],
-      cta: "Text me on WhatsApp",
+      cta: "Let’s talk on WhatsApp",
     },
 
     services: {
       eyebrow: "Services",
-      title: "Three ways I can help.",
-      photoAlt: "Eduardo Scott on a tech consulting video call from his Miami office",
-      lead: "We start wherever you need it most. Usually that's the first one.",
-      itemCta: "Tell me more",
+      title: "A smarter way to move your business forward.",
+      photoAlt: "Eduardo Scott on a video call from his Miami office",
+      lead: "We’ll start with what’s slowing you down and find the right way to fix it.",
+      itemCta: "Ask me about this",
       items: [
         {
-          name: "One-on-one tech consulting",
-          claim: "We sit down, you walk me through how you work, and I tell you what's worth doing and what isn't. You get the answer before you get a pitch.",
+          name: "Practical tech consulting",
+          claim: "Not sure what to fix first? Walk me through your day-to-day work. I’ll help you decide what to improve, what to keep, and where your time and budget will make the biggest difference.",
           icon: "/service-consult.svg",
           points: [
-            "I go through your day-to-day, step by step",
-            "Which tools earn their keep, and which ones you're overpaying for",
-            "A written plan, ranked by what to do first",
-            "Working sessions so you can run it without me",
+            "A clear look at your processes and bottlenecks",
+            "An honest review of the tools you use and pay for",
+            "A written plan with clear priorities",
+            "Hands-on sessions to help you use your tools confidently",
           ],
         },
         {
-          name: "Apps and websites",
-          claim: "Your website, or the app your business actually needs. Designed, built and launched by me.",
+          name: "Websites and custom apps",
+          claim: "Help customers understand what you offer and take the next step. Or give your team an app that makes everyday work easier. I handle the design, development, and launch.",
           icon: "/service-build.svg",
           points: [
-            "Sites people get in ten seconds",
-            "Apps built around the way you already work",
-            "Showing up on Google when someone searches for what you do",
-            "Ready for ad spend without setting money on fire",
+            "Websites that make your offer clear at a glance",
+            "Custom apps built around the way your team works",
+            "Content built around what your customers search for",
+            "Landing pages with a clear path from ad to inquiry",
           ],
         },
         {
-          name: "AI agents",
-          claim: "Software that handles the repetitive work on its own: it searches, sorts, replies and flags what actually needs you.",
+          name: "AI agents and automation",
+          claim: "Let software take on the repetitive parts: finding information, organizing it, preparing replies, and flagging what needs your attention.",
           icon: "/service-agent.svg",
           points: [
-            "Agents that find and qualify leads",
-            "Auto-replies that still sound like you",
-            "Reports that write themselves",
-            "Connecting the tools you already use",
+            "Find and qualify potential customers",
+            "Handle routine replies in your brand’s voice",
+            "Bring information together in automated reports",
+            "Keep information moving between the tools you use",
           ],
         },
       ],
     },
 
     cases: {
-      eyebrow: "What I do",
-      title: "A real problem. A simple fix.",
-      problemLabel: "The problem",
-      solutionLabel: "What I built",
+      eyebrow: "Problems I’ve solved",
+      title: "Here’s what a smarter way looks like.",
+      problemLabel: "The challenge",
+      solutionLabel: "The solution",
       items: [
         {
           name: "Picktennt",
           problem:
-            "Every tournament was run by hand. Sign-ups over WhatsApp, brackets on paper, scores typed in one at a time.",
+            "Running a tournament meant juggling WhatsApp registrations, paper brackets, and manually entered scores.",
           solution:
-            "An app where players sign themselves up, the brackets build themselves, and scores post straight to DUPR.",
+            "I built an app that lets players register, generates tournament brackets, and sends scores to DUPR, the pickleball rating system.",
           mark: "/node-network.svg",
         },
         {
-          name: "My own business",
+          name: "Scotting’s own lead research",
           problem:
-            "Finding clients meant sitting in Google Maps, copying businesses into a spreadsheet one at a time.",
+            "Finding potential clients meant searching Google Maps and copying business details into a spreadsheet, one at a time.",
           solution:
-            "An agent that builds the list, qualifies it, and tells me who to call first. This one I built for myself.",
+            "I built an agent for my own business that gathers potential clients, checks which ones fit, and helps me decide who to contact first.",
           mark: "/node-growth.svg",
         },
         {
           name: "Pool Control Solutions",
           problem:
-            "Word of mouth kept us busy. But if somebody searched for us on Google, we didn't exist.",
+            "The business grew through word of mouth but needed a way for customers to find it online.",
           solution:
-            "I built the site and wrote everything on it, plus their Google Business profile. All of it around what people actually type into Google: pool service in Kendall, Doral, Pinecrest, Homestead.",
+            "I built the website, wrote the copy, and set up the Google Business Profile around the services and areas customers search for, including Kendall, Doral, Pinecrest, and Homestead.",
           mark: "/node-bridge.svg",
         },
       ],
-      cta: "Text me on WhatsApp",
+      cta: "Let’s talk on WhatsApp",
     },
 
     process: {
       eyebrow: "How I work",
-      title: "Automation is step four. Not step one.",
-      body: "Most people show up with a tool already picked out and sell it to you before they've looked at how you work. I look first. Sometimes the fix isn't automation at all — it's doing two steps in the other order.",
-      hint: "Hover a step to see what it means.",
-      cycle: "It's not a straight line that ends at delivery. It's a loop.",
+      title: "Make it work. Then make it smarter.",
+      body: "First, I learn how your business works and where things get stuck. Then we find the simplest useful improvement. That might mean connecting two tools, building something new, or changing a few steps in the process. Automation comes when it makes sense.",
+      hint: "Hover over a step or use the Tab key to learn more.",
+      cycle: "Build, learn, improve. Each step helps us find the next useful change.",
       steps: [
-        { label: "Detect", note: "I look at how you work today. Nothing changes yet." },
-        { label: "Analyze", note: "Where the time goes, where things slip through, where the money leaks out." },
-        { label: "Solve", note: "I design and build the fix. Sometimes that's software, sometimes it's a better order of operations." },
-        { label: "Automate", note: "I only automate what we already know works." },
-        { label: "Improve", note: "I check what's actually running, tune it, and we go around again." },
+        { label: "Discover", note: "You walk me through how things work today and what gets in the way." },
+        { label: "Analyze", note: "We find the delays, repeated tasks, and gaps worth addressing first." },
+        { label: "Solve", note: "I build a practical solution, whether it’s software or a simpler process." },
+        { label: "Automate", note: "Once the process works, I automate the parts that will save you time." },
+        { label: "Improve", note: "We review how it works in practice and identify what to improve next." },
       ],
-      loop: "Then it starts over",
+      loop: "Keep improving",
     },
 
     about: {
-      eyebrow: "Who I am",
-      title: "I'm Eduardo Scott.",
+      eyebrow: "The person behind Scotting",
+      title: "Hi, I’m Eduardo.",
       paragraphs: [
-        "I'm an engineer. Fifteen years in software, the last ten in data and running technology teams.",
-        "I put my first app, KIDI, on the App Store in 2012. It hit the global top 100 for downloads on launch day. After that I went deep on news publishing, programmatic advertising and ad servers, and that's what pulled me into big data, adtech and digital products.",
-        "I consulted for large media groups: Grupo Nación in Costa Rica, and Medios Masivos Mexicanos, one of the five biggest in Mexico by traffic. Then I ran demand revenue operations at Connatix, an ad tech company. When it merged with JWX, unifying the tools and processes of both companies landed on me.",
-        "I've advised, but I've also built. I studied data analytics at Georgia Tech and hold certificates in project and product management.",
-        "Today I do the same thing at a smaller scale: I walk into a business that already works and build the piece it's missing. And I don't hand it over and disappear — I keep improving it, and I stay on for support.",
-        "I live in Miami. Coffee in Brickell or Coral Gables works, or we can talk it through after a pickleball game at Tropical Park. And if you'd rather not deal with the traffic, we do it online.",
+        "I’m an engineer with 15 years of experience in software, including a decade working with data and leading technology teams.",
+        "I launched my first app, KIDI, in 2012. Since then, I’ve built digital products and worked across publishing, advertising technology, and data.",
+        "My work has included consulting for Grupo Nación in Costa Rica and Medios Masivos Mexicanos, as well as leading demand revenue operations at Connatix. Along the way, I’ve helped teams bring their tools and processes together.",
+        "I’ve studied data analytics at Georgia Tech and hold certificates in project and product management. I bring both the planning and the hands-on technical work to each project.",
+        "At Scotting, I bring that experience to everyday business challenges. You work directly with me, from understanding the problem to building the solution and planning what comes next.",
+        "I’m based in Miami. We can talk over coffee in Brickell or Coral Gables, after a pickleball game at Tropical Park, or on a video call. Tell me what’s taking up too much of your time.",
       ],
-      photoAlt: "Eduardo Scott, software engineer in Miami, working at his desk",
+      photoAlt: "Eduardo Scott of Scotting in his Miami office",
       caption: "Eduardo Scott · Miami, Florida",
     },
 
     beliefs: {
       eyebrow: "What I believe",
       opener: "There has to be a smarter way to do this.",
-      openerNote: "The sentence that starts every project.",
+      openerNote: "That’s where every project starts.",
       items: [
-        "I explain it before I sell it.",
-        "If doing it by hand already works, I'll say so.",
-        "The best tool is the one you can run without me.",
-        "We start small. Whatever works, grows.",
+        "You’ll understand the recommendation before you decide.",
+        "If you don’t need new technology, I’ll tell you.",
+        "You should feel confident using what I build.",
+        "We start with one useful improvement and build from there.",
       ],
     },
 
 
     work: {
-      eyebrow: "What I've built",
-      title: "I don't come in with one thing to sell. I look at how you work and fix whatever's in the way.",
+      eyebrow: "My work",
+      title: "Different businesses. Practical solutions.",
       groups: [
         {
-          label: "Websites and visibility",
+          label: "Websites and online presence",
           mark: "/node-bridge.svg",
           items: [
             { name: "Pool Control Solutions", url: "https://www.poolcontrolsolutions.com" },
@@ -378,8 +386,8 @@ export const copy = {
           label: "Systems and automation",
           mark: "/node-network.svg",
           items: [
-            { name: "Lead prospecting agent", url: null },
-            { name: "DUPR integration", url: null },
+            { name: "Lead research agent", url: null },
+            { name: "DUPR score integration", url: null },
             { name: "Operations dashboard", url: null },
           ],
         },
@@ -387,54 +395,62 @@ export const copy = {
           label: "Training and coaching",
           mark: "/node-ring-full.svg",
           items: [
-            { name: "Claude 10x course", url: "https://idddeas.com/curso_claude_10x" },
+            { name: "Claude 10x course (in Spanish)", url: "https://idddeas.com/curso_claude_10x" },
             { name: "One-on-one coaching", url: null },
           ],
         },
       ],
-      cta: "Text me on WhatsApp",
+      cta: "Let’s talk on WhatsApp",
     },
 
     form: {
-      eyebrow: "Tell me about it",
-      title: "What did you do by hand this week that should be running on its own?",
+      eyebrow: "Let’s make work easier",
+      title: "What’s taking up too much of your time?",
       chips: [
         "Quotes and estimates",
         "Scheduling",
         "Invoicing",
-        "Client follow-up",
+        "Customer follow-up",
         "Reports",
         "My website",
         "Something else",
       ],
-      chipsHint: "Pick as many as you like.",
-      detailLabel: "Tell me in one line",
+      chipsHint: "Choose one or more areas you’d like help with.",
+      detailLabel: "What would you like to make easier?",
       detailOptional: "optional",
-      nameLabel: "Name",
-      contactLabel: "WhatsApp or email",
-      submit: "Send it",
-      reassurance: "I write back myself, not a bot. Usually the same day.",
-      chipRequired: "Pick one to get started.",
-      contactRequired: "Leave a number or an email so I can get back to you.",
-      success: "That's exactly the kind of thing I build. I'll get back to you today.",
-      sending: "Sending…",
+      nameLabel: "Your name (optional)",
+      contactLabel: "Your WhatsApp number or email",
+      submit: "Send my message",
+      reassurance: "You’ll hear directly from me. We’ll start by talking through what you need.",
+      chipRequired: "Please choose at least one area you’d like help with.",
+      contactRequired: "Please add your WhatsApp number or email so I can reply.",
+      success: "Thanks for reaching out. I’ll review your message and get back to you.",
+      sending: "Sending your message…",
+      failure: "Your message didn’t go through. Please try again or contact me on WhatsApp.",
+      whatsappContinue: "Continue in WhatsApp",
+      whatsappReady: "One more step: send your message in WhatsApp.",
+      whatsappRetry: "Open WhatsApp",
     },
 
-    sticky: { label: "Text me" },
+    sticky: { label: "Chat on WhatsApp" },
 
     footer: {
-      tagline: "Smart systems. Real impact.",
+      tagline: "Less busywork. More good work.",
       location: "Miami, Florida",
       rights: "All rights reserved.",
     },
 
-    waIntro: "Hi Eduardo, I found you through your website",
+    waIntro: "Hi Eduardo, I’d like to talk about making work easier in my business",
   },
 };
 
 export type Copy = (typeof copy)["es"];
 
-export function waLink(lang: Lang, context: string) {
-  const text = `${copy[lang].waIntro} — ${context}`;
+export function waLink(lang: Lang, context?: string) {
+  const text = lang === "en"
+    ? context
+      ? `Hi Eduardo, I’d like to ask about ${context}.`
+      : `${copy[lang].waIntro}.`
+    : `${copy[lang].waIntro}${context ? ` — ${context}` : ""}`;
   return `https://wa.me/${WHATSAPP}?text=${encodeURIComponent(text)}`;
 }
