@@ -4,6 +4,29 @@ const keys = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_id', 'utm_content
 const ttl = 90 * 86400000;
 const storageKey = 'scotting-attribution-v1';
 let current: Attribution = null;
+let analyticsMeasurementId: string | null = null;
+
+declare global {
+  interface Window {
+    dataLayer?: unknown[][];
+    gtag?: (...args: unknown[]) => void;
+  }
+}
+
+export function initializeAnalytics(measurementId: string | undefined) {
+  if (typeof window === 'undefined' || typeof document === 'undefined' || !measurementId || !/^G-[A-Z0-9]{6,}$/i.test(measurementId)) return false;
+  if (analyticsMeasurementId === measurementId) return true;
+  analyticsMeasurementId = measurementId;
+  window.dataLayer = window.dataLayer || [];
+  window.gtag = (...args: unknown[]) => window.dataLayer?.push(args);
+  const script = document.createElement('script');
+  script.async = true;
+  script.src = `https://www.googletagmanager.com/gtag/js?id=${encodeURIComponent(measurementId)}`;
+  document.head.appendChild(script);
+  window.gtag('js', new Date());
+  window.gtag('config', measurementId);
+  return true;
+}
 
 export function updateAttribution(previous: Attribution, href: string, now = Date.now()): Attribution {
   const valid = (touch: Touch | undefined) => touch && Number.isFinite(Date.parse(touch.at)) && now - Date.parse(touch.at) >= 0 && now - Date.parse(touch.at) < ttl;
@@ -32,8 +55,8 @@ export function initializeAttribution(persist: boolean) {
 
 export function getAttribution() { return current; }
 
-type Metric = 'chat_started' | 'generate_lead' | 'booking_click' | 'form_start';
-export function trackMetric(name: Metric, language: string, surface: 'chat' | 'form') {
+type Metric = 'chat_started' | 'generate_lead' | 'booking_click' | 'form_start' | 'whatsapp_click';
+export function trackMetric(name: Metric, language: string, surface: 'chat' | 'form' | 'whatsapp') {
   const data = { language: language === 'es' ? 'es' : 'en', surface, landing_id: 'homepage', offer_id: 'premium_quote_v1' };
   // Deliberately excludes message text, contacts, URLs, UTMs and click IDs.
   const analytics = window as Window & { gtag?: (...args: unknown[]) => void };

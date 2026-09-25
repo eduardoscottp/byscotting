@@ -4,7 +4,7 @@ import ProcessFlow from "@/components/ProcessFlow";
 import PainForm from "@/components/PainForm";
 import StickyWhatsApp from "@/components/StickyWhatsApp";
 import ChatWidget from "@/components/ChatWidget";
-import { initializeAttribution } from "@/lib/attribution";
+import { initializeAnalytics, initializeAttribution, trackMetric } from "@/lib/attribution";
 import WhatsAppIcon from "@/components/WhatsAppIcon";
 import Spine from "@/components/Spine";
 import Frame from "@/components/Frame";
@@ -61,7 +61,16 @@ function Eyebrow({ children, tone = "dark" }: { children: React.ReactNode; tone?
 
 export default function Site({ lang }: { lang: Lang }) {
   const t = copy[lang];
-  useEffect(() => { initializeAttribution(import.meta.env.VITE_ATTRIBUTION_STORAGE === 'true'); }, [lang]);
+  useEffect(() => {
+    initializeAttribution(import.meta.env.VITE_ATTRIBUTION_STORAGE === 'true');
+    initializeAnalytics(import.meta.env.VITE_GA_MEASUREMENT_ID);
+    const onWhatsAppClick = (event: MouseEvent) => {
+      const link = (event.target as Element | null)?.closest('a[href*="wa.me/"]');
+      if (link) trackMetric('whatsapp_click', lang, 'whatsapp');
+    };
+    document.addEventListener('click', onWhatsAppClick);
+    return () => document.removeEventListener('click', onWhatsAppClick);
+  }, [lang]);
   // los dos primeros casos son video real, no foto: grabaciones sin recortar en 16:10
   const caseImages = [undefined, undefined, workPoolcontrol];
   const caseVideos = [picktenntDemo, agenteProspeccion, undefined];
