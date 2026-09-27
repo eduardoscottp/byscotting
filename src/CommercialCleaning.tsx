@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState, type FormEvent } from 'react';
 import ChatWidget from '@/components/ChatWidget';
+import CleaningDemo from '@/components/CleaningDemo';
 import { getAttribution, initializeAnalytics, initializeAttribution, trackMetric } from '@/lib/attribution';
 import { waLink } from '@/copy';
 import logo from '@/assets/scotting-wordmark-blue.png';
@@ -62,20 +63,25 @@ export default function CommercialCleaning() {
   }, []);
   return <div className="cleaning-page">
     <a className="cl-skip" href="#main">Skip to content</a>
-    <header className="cl-header cl-wrap"><img src={logo} alt="Scotting" width="150" height="42" /><span>Miami, Florida</span></header>
-    <main id="main" className="cl-wrap cl-main">
+    <header className="cl-header cl-wrap"><img src={logo} alt="Scotting" width="150" height="42" /><a href="#growth-plan" onClick={() => setCallbackRequest(n => n + 1)}>Request a call <Arrow /></a></header>
+    <main id="main"><div className="cl-wrap cl-main">
       <section className="cl-pitch" aria-labelledby="cleaning-title">
         <p className="cl-eyebrow">FOR COMMERCIAL CLEANING OWNERS IN MIAMI-DADE</p>
-        <h1 id="cleaning-title">More commercial inquiries.<br /><em>Better follow-up.</em></h1>
-        <p className="cl-description">We build your ads, landing page and follow-up system so your team can focus on winning the work.</p>
+        <h1 id="cleaning-title">Still chasing your next <em>cleaning contract?</em></h1>
+        <p className="cl-description">Build a clearer path from inquiry to walkthrough—with targeted ads, a focused landing page and follow-up, connected for you.</p>
+        <ol className="cl-mini-process" aria-label="What Scotting connects"><li><span>01</span><strong>Attract</strong><small>Ads + landing page</small></li><li><span>02</span><strong>Respond</strong><small>Capture + qualify</small></li><li><span>03</span><strong>Follow up</strong><small>Walkthrough + quote</small></li></ol>
+        <a className="cl-demo-link" href="#how-it-works">See a sample inquiry in action <span aria-hidden="true">↓</span></a>
         <a className="cl-mobile-cta" href="#growth-plan">Get My Growth Plan <Arrow /></a>
         <div className="cl-contact-options">
           <button id="cleaning-chat-button" type="button" onClick={() => setChatRequest(n => n + 1)}>Chat now <Arrow /></button>
           <a href="#growth-plan" onClick={() => setCallbackRequest(n => n + 1)}>Request a call <Arrow /></a>
         </div>
-        <div className="cl-person"><img src={portrait} width="38" height="38" alt="Eduardo Scott" /><p><strong>Eduardo Scott</strong><span>Your local contact at Scotting</span></p></div>
+        <div className="cl-person"><img src={portrait} width="38" height="38" alt="Eduardo Scott" /><p><strong>Built with Eduardo Scott</strong><span>Your local contact in Miami</span></p></div>
       </section>
       <section id="growth-plan" className="cl-form-panel" aria-label="Request your cleaning growth plan"><GrowthForm callbackRequest={callbackRequest} /></section>
+    </div>
+    <section className="cl-wrap cl-reassurance" aria-label="Before you commit"><div><strong>Start with what you have.</strong><p>We review your current tools first.</p></div><div><strong>See the costs upfront.</strong><p>Scope, ads and software priced separately.</p></div><div><strong>Keep a person in control.</strong><p>Your team handles quotes and sales decisions.</p></div></section>
+    <CleaningDemo />
     </main>
     <footer className="cl-wrap cl-footer">
       <p>Scope and pricing agreed first. Advertising and software costs are separate.</p>
