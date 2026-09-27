@@ -30,4 +30,7 @@ test('cleaning chat uses bounded vertical context and does not invent booking to
   assert.match(prompt, /commercial cleaning/i);
   assert.match(prompt, /walkthrough/i);
   assert.match(prompt, /no action tools/i);
+  assert.match(prompt, /Approved FAQ library/);
+  assert.match(prompt, /Pricing follows a review/);
+  assert.match(prompt, /no live booking tool/);
 });

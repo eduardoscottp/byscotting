@@ -1,0 +1,168 @@
+{
+  "version": "2026-09-27-v1",
+  "objective": "Answer approved questions, establish fit and route a consented growth-plan request to Eduardo. A raw request is not a qualified opportunity or a booked appointment.",
+  "faqs": [
+    {
+      "id": "service",
+      "category": "Offer",
+      "question": "What does Scotting do?",
+      "answer": "Scotting builds marketing and follow-up systems for commercial cleaning companies: focused ads, a landing page, lead capture, CRM routing and optional AI Agents. Your team handles walkthroughs, pricing and closing."
+    },
+    {
+      "id": "leads",
+      "category": "Offer",
+      "question": "Can you help me get more cleaning leads?",
+      "answer": "We review your services, area, capacity and budget before recommending ads and a focused landing page. We measure inquiries and qualified conversations separately; we do not promise a fixed number of leads."
+    },
+    {
+      "id": "followup",
+      "category": "Offer",
+      "question": "I have inquiries but lose track of them. Can you help?",
+      "answer": "Yes. We can connect your inquiry sources to a shared pipeline, assign an owner and make the next follow-up visible. The first step is finding where inquiries or proposals get stuck."
+    },
+    {
+      "id": "contracts",
+      "category": "Offer",
+      "question": "Do you sell cleaning contracts or lead lists?",
+      "answer": "No. We build the marketing and follow-up process around your business. Your team still qualifies prospects, visits sites, prepares quotes and wins the work."
+    },
+    {
+      "id": "ai",
+      "category": "AI Agents",
+      "question": "What can AI Agents do for my cleaning business?",
+      "answer": "Within an agreed setup, AI Agents can answer approved questions, collect qualification details and route inquiries for human follow-up. They can support scheduling when connected to a verified calendar; they should not invent prices or confirm work your team has not approved."
+    },
+    {
+      "id": "required",
+      "category": "AI Agents",
+      "question": "Do I have to use AI?",
+      "answer": "No. We start with the problem. A clear form and reliable human follow-up may be enough; AI Agents are added where they help."
+    },
+    {
+      "id": "voice",
+      "category": "AI Agents",
+      "question": "Can an AI Agent call or text my leads?",
+      "answer": "Voice and text automation can be discussed as a separate phase with the appropriate consent and operating rules. This page's contact request does not sign anyone up for automated calls or text marketing."
+    },
+    {
+      "id": "always",
+      "category": "AI Agents",
+      "question": "Can an AI Agent answer outside office hours?",
+      "answer": "A configured AI Agent can handle approved questions outside staffed hours. Human response times and system availability must be agreed; we do not promise instant personal callbacks."
+    },
+    {
+      "id": "human",
+      "category": "AI Agents",
+      "question": "Can I speak to a person?",
+      "answer": "Yes. Use Talk to Eduardo for WhatsApp, or request an email or human callback through the growth-plan form. The chatbot cannot confirm that Eduardo is available right now."
+    },
+    {
+      "id": "price",
+      "category": "Cost & scope",
+      "question": "How much does the system cost?",
+      "answer": "Pricing follows a review of your current process and the work required. Your proposal separates setup, ongoing support, advertising spend and software or usage costs."
+    },
+    {
+      "id": "budget",
+      "category": "Cost & scope",
+      "question": "What advertising budget do I need?",
+      "answer": "There is no confirmed minimum for your business. We review the market, your capacity and the economics before recommending a test. Scotting's own advertising budget is not your campaign budget."
+    },
+    {
+      "id": "contract",
+      "category": "Cost & scope",
+      "question": "Is there a long-term contract?",
+      "answer": "Contract length, cancellation and ongoing support are agreed in your written proposal. I cannot promise terms that Eduardo has not confirmed."
+    },
+    {
+      "id": "free",
+      "category": "Cost & scope",
+      "question": "Is the growth plan a free report?",
+      "answer": "The offer is a short conversation and a practical recommendation about your next priority. It is not an automatic downloadable report or a full strategy delivered by this chat; any project scope and charges are agreed before work starts."
+    },
+    {
+      "id": "timeline",
+      "category": "Cost & scope",
+      "question": "How quickly can you launch?",
+      "answer": "Timing depends on the agreed scope, access and integrations. Eduardo can estimate it after reviewing your setup; there is no guaranteed launch date or revenue deadline."
+    },
+    {
+      "id": "fit",
+      "category": "Fit",
+      "question": "Who is this for?",
+      "answer": "Established commercial cleaning businesses serving Miami-Dade, including companies that also do residential cleaning. You should have capacity for more commercial work and someone who can respond to inquiries."
+    },
+    {
+      "id": "residential",
+      "category": "Fit",
+      "question": "I only clean homes. Is this for me?",
+      "answer": "This specific offer is for companies with an active commercial cleaning operation. For a different technology project, you can ask Eduardo directly."
+    },
+    {
+      "id": "jobs",
+      "category": "Fit",
+      "question": "Are you hiring cleaners or providing cleaning services?",
+      "answer": "Scotting provides marketing and technology services to cleaning business owners. We do not provide cleaning services or recruit cleaners through this page."
+    },
+    {
+      "id": "area",
+      "category": "Fit",
+      "question": "Do you work outside Miami-Dade?",
+      "answer": "This campaign focuses on Miami-Dade. Eduardo can review an enquiry from another area, but availability outside the initial focus is not promised."
+    },
+    {
+      "id": "new",
+      "category": "Fit",
+      "question": "I am starting a new cleaning business. Can I use this?",
+      "answer": "This offer is designed for established commercial operations. If you are starting from zero, speak with Eduardo about whether a smaller project is appropriate before paying for more traffic."
+    },
+    {
+      "id": "tools",
+      "category": "Setup & trust",
+      "question": "Will I have to replace my current software?",
+      "answer": "We review the tools you already use first. Existing systems may work if they provide suitable access and integrations; we agree on any changes before implementation."
+    },
+    {
+      "id": "team",
+      "category": "Setup & trust",
+      "question": "Will this replace my salesperson?",
+      "answer": "No. It supports your team's response and follow-up. Your people retain responsibility for qualification decisions, site visits, prices and closing."
+    },
+    {
+      "id": "proof",
+      "category": "Setup & trust",
+      "question": "Are the examples real customer results?",
+      "answer": "The interactive demonstration uses clearly labeled sample data to explain the proposed workflow. It is not a testimonial, real client result or revenue claim."
+    },
+    {
+      "id": "guarantee",
+      "category": "Setup & trust",
+      "question": "Do you guarantee contracts or revenue?",
+      "answer": "No. We agree on deliverables and measure the process. Sales outcomes depend on demand, budget, service capacity, pricing and your team's execution."
+    },
+    {
+      "id": "privacy",
+      "category": "Setup & trust",
+      "question": "What happens to my information?",
+      "answer": "Details you submit through the form are stored in Airtable so Scotting can respond by your chosen channel. Guided chat answers stay in the page unless you choose to include your qualification choices; full chat transcripts are not automatically attached."
+    },
+    {
+      "id": "next",
+      "category": "Next step",
+      "question": "What happens after I submit?",
+      "answer": "Your request is saved for Eduardo to review and respond by your selected channel. A request is not a booked appointment; a time is agreed separately."
+    },
+    {
+      "id": "book",
+      "category": "Next step",
+      "question": "Can you book an appointment now?",
+      "answer": "This version can request human follow-up. It cannot check availability or book a meeting. Use the form and Eduardo will arrange a time."
+    },
+    {
+      "id": "delete",
+      "category": "Next step",
+      "question": "How do I correct or remove my information?",
+      "answer": "Use the Talk to Eduardo contact link to request a correction, deletion or no further contact. This chatbot cannot change or delete a CRM record itself."
+    }
+  ]
+}

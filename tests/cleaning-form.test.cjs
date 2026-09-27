@@ -8,7 +8,7 @@ function nodes(element) {
   if (!element || typeof element !== 'object') return [];
   return [element, ...[element.props?.children].flat(Infinity).flatMap(nodes)];
 }
-function harness(fetch) {
+function harness(fetch, chatContext) {
   const values = [];
   let cursor = 0;
   const metrics = [];
@@ -28,7 +28,7 @@ function harness(fetch) {
     require: id => id === 'react' ? react : id === '@/lib/attribution' ? { getAttribution: () => ({ first: { utm_campaign: 'cleaning-test' } }), trackMetric: (...args) => metrics.push(args) } : id === '@/copy' ? { waLink: () => 'https://example.invalid' } : id.startsWith('@/') ? {} : require(id),
   };
   vm.runInNewContext(js, context);
-  const render = () => { cursor = 0; return context.exports.GrowthForm(); };
+  const render = () => { cursor = 0; return context.exports.GrowthForm({ chatContext }); };
   const mix = value => nodes(render()).find(node => node.type === 'select').props.onChange({ target: { value } });
   const submit = () => render().props.onSubmit({ preventDefault() {}, currentTarget: { name: 'Test Owner', email: 'test@example.invalid', company: 'TEST ONLY Cleaning', detail: 'Integration test' } });
   return { render, mix, submit, metrics };
@@ -61,4 +61,13 @@ test('out-of-scope service mix prevents transmission', async () => {
   form.mix('residential');
   await form.submit();
   assert.equal(calls, 0);
+});
+
+test('explicit chat handoff saves only the selected summary and never the full transcript', async () => {
+  let payload;
+  const form = harness(async (_, options) => { payload = JSON.parse(options.body); return { ok: true, json: async () => ({ accepted: true }) }; }, { serviceMix: 'commercial', channel: 'email', summary: 'Self-reported: Miami-Dade; more inquiries; capacity available.' });
+  form.mix('commercial'); await form.submit();
+  assert.match(payload.detail, /Self-reported: Miami-Dade/);
+  assert.equal(payload.messages, undefined);
+  assert.equal(payload.share_chat, undefined);
 });
