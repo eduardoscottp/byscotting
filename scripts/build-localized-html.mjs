@@ -23,3 +23,16 @@ for (const [attribute, name, value] of [
 html = html.replace(/<link rel="canonical" href="[^"]*"\s*\/?>/, '<link rel="canonical" href="https://byscotting.com/en" />');
 await mkdir(new URL("../dist/en/", import.meta.url), { recursive: true });
 await writeFile(new URL("../dist/en/index.html", import.meta.url), html);
+
+// Keep the campaign route's first response and link previews specific to this offer.
+const cleaningTitle = 'Marketing for Commercial Cleaning Companies | Scotting';
+const cleaningDescription = 'Connect your cleaning company’s marketing, inquiries and follow-up. Get a practical growth plan for your Miami-Dade business.';
+let cleaning = html.replace(/<title>[^<]*<\/title>/, `<title>${cleaningTitle}</title>`)
+  .replace(/<meta\s+name="description"\s+content="[^"]*"\s*\/?>/, `<meta name="description" content="${cleaningDescription}" />`)
+  .replace(/<meta\s+property="og:title"\s+content="[^"]*"\s*\/?>/, `<meta property="og:title" content="${cleaningTitle}" />`)
+  .replace(/<meta\s+property="og:description"\s+content="[^"]*"\s*\/?>/, `<meta property="og:description" content="${cleaningDescription}" />`)
+  .replaceAll('https://byscotting.com/en', 'https://byscotting.com/comercial_cleaning')
+  .replace(/<link rel="alternate"[^>]*>/g, '')
+  .replace('</head>', '<meta name="robots" content="noindex,follow" /></head>');
+await mkdir(new URL('../dist/comercial_cleaning/', import.meta.url), { recursive: true });
+await writeFile(new URL('../dist/comercial_cleaning/index.html', import.meta.url), cleaning);

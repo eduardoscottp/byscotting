@@ -42,7 +42,7 @@ export async function chat(body, { env = process.env, fetch: request = globalThi
     const response = await request('https://api.openai.com/v1/responses', {
       method: 'POST',
       headers: { Authorization: `Bearer ${env.OPENAI_API_KEY}`, 'Content-Type': 'application/json' },
-      body: JSON.stringify({ model: env.OPENAI_MODEL, instructions, input: messages, store: false, max_output_tokens: 700 }),
+      body: JSON.stringify({ model: env.OPENAI_MODEL, instructions: instructions + (body.context === 'commercial_cleaning' ? '\nThis page serves established commercial cleaning business owners in Miami-Dade. Scotting offers a scoped marketing and follow-up system: focused ads and landing page, inquiry qualification, human callbacks, walkthrough coordination, proposal follow-up and pipeline measurement. It does not provide cleaning services or sell guaranteed contracts or lists of leads. Ask whether they need more inquiries or better follow-up. AI is optional. Advertising, software and service fees are separate; price is quoted after discovery. Offer the page growth-plan form for personal follow-up. Never invent cleaning-industry case studies or performance.' : ''), input: messages, store: false, max_output_tokens: 700 }),
       signal: AbortSignal.timeout(25000),
     });
     if (!response.ok) return failure(502, 'chat_unavailable');
@@ -64,6 +64,15 @@ export async function saveLead(body, { env = process.env, fetch: request = globa
   const phone = contact && /^[+\d() .-]+$/.test(contact) && contact.replace(/\D/g, '').length >= 8 && contact.replace(/\D/g, '').length <= 15;
   const chips = Array.isArray(body?.chips) && body.chips.length <= 8 ? body.chips.map(c => text(c, 150)) : [];
   if (!submission || !/^[a-f0-9-]{36}$/i.test(submission) || name === null || detail === null || (!email && !phone) || chips.some(c => !c)) return failure(400, 'invalid_inquiry');
+  let cleaning;
+  if (body.landing === 'commercial_cleaning') {
+    const company = text(body.company, 160);
+    const callback = text(body.phone ?? '', 40);
+    if (!company || !name || !email || !['commercial', 'mixed'].includes(body.service_mix) || !['email', 'callback'].includes(body.response_channel)) return failure(400, 'invalid_inquiry');
+    if (body.response_channel === 'callback' && (!callback || !/^[+\d() .-]+$/.test(callback) || callback.replace(/\D/g, '').length < 8 || callback.replace(/\D/g, '').length > 15)) return failure(400, 'invalid_inquiry');
+    if (body.website_trap) return failure(400, 'invalid_inquiry');
+    cleaning = { landing: 'commercial_cleaning', company, service_mix: body.service_mix, response_channel: body.response_channel, ...(body.response_channel === 'callback' ? { phone: callback } : {}) };
+  }
   const messages = body.share_chat === true ? cleanMessages(body.messages) : undefined;
   if (body.share_chat === true && !messages) return failure(400, 'invalid_messages');
   const missingConfig = [
@@ -76,7 +85,7 @@ export async function saveLead(body, { env = process.env, fetch: request = globa
     console.warn('lead_capture_config_missing', missingConfig);
     return failure(503, 'lead_capture_unavailable');
   }
-  const inquiry = { project: 'scotting', name, contact, detail, topics: chips, language: body.lang === 'es' ? 'es' : 'en', ...(messages ? { shared_chat: messages } : {}) };
+  const inquiry = { project: 'scotting', name, contact, detail, topics: chips, language: body.lang === 'es' ? 'es' : 'en', ...cleaning, ...(messages ? { shared_chat: messages } : {}) };
   const attribution = sanitizeAttribution(body.attribution);
   // Bind the idempotency key to content so a changed payload cannot overwrite an unrelated inquiry.
   const key = createHmac('sha256', env.LEAD_SIGNING_SECRET).update(JSON.stringify({ submission, inquiry, attribution })).digest('hex');
@@ -86,6 +95,7 @@ export async function saveLead(body, { env = process.env, fetch: request = globa
     'Scotting Attribution': JSON.stringify(attribution),
     ...(email ? { Email: contact } : { Phone: contact }),
     ...(name ? { 'Contact First Name': name.split(/\s+/)[0], 'Contact Last Name': name.split(/\s+/).slice(1).join(' ') } : {}),
+    ...(cleaning ? { 'Business Name': cleaning.company, ...(cleaning.phone ? { Phone: cleaning.phone } : {}) } : {}),
   };
   try {
     const response = await request(`https://api.airtable.com/v0/${encodeURIComponent(env.AIRTABLE_BASE_ID)}/${encodeURIComponent(env.AIRTABLE_LEADS_TABLE_ID)}`, {
