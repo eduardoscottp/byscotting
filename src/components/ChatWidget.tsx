@@ -20,7 +20,7 @@ function bookingUrl() {
   } catch { return null; }
 }
 
-export default function ChatWidget({ lang, context = 'homepage' }: { lang: Lang; context?: 'homepage' | 'commercial_cleaning' }) {
+export default function ChatWidget({ lang, context = 'homepage', openRequest = 0 }: { lang: Lang; context?: 'homepage' | 'commercial_cleaning'; openRequest?: number }) {
   const cleaning = context === 'commercial_cleaning';
   const chatEndpoint = endpoint;
   const guided = cleaning && !chatEndpoint;
@@ -40,11 +40,12 @@ export default function ChatWidget({ lang, context = 'homepage' }: { lang: Lang;
   const toggle = useRef<HTMLButtonElement>(null);
   const log = useRef<HTMLDivElement>(null);
   const booking = bookingUrl();
+  useEffect(() => { if (openRequest > 0) { setOpen(true); trackMetric('chat_started', lang, 'chat', context); } }, [openRequest, lang, context]);
   useEffect(() => { if (open) { if (guided) log.current?.focus(); else input.current?.focus(); } }, [open, guided]);
   useEffect(() => { log.current?.scrollTo({ top: log.current.scrollHeight }); }, [messages, busy]);
   if (!chatEndpoint && !guided) return null;
 
-  function close() { setOpen(false); toggle.current?.focus(); }
+  function close() { setOpen(false); if (cleaning) document.getElementById('cleaning-chat-button')?.focus(); else toggle.current?.focus(); }
   async function send(event: React.FormEvent) {
     event.preventDefault();
     if (!draft.trim() || busy || saving || !chatEndpoint) return;
@@ -115,7 +116,7 @@ export default function ChatWidget({ lang, context = 'homepage' }: { lang: Lang;
           </form>)}
         </div>
       </section>}
-      <button ref={toggle} type="button" aria-expanded={open} onClick={() => { if (open) close(); else { setOpen(true); trackMetric('chat_started', lang, 'chat', context); } }} className="rounded-full bg-ink px-5 py-3 font-display text-sm text-white focus:outline-2 focus:outline-offset-2 focus:outline-blue">{es ? 'Pregúntale a Scotting' : 'Ask Scotting'}</button>
+      {!cleaning && <button ref={toggle} type="button" aria-expanded={open} onClick={() => { if (open) close(); else { setOpen(true); trackMetric('chat_started', lang, 'chat', context); } }} className="rounded-full bg-ink px-5 py-3 font-display text-sm text-white focus:outline-2 focus:outline-offset-2 focus:outline-blue">{es ? 'Pregúntale a Scotting' : 'Ask Scotting'}</button>}
     </div>
   );
 }

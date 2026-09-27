@@ -12,7 +12,7 @@ function harness(fetch) {
   const values = [];
   let cursor = 0;
   const metrics = [];
-  const react = { ...require('react'), useState(initial) {
+  const react = { ...require('react'), useEffect() {}, useState(initial) {
     const index = cursor++;
     if (!(index in values)) values[index] = initial;
     return [values[index], value => { values[index] = value; }];
