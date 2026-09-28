@@ -15,11 +15,23 @@ test('cleaning lead saves business and campaign context without overwriting unre
   assert.equal(saved.service_mix, 'commercial');
   assert.equal(sent.records[0].fields['Status Flag'], undefined);
 });
-test('cleaning requests require valid scope, company and callback number before provider access', async () => {
+test('cleaning requests reject invalid contact, name, channel and supplied scope before provider access', async () => {
   const { saveLead } = await import('../server/mvp.mjs');
-  for (const changes of [{ company: '' }, { service_mix: 'jobs' }, { response_channel: 'callback', phone: '' }]) {
+  for (const changes of [{ name: '' }, { service_mix: 'jobs' }, { response_channel: 'callback', phone: '' }, { response_channel: 'sms' }, { response_channel: 'email', contact: '+1 305 555 0123' }, { website_trap: 'spam' }]) {
     const result = await saveLead({ ...inquiry, ...changes }, { env, fetch: async () => { throw Error('must not send'); } });
     assert.equal(result.status, 400);
+  }
+});
+test('minimal email and callback requests save only the selected contact without business fields', async () => {
+  const { saveLead } = await import('../server/mvp.mjs');
+  for (const [channel, contact, field] of [['email', 'owner@example.com', 'Email'], ['callback', '+1 305 555 0123', 'Phone']]) {
+    let fields;
+    const result = await saveLead({ submission_id: inquiry.submission_id, name: 'Sample Owner', contact, landing: 'commercial_cleaning', response_channel: channel }, { env, fetch: async (_, init) => { fields = JSON.parse(init.body).records[0].fields; return { ok: true, json: async () => ({ records: [{ id: 'recTest' }] }) }; } });
+    assert.equal(result.status, 200);
+    assert.equal(fields[field], contact);
+    assert.equal(fields[field === 'Email' ? 'Phone' : 'Email'], undefined);
+    assert.equal(fields['Business Name'], undefined);
+    assert.equal(JSON.parse(fields['Scotting Inquiry']).service_mix, undefined);
   }
 });
 test('cleaning chat uses bounded vertical context and does not invent booking tools', async () => {

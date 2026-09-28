@@ -12,22 +12,20 @@ import '@/cleaning.css';
 function Arrow() { return <span aria-hidden="true">↗</span>; }
 export function GrowthForm({ callbackRequest = 0, chatContext, clearChatContext }: { callbackRequest?: number; chatContext?: CleaningHandoff; clearChatContext?: () => void } = {}) {
   const [channel, setChannel] = useState('email');
-  const [mix, setMix] = useState('');
   const [state, setState] = useState<'idle' | 'saving' | 'saved' | 'error'>('idle');
   const [error, setError] = useState('');
   const id = useRef(crypto.randomUUID());
   const started = useRef(false);
-  const fit = mix === 'commercial' || mix === 'mixed';
   useEffect(() => { if (callbackRequest > 0) setChannel('callback'); }, [callbackRequest]);
-  useEffect(() => { if (chatContext) { setMix(chatContext.serviceMix); setChannel(chatContext.channel); } }, [chatContext]);
+  useEffect(() => { if (chatContext) setChannel(chatContext.channel); }, [chatContext]);
   async function submit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    if (!fit || state === 'saving') return;
+    if (state === 'saving') return;
     const fields = new FormData(e.currentTarget);
     setState('saving'); setError('');
     try {
       const response = await fetch(import.meta.env.VITE_FORM_ENDPOINT || '/api/leads', { method: 'POST', headers: { 'Content-Type': 'application/json' }, signal: AbortSignal.timeout(20000), body: JSON.stringify({
-        submission_id: id.current, name: fields.get('name'), contact: fields.get('email'), company: fields.get('company'), service_mix: mix, response_channel: channel, phone: fields.get('phone') || '',
+        submission_id: id.current, name: fields.get('name'), contact: fields.get(channel === 'callback' ? 'phone' : 'email'), ...(chatContext ? { service_mix: chatContext.serviceMix } : {}), response_channel: channel,
         detail: chatContext?.summary || '', website_trap: fields.get('website_trap') || '', landing: 'commercial_cleaning', chips: ['Commercial cleaning growth plan'], lang: 'en', attribution: getAttribution(),
       }) });
       const result = await response.json();
@@ -39,16 +37,13 @@ export function GrowthForm({ callbackRequest = 0, chatContext, clearChatContext 
   return <form className="cl-form" onSubmit={submit} onFocus={() => { if (!started.current) { started.current = true; trackMetric('form_start', 'en', 'form', 'commercial_cleaning'); } }}>
     <div className="cl-form-heading"><h2>Get your cleaning growth plan.</h2><p>A short conversation. A clear next step.</p></div>
     {chatContext && <p className="cl-chat-summary">Your chat choices will be included. <button type="button" onClick={clearChatContext}>Remove them</button></p>}
-    <div className="cl-form-row"><label>Your name<input required name="name" autoComplete="name" maxLength={120} /></label><label>Company name<input required name="company" autoComplete="organization" maxLength={160} /></label></div>
-    <label>Email<input required name="email" type="email" autoComplete="email" maxLength={254} placeholder="you@company.com" /></label>
-    <label>What kind of cleaning business do you run?<select required value={mix} onChange={e => setMix(e.target.value)}><option value="">Choose your service mix</option><option value="commercial">Commercial cleaning</option><option value="mixed">Commercial and residential</option><option value="residential">Residential only</option><option value="other">I’m looking for a cleaner or a job</option></select></label>
-    {mix && !fit && <p className="cl-scope-note" role="status">This growth plan is for businesses with an active commercial cleaning operation. For other technology questions, you can <a href={waLink('en')}>contact Eduardo directly</a>.</p>}
     <fieldset><legend>How should we respond?</legend><div className="cl-radio-row"><label><input type="radio" name="channel" value="email" checked={channel === 'email'} onChange={() => setChannel('email')} /> Email me</label><label><input type="radio" name="channel" value="callback" checked={channel === 'callback'} onChange={() => setChannel('callback')} /> Call me</label></div></fieldset>
-    {channel === 'callback' && <label>Phone number<input required name="phone" type="tel" autoComplete="tel" maxLength={40} placeholder="(305) 555-0123" /><span className="cl-field-note">A team member will call about this request.</span></label>}
+    <label>Full name<input required name="name" autoComplete="name" maxLength={120} /></label>
+    {channel === 'callback' ? <label>Phone number<input key="phone" required name="phone" type="tel" autoComplete="tel" maxLength={40} placeholder="(305) 555-0123" /><span className="cl-field-note">A team member will call about this request.</span></label> : <label>Email<input key="email" required name="email" type="email" autoComplete="email" maxLength={254} placeholder="you@company.com" /></label>}
     <div className="cl-trap" aria-hidden="true"><label>Leave this empty<input name="website_trap" tabIndex={-1} autoComplete="off" /></label></div>
     <p className="cl-consent">We’ll use your details to respond to this request. <a href="#privacy" onClick={() => document.getElementById('privacy')?.setAttribute('open', '')}>Privacy</a>.</p>
     {error && <p className="cl-error" role="alert">{error}</p>}
-    <button className="cl-button cl-button-full" type="submit" disabled={state === 'saving' || Boolean(mix && !fit)}>{state === 'saving' ? 'Sending your request…' : 'Request My Growth Plan'}<Arrow /></button>
+    <button className="cl-button cl-button-full" type="submit" disabled={state === 'saving'}>{state === 'saving' ? 'Sending your request…' : channel === 'callback' ? 'Request My Call' : 'Email Me My Next Step'}<Arrow /></button>
     {state === 'error' && <a className="cl-form-alternative" href={waLink('en')} target="_blank" rel="noopener noreferrer" onClick={() => trackMetric('whatsapp_click', 'en', 'whatsapp', 'commercial_cleaning')}>Chat with Eduardo on WhatsApp ↗</a>}
   </form>;
 }
@@ -75,7 +70,7 @@ export default function CommercialCleaning() {
         <h1 id="cleaning-title">Still chasing your next <em>cleaning contract?</em></h1>
         <p className="cl-description">Bring prospects to your site. Turn inquiries into walkthroughs with AI Agents and your team.</p>
         <CleaningFlow />
-        <a className="cl-demo-link" href="#how-it-works">See a sample inquiry in action <span aria-hidden="true">↓</span></a>
+        <a className="cl-demo-link" href="#how-it-works">Watch the customer journey <span aria-hidden="true">↓</span></a>
         <a className="cl-mobile-cta" href="#growth-plan">Get My Growth Plan <Arrow /></a>
         <div className="cl-contact-options">
           <button id="cleaning-chat-button" type="button" onClick={() => setChatRequest(n => n + 1)}>Chat now <Arrow /></button>

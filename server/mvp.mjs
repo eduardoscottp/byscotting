@@ -67,12 +67,13 @@ export async function saveLead(body, { env = process.env, fetch: request = globa
   if (!submission || !/^[a-f0-9-]{36}$/i.test(submission) || name === null || detail === null || (!email && !phone) || chips.some(c => !c)) return failure(400, 'invalid_inquiry');
   let cleaning;
   if (body.landing === 'commercial_cleaning') {
-    const company = text(body.company, 160);
-    const callback = text(body.phone ?? '', 40);
-    if (!company || !name || !email || !['commercial', 'mixed'].includes(body.service_mix) || !['email', 'callback'].includes(body.response_channel)) return failure(400, 'invalid_inquiry');
+    const company = text(body.company ?? '', 160);
+    const callback = text(phone ? contact : body.phone ?? '', 40);
+    if (company === null || !name || (body.service_mix !== undefined && !['commercial', 'mixed'].includes(body.service_mix)) || !['email', 'callback'].includes(body.response_channel)) return failure(400, 'invalid_inquiry');
+    if (body.response_channel === 'email' && !email) return failure(400, 'invalid_inquiry');
     if (body.response_channel === 'callback' && (!callback || !/^[+\d() .-]+$/.test(callback) || callback.replace(/\D/g, '').length < 8 || callback.replace(/\D/g, '').length > 15)) return failure(400, 'invalid_inquiry');
     if (body.website_trap) return failure(400, 'invalid_inquiry');
-    cleaning = { landing: 'commercial_cleaning', company, service_mix: body.service_mix, response_channel: body.response_channel, ...(body.response_channel === 'callback' ? { phone: callback } : {}) };
+    cleaning = { landing: 'commercial_cleaning', ...(company ? { company } : {}), ...(body.service_mix ? { service_mix: body.service_mix } : {}), response_channel: body.response_channel, ...(body.response_channel === 'callback' ? { phone: callback } : {}) };
   }
   const messages = body.share_chat === true ? cleanMessages(body.messages) : undefined;
   if (body.share_chat === true && !messages) return failure(400, 'invalid_messages');
@@ -96,7 +97,8 @@ export async function saveLead(body, { env = process.env, fetch: request = globa
     'Scotting Attribution': JSON.stringify(attribution),
     ...(email ? { Email: contact } : { Phone: contact }),
     ...(name ? { 'Contact First Name': name.split(/\s+/)[0], 'Contact Last Name': name.split(/\s+/).slice(1).join(' ') } : {}),
-    ...(cleaning ? { 'Business Name': cleaning.company, ...(cleaning.phone ? { Phone: cleaning.phone } : {}) } : {}),
+    ...(cleaning?.company ? { 'Business Name': cleaning.company } : {}),
+    ...(cleaning?.phone ? { Phone: cleaning.phone } : {}),
   };
   try {
     const response = await request(`https://api.airtable.com/v0/${encodeURIComponent(env.AIRTABLE_BASE_ID)}/${encodeURIComponent(env.AIRTABLE_LEADS_TABLE_ID)}`, {

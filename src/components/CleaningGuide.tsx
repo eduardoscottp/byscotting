@@ -30,7 +30,7 @@ export default function CleaningGuide({ onReply, onHandoff, onClose }: Props) {
       return;
     }
     setStep(step + 1);
-    onReply(answer, step + 1 < questions.length ? questions[step + 1].question : 'Ready. Continue to the form to add your name, company and contact details. Nothing has been saved yet.');
+    onReply(answer, step + 1 < questions.length ? questions[step + 1].question : 'Ready. Continue to the form to add your full name and your email or phone number. Nothing has been saved yet.');
   }
   function handoff() {
     onHandoff?.({ serviceMix: answers.service === 'Commercial and residential' ? 'mixed' : 'commercial', channel: answers.channel === 'Call me' ? 'callback' : 'email', summary: 'Chat qualification (self-reported; not verified):\n' + questions.map(q => `${q.question} ${answers[q.key]}`).join('\n') });

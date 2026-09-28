@@ -29,18 +29,19 @@ function harness(fetch, chatContext) {
   };
   vm.runInNewContext(js, context);
   const render = () => { cursor = 0; return context.exports.GrowthForm({ chatContext }); };
-  const mix = value => nodes(render()).find(node => node.type === 'select').props.onChange({ target: { value } });
-  const submit = () => render().props.onSubmit({ preventDefault() {}, currentTarget: { name: 'Test Owner', email: 'test@example.invalid', company: 'TEST ONLY Cleaning', detail: 'Integration test' } });
-  return { render, mix, submit, metrics };
+  const channel = value => nodes(render()).find(node => node.type === 'input' && node.props.value === value).props.onChange();
+  const submit = () => render().props.onSubmit({ preventDefault() {}, currentTarget: { name: 'Test Owner', email: 'test@example.invalid', phone: '+1 305 555 0123' } });
+  return { render, channel, submit, metrics };
 }
 
 test('cleaning form sends campaign details and records a conversion only after acceptance', async () => {
   let payload;
   const form = harness(async (_, options) => { payload = JSON.parse(options.body); return { ok: true, json: async () => ({ accepted: true }) }; });
-  form.mix('commercial');
   await form.submit();
   assert.equal(form.render().props.role, 'status');
-  assert.equal(payload.company, 'TEST ONLY Cleaning');
+  assert.equal(payload.company, undefined);
+  assert.equal(payload.service_mix, undefined);
+  assert.equal(payload.contact, 'test@example.invalid');
   assert.equal(payload.landing, 'commercial_cleaning');
   assert.equal(payload.attribution.first.utm_campaign, 'cleaning-test');
   assert.deepEqual(form.metrics, [['generate_lead', 'en', 'form', 'commercial_cleaning']]);
@@ -48,25 +49,34 @@ test('cleaning form sends campaign details and records a conversion only after a
 
 test('a 200 response without acceptance keeps the form and does not count a conversion', async () => {
   const form = harness(async () => ({ ok: true, json: async () => ({ accepted: false }) }));
-  form.mix('mixed');
   await form.submit();
   assert.equal(form.render().type, 'form');
   assert.match(nodes(form.render()).find(node => node.props.role === 'alert').props.children, /not been saved/);
   assert.equal(form.metrics.length, 0);
 });
 
-test('out-of-scope service mix prevents transmission', async () => {
-  let calls = 0;
-  const form = harness(async () => { calls++; });
-  form.mix('residential');
+test('callback mode needs only full name and phone and sends no email', async () => {
+  let payload;
+  const form = harness(async (_, options) => { payload = JSON.parse(options.body); return { ok: true, json: async () => ({ accepted: true }) }; });
+  form.channel('callback');
+  const required = nodes(form.render()).filter(n => n.type === 'input' && n.props.required).map(n => n.props.name);
+  assert.deepEqual(required, ['name', 'phone']);
   await form.submit();
-  assert.equal(calls, 0);
+  assert.equal(payload.contact, '+1 305 555 0123');
+  assert.equal(payload.response_channel, 'callback');
+  assert.equal(payload.company, undefined);
+  assert.equal(payload.email, undefined);
+});
+test('email mode needs only full name and email', () => {
+  const form = harness(async () => {});
+  const required = nodes(form.render()).filter(n => n.type === 'input' && n.props.required).map(n => n.props.name);
+  assert.deepEqual(required, ['name', 'email']);
 });
 
 test('explicit chat handoff saves only the selected summary and never the full transcript', async () => {
   let payload;
   const form = harness(async (_, options) => { payload = JSON.parse(options.body); return { ok: true, json: async () => ({ accepted: true }) }; }, { serviceMix: 'commercial', channel: 'email', summary: 'Self-reported: Miami-Dade; more inquiries; capacity available.' });
-  form.mix('commercial'); await form.submit();
+  await form.submit();
   assert.match(payload.detail, /Self-reported: Miami-Dade/);
   assert.equal(payload.messages, undefined);
   assert.equal(payload.share_chat, undefined);
