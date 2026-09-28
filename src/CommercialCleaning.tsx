@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState, type FormEvent } from 'react';
 import ChatWidget from '@/components/ChatWidget';
 import CleaningDemo from '@/components/CleaningDemo';
+import CleaningFlow from '@/components/CleaningFlow';
 import type { CleaningHandoff } from '@/components/CleaningGuide';
 import { getAttribution, initializeAnalytics, initializeAttribution, trackMetric } from '@/lib/attribution';
 import { waLink } from '@/copy';
@@ -72,8 +73,8 @@ export default function CommercialCleaning() {
       <section className="cl-pitch" aria-labelledby="cleaning-title">
         <p className="cl-eyebrow">FOR COMMERCIAL CLEANING OWNERS IN MIAMI-DADE</p>
         <h1 id="cleaning-title">Still chasing your next <em>cleaning contract?</em></h1>
-        <p className="cl-description">Connect targeted ads, a focused landing page and AI Agents that help answer and qualify inquiries—so your team can focus on walkthroughs and winning the work.</p>
-        <ol className="cl-mini-process" aria-label="What Scotting connects"><li><span>01</span><strong>Attract</strong><small>Ads + landing page</small></li><li><span>02</span><strong>Respond</strong><small>AI + your team</small></li><li><span>03</span><strong>Follow up</strong><small>Walkthrough + quote</small></li></ol>
+        <p className="cl-description">Bring prospects to your site. Turn inquiries into walkthroughs with AI Agents and your team.</p>
+        <CleaningFlow />
         <a className="cl-demo-link" href="#how-it-works">See a sample inquiry in action <span aria-hidden="true">↓</span></a>
         <a className="cl-mobile-cta" href="#growth-plan">Get My Growth Plan <Arrow /></a>
         <div className="cl-contact-options">
