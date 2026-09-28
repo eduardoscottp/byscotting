@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import googleAds from '@/assets/google-ads.svg';
 import aiAgent from '@/assets/ai-agent.svg';
 import '@/cleaning-simulation.css';
@@ -25,24 +25,34 @@ function Scene({ step }: { step: number }) {
 
 export default function CleaningDemo() {
   const [step, setStep] = useState(0);
-  const [playing, setPlaying] = useState(false);
+  const [playing, setPlaying] = useState(() => !window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+  const [visible, setVisible] = useState(false);
+  const [restart, setRestart] = useState(0);
+  const player = useRef<HTMLDivElement>(null);
   useEffect(() => {
-    if (!playing) return;
-    if (step === steps.length - 1) { setPlaying(false); return; }
-    const timer = window.setTimeout(() => setStep(step + 1), 5500);
+    const observer = new IntersectionObserver(([entry]) => setVisible(entry.isIntersecting), { threshold: 0.15 });
+    if (player.current) observer.observe(player.current);
+    return () => observer.disconnect();
+  }, []);
+  useEffect(() => {
+    if (!playing || !visible) return;
+    const timer = window.setTimeout(() => {
+      if (step === steps.length - 1) setPlaying(false);
+      else setStep(step + 1);
+    }, 5500);
     return () => window.clearTimeout(timer);
-  }, [playing, step]);
-  function select(next: number) { setPlaying(false); setStep(next); }
+  }, [playing, visible, step, restart]);
+  function select(next: number) { setStep(next); setRestart(value => value + 1); setPlaying(true); }
   return <section className="cl-demo-section" id="how-it-works" aria-labelledby="demo-title">
     <div className="cl-wrap">
-      <div className="cl-demo-heading"><div><p className="cl-eyebrow">WATCH THE CUSTOMER JOURNEY</p><h2 id="demo-title">From a Google search to your next sales call.</h2><p>See how the pieces work together for a cleaning company.</p></div><span className="cl-sample-badge">Animated simulation · sample data</span></div>
+      <div className="cl-demo-heading"><h2 id="demo-title">Let’s turn a simple Google search into your next client.</h2></div>
       <div className="cl-sim-layout">
         <div className="cl-sim-timeline" aria-label="Simulation steps">{steps.map((item, index) => <button key={item.label} type="button" aria-current={step === index ? 'step' : undefined} className={step === index ? 'is-active' : index < step ? 'is-done' : ''} onClick={() => select(index)}><span>{index < step ? '✓' : `0${index + 1}`}</span>{item.label}</button>)}</div>
-        <div className="cl-sim-player">
+        <div ref={player} className="cl-sim-player">
           <div className="cl-sim-window"><span aria-hidden="true">● ● ●</span><span>Customer journey preview</span><span>DEMO</span></div>
-          <div key={step} className="cl-sim-scene"><Scene step={step} /></div>
+          <div key={`${step}-${restart}`} className="cl-sim-scene"><Scene step={step} /></div>
           <div className="cl-sim-caption" aria-live="polite" aria-atomic="true"><span>STEP {step + 1} OF {steps.length}</span><h3>{steps[step].title}</h3><p>{steps[step].detail}</p></div>
-          <div className="cl-sim-controls"><button type="button" className="cl-sim-play" onClick={() => { if (step === steps.length - 1) setStep(0); setPlaying(!playing); }}>{playing ? 'Pause' : step === steps.length - 1 ? 'Replay' : 'Play simulation'} <span aria-hidden="true">{playing ? 'Ⅱ' : '▶'}</span></button><div><button type="button" disabled={step === 0} onClick={() => select(step - 1)} aria-label="Previous simulation step">←</button><button type="button" disabled={step === steps.length - 1} onClick={() => select(step + 1)} aria-label="Next simulation step">→</button></div></div>
+          <div className="cl-sim-controls"><button type="button" className="cl-sim-play" onClick={() => { if (!playing && step === steps.length - 1) select(0); else setPlaying(!playing); }}>{playing ? 'Pause' : step === steps.length - 1 ? 'Replay' : 'Play simulation'} <span aria-hidden="true">{playing ? 'Ⅱ' : '▶'}</span></button><div><button type="button" disabled={step === 0} onClick={() => select(step - 1)} aria-label="Previous simulation step">←</button><button type="button" disabled={step === steps.length - 1} onClick={() => select(step + 1)} aria-label="Next simulation step">→</button></div></div>
         </div>
       </div>
       <div className="cl-demo-bottom"><p>Illustrative workflow, not a client result. No real messages, bookings or CRM records are created. AI booking requires connected tools; your team owns the sale. Results vary.</p><a href="#growth-plan">Build my customer journey <span aria-hidden="true">↗</span></a></div>

@@ -7,6 +7,7 @@ import { contactChannel, cleaningHeadlines, selectCleaningHeadline, type Cleanin
 import { getAttribution, initializeAnalytics, initializeAttribution, trackMetric } from '@/lib/attribution';
 import { waLink } from '@/copy';
 import logo from '@/assets/scotting-wordmark-blue.png';
+import eduardoHero from '@/assets/eduardo-hero-oficina.webp';
 import '@/cleaning.css';
 
 export function GrowthForm({ chatContext, clearChatContext, headline = 'default' }: { chatContext?: CleaningHandoff; clearChatContext?: () => void; headline?: CleaningHeadlineKey } = {}) {
@@ -88,9 +89,12 @@ export default function CommercialCleaning() {
         <div className="cl-implementation"><p className="cl-implementation-label">HOW WE HELP BRING CUSTOMERS TO YOU</p><CleaningFlow /><a className="cl-demo-link" href="#how-it-works">Watch it in action <span aria-hidden="true">↓</span></a></div>
       </section>
       <CleaningDemo />
-      <section className="cl-wrap cl-reassurance" aria-label="Before you commit"><div><strong>Start with what you have.</strong><p>We review your current tools first.</p></div><div><strong>See the costs upfront.</strong><p>Scope, ads and software priced separately.</p></div><div><strong>Keep a person in control.</strong><p>Your team handles quotes and sales decisions.</p></div></section>
+      <section className="cl-wrap cl-about" aria-labelledby="about-title">
+        <img src={eduardoHero} alt="Eduardo Scott of Scotting in his Miami office" loading="lazy" width="800" height="640" />
+        <div><h2 id="about-title">Who we are.</h2><p>I’m <strong>Eduardo Scott</strong>, a Miami-based engineer with 15 years of experience in software, including a decade working with data and leading technology teams.</p><p>At Scotting, I bring that experience to your business. You work directly with me to connect your landing page, AI Agents and follow-up into a practical system for reaching new customers.</p><a className="cl-about-link" href="https://byscotting.com/">Visit our website <span aria-hidden="true">↗</span></a></div>
+      </section>
     </main>
-    <footer className="cl-wrap cl-footer"><p>Scope and pricing agreed first. Advertising and software costs are separate.</p><details id="privacy"><summary>Privacy & contact</summary><div>
+    <footer className="cl-wrap cl-footer"><details id="privacy"><summary>Privacy & contact</summary><div>
       <p>Scotting stores the details you submit in Airtable to review and respond to your request. We detect whether you provided an email address or phone number. This does not enroll you in SMS or AI voice marketing.</p>
       <p>The guided chat uses prepared answers in your browser. If AI chat is enabled, it identifies itself and explains that messages go to our AI provider. Qualification choices are included only when you choose to use them in the form; full chat transcripts are not automatically attached.</p>
       <p>Google Analytics measures page activity and campaign interactions. Our custom events exclude names, contact details and form text. Campaign identifiers and the headline version may accompany your inquiry.</p>
