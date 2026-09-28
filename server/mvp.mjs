@@ -73,7 +73,11 @@ export async function saveLead(body, { env = process.env, fetch: request = globa
     if (body.response_channel === 'email' && !email) return failure(400, 'invalid_inquiry');
     if (body.response_channel === 'callback' && (!callback || !/^[+\d() .-]+$/.test(callback) || callback.replace(/\D/g, '').length < 8 || callback.replace(/\D/g, '').length > 15)) return failure(400, 'invalid_inquiry');
     if (body.website_trap) return failure(400, 'invalid_inquiry');
+    if (body.request_kind !== undefined && !['contact', 'demo'].includes(body.request_kind)) return failure(400, 'invalid_inquiry');
+    if (body.headline_variant !== undefined && !['default', 'more-leads', 'follow-up', 'ai-agents', 'walkthroughs'].includes(body.headline_variant)) return failure(400, 'invalid_inquiry');
     cleaning = { landing: 'commercial_cleaning', ...(company ? { company } : {}), ...(body.service_mix ? { service_mix: body.service_mix } : {}), response_channel: body.response_channel, ...(body.response_channel === 'callback' ? { phone: callback } : {}) };
+    if (body.request_kind) cleaning.request_kind = body.request_kind;
+    if (body.headline_variant) cleaning.headline_variant = body.headline_variant;
   }
   const messages = body.share_chat === true ? cleanMessages(body.messages) : undefined;
   if (body.share_chat === true && !messages) return failure(400, 'invalid_messages');

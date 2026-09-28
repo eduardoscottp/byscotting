@@ -3,95 +3,100 @@ import ChatWidget from '@/components/ChatWidget';
 import CleaningDemo from '@/components/CleaningDemo';
 import CleaningFlow from '@/components/CleaningFlow';
 import type { CleaningHandoff } from '@/components/CleaningGuide';
+import { contactChannel, cleaningHeadlines, selectCleaningHeadline, type CleaningHeadlineKey } from '@/lib/cleaningCampaign';
 import { getAttribution, initializeAnalytics, initializeAttribution, trackMetric } from '@/lib/attribution';
 import { waLink } from '@/copy';
 import logo from '@/assets/scotting-wordmark-blue.png';
-import portrait from '@/assets/eduardo-scott-ingeniero-miami.webp';
 import '@/cleaning.css';
 
-function Arrow() { return <span aria-hidden="true">↗</span>; }
-export function GrowthForm({ callbackRequest = 0, chatContext, clearChatContext }: { callbackRequest?: number; chatContext?: CleaningHandoff; clearChatContext?: () => void } = {}) {
-  const [channel, setChannel] = useState('email');
+export function GrowthForm({ chatContext, clearChatContext, headline = 'default' }: { chatContext?: CleaningHandoff; clearChatContext?: () => void; headline?: CleaningHeadlineKey } = {}) {
   const [state, setState] = useState<'idle' | 'saving' | 'saved' | 'error'>('idle');
   const [error, setError] = useState('');
+  const [submittedKind, setSubmittedKind] = useState('contact');
   const id = useRef(crypto.randomUUID());
   const started = useRef(false);
-  useEffect(() => { if (callbackRequest > 0) setChannel('callback'); }, [callbackRequest]);
-  useEffect(() => { if (chatContext) setChannel(chatContext.channel); }, [chatContext]);
   async function submit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     if (state === 'saving') return;
     const fields = new FormData(e.currentTarget);
-    setState('saving'); setError('');
+    const name = String(fields.get('name') || '').trim();
+    const contact = String(fields.get('contact') || '').trim();
+    const channel = contactChannel(contact);
+    if (!name || !channel) {
+      setState('error');
+      setError(!name ? 'Please enter your full name.' : 'Enter a valid email address or phone number, including the area code.');
+      return;
+    }
+    const submitter = (e.nativeEvent as SubmitEvent).submitter as HTMLButtonElement | null;
+    const requestKind = submitter?.value === 'demo' ? 'demo' : 'contact';
+    setSubmittedKind(requestKind); setState('saving'); setError('');
     try {
       const response = await fetch(import.meta.env.VITE_FORM_ENDPOINT || '/api/leads', { method: 'POST', headers: { 'Content-Type': 'application/json' }, signal: AbortSignal.timeout(20000), body: JSON.stringify({
-        submission_id: id.current, name: fields.get('name'), contact: fields.get(channel === 'callback' ? 'phone' : 'email'), ...(chatContext ? { service_mix: chatContext.serviceMix } : {}), response_channel: channel,
-        detail: chatContext?.summary || '', website_trap: fields.get('website_trap') || '', landing: 'commercial_cleaning', chips: ['Commercial cleaning growth plan'], lang: 'en', attribution: getAttribution(),
+        submission_id: id.current, name, contact, ...(chatContext ? { service_mix: chatContext.serviceMix } : {}), response_channel: channel,
+        request_kind: requestKind === 'demo' ? 'demo' : 'contact', headline_variant: headline,
+        detail: chatContext?.summary || '', website_trap: fields.get('website_trap') || '', landing: 'commercial_cleaning', chips: [requestKind === 'demo' ? 'Commercial cleaning demo' : 'Commercial cleaning growth plan'], lang: 'en', attribution: getAttribution(),
       }) });
       const result = await response.json();
       if (!response.ok || result.accepted !== true) throw new Error('not_saved');
       setState('saved'); trackMetric('generate_lead', 'en', 'form', 'commercial_cleaning');
-    } catch { setState('error'); setError('Your request has not been saved. Please try again, or contact Eduardo using the link below.'); }
+    } catch { setState('error'); setError('Your request has not been saved. Please try again, or contact Eduardo on WhatsApp.'); }
   }
-  if (state === 'saved') return <div className="cl-success" role="status"><span className="cl-check">✓</span><p className="cl-eyebrow">REQUEST RECEIVED</p><h2>Let’s find your next priority.</h2><p>Your details have been saved for Eduardo to review. He’ll respond through your selected contact method.</p><p className="cl-small">A request is not a confirmed appointment. We’ll agree on a time together.</p></div>;
-  return <form className="cl-form" onSubmit={submit} onFocus={() => { if (!started.current) { started.current = true; trackMetric('form_start', 'en', 'form', 'commercial_cleaning'); } }}>
-    <div className="cl-form-heading"><h2>Get your cleaning growth plan.</h2><p>A short conversation. A clear next step.</p></div>
-    {chatContext && <p className="cl-chat-summary">Your chat choices will be included. <button type="button" onClick={clearChatContext}>Remove them</button></p>}
-    <fieldset><legend>How should we respond?</legend><div className="cl-radio-row"><label><input type="radio" name="channel" value="email" checked={channel === 'email'} onChange={() => setChannel('email')} /> Email me</label><label><input type="radio" name="channel" value="callback" checked={channel === 'callback'} onChange={() => setChannel('callback')} /> Call me</label></div></fieldset>
-    <label>Full name<input required name="name" autoComplete="name" maxLength={120} /></label>
-    {channel === 'callback' ? <label>Phone number<input key="phone" required name="phone" type="tel" autoComplete="tel" maxLength={40} placeholder="(305) 555-0123" /><span className="cl-field-note">A team member will call about this request.</span></label> : <label>Email<input key="email" required name="email" type="email" autoComplete="email" maxLength={254} placeholder="you@company.com" /></label>}
+  if (state === 'saved') return <div className="cl-dock-success" role="status"><span aria-hidden="true">✓</span><div><strong>{submittedKind === 'demo' ? 'Demo request received.' : 'Request received.'}</strong><p>Eduardo will follow up using the contact you provided. A meeting time is agreed separately.</p></div></div>;
+  return <form className="cl-dock-form" onSubmit={submit} onFocus={() => { if (!started.current) { started.current = true; trackMetric('form_start', 'en', 'form', 'commercial_cleaning'); } }}>
+    <div className="cl-dock-fields">
+      <label>Full name<input id="cleaning-contact-name" required name="name" autoComplete="name" maxLength={120} placeholder="Your full name" /></label>
+      <label>Phone number or email<input required name="contact" type="text" autoComplete="off" autoCapitalize="none" spellCheck={false} maxLength={254} placeholder="Phone or email" aria-describedby={error ? 'cleaning-form-error' : undefined} /></label>
+      <button className="cl-dock-submit" type="submit" name="request_kind" value="contact" disabled={state === 'saving'}>{state === 'saving' ? 'Sending…' : 'Contact me'} <span aria-hidden="true">↗</span></button>
+      <button className="cl-dock-demo" type="submit" name="request_kind" value="demo" disabled={state === 'saving'}>Request a demo <span aria-hidden="true">▶</span></button>
+    </div>
     <div className="cl-trap" aria-hidden="true"><label>Leave this empty<input name="website_trap" tabIndex={-1} autoComplete="off" /></label></div>
-    <p className="cl-consent">We’ll use your details to respond to this request. <a href="#privacy" onClick={() => document.getElementById('privacy')?.setAttribute('open', '')}>Privacy</a>.</p>
-    {error && <p className="cl-error" role="alert">{error}</p>}
-    <button className="cl-button cl-button-full" type="submit" disabled={state === 'saving'}>{state === 'saving' ? 'Sending your request…' : channel === 'callback' ? 'Request My Call' : 'Email Me My Next Step'}<Arrow /></button>
-    {state === 'error' && <a className="cl-form-alternative" href={waLink('en')} target="_blank" rel="noopener noreferrer" onClick={() => trackMetric('whatsapp_click', 'en', 'whatsapp', 'commercial_cleaning')}>Chat with Eduardo on WhatsApp ↗</a>}
+    <div className="cl-dock-notes"><p>We’ll call or email about your request. <a href="#privacy" onClick={() => document.getElementById('privacy')?.setAttribute('open', '')}>Privacy</a>.</p>{chatContext && <p>Chat choices included. <button type="button" onClick={clearChatContext}>Remove</button></p>}</div>
+    {error && <p id="cleaning-form-error" className="cl-dock-error" role="alert">{error}</p>}
+    {state === 'error' && error.startsWith('Your request') && <a className="cl-dock-alternative" href={waLink('en')} target="_blank" rel="noopener noreferrer">Contact Eduardo on WhatsApp ↗</a>}
   </form>;
 }
 
 export default function CommercialCleaning() {
   const [chatRequest, setChatRequest] = useState(0);
-  const [callbackRequest, setCallbackRequest] = useState(0);
   const [chatContext, setChatContext] = useState<CleaningHandoff>();
+  const [headline] = useState(() => selectCleaningHeadline(window.location.search));
+  const copy = cleaningHeadlines[headline];
+  const page = useRef<HTMLDivElement>(null);
+  const dock = useRef<HTMLElement>(null);
+  useEffect(() => {
+    const element = dock.current;
+    if (!element) return;
+    const resize = () => page.current?.style.setProperty('--cl-dock-height', `${element.getBoundingClientRect().height}px`);
+    resize();
+    const observer = new ResizeObserver(resize); observer.observe(element);
+    return () => observer.disconnect();
+  }, []);
   useEffect(() => {
     initializeAttribution(import.meta.env.VITE_ATTRIBUTION_STORAGE === 'true');
     initializeAnalytics(import.meta.env.VITE_GA_MEASUREMENT_ID);
     document.documentElement.lang = 'en';
     document.title = 'Marketing for Commercial Cleaning Companies | Scotting';
-    const description = 'Connect your cleaning company’s marketing, inquiries and follow-up. Get a practical growth plan for your Miami-Dade business.';
-    document.querySelector('meta[name="description"]')?.setAttribute('content', description);
+    document.querySelector('meta[name="description"]')?.setAttribute('content', copy.subtitle);
     document.querySelector('link[rel="canonical"]')?.setAttribute('href', `${window.location.origin}/comercial_cleaning`);
-  }, []);
-  return <div className="cleaning-page">
+  }, [copy.subtitle]);
+  return <div ref={page} className="cleaning-page">
     <a className="cl-skip" href="#main">Skip to content</a>
-    <header className="cl-header cl-wrap"><img src={logo} alt="Scotting" width="150" height="42" /><a href="#growth-plan" onClick={() => setCallbackRequest(n => n + 1)}>Request a call <Arrow /></a></header>
-    <main id="main"><div className="cl-wrap cl-main">
-      <section className="cl-pitch" aria-labelledby="cleaning-title">
-        <p className="cl-eyebrow">FOR COMMERCIAL CLEANING OWNERS IN MIAMI-DADE</p>
-        <h1 id="cleaning-title">Still chasing your next <em>cleaning contract?</em></h1>
-        <p className="cl-description">Bring prospects to your site. Turn inquiries into walkthroughs with AI Agents and your team.</p>
-        <CleaningFlow />
-        <a className="cl-demo-link" href="#how-it-works">Watch the customer journey <span aria-hidden="true">↓</span></a>
-        <a className="cl-mobile-cta" href="#growth-plan">Get My Growth Plan <Arrow /></a>
-        <div className="cl-contact-options">
-          <button id="cleaning-chat-button" type="button" onClick={() => setChatRequest(n => n + 1)}>Chat now <Arrow /></button>
-          <a href="#growth-plan" onClick={() => setCallbackRequest(n => n + 1)}>Request a call <Arrow /></a>
-        </div>
-        <div className="cl-person"><img src={portrait} width="38" height="38" alt="Eduardo Scott" /><p><strong>Built with Eduardo Scott</strong><span>Your local contact in Miami</span></p></div>
+    <header className="cl-header cl-wrap"><img src={logo} alt="Scotting" width="150" height="42" /><button id="cleaning-chat-button" type="button" onClick={() => setChatRequest(n => n + 1)}>Chat with us <span aria-hidden="true">↗</span></button></header>
+    <main id="main">
+      <section className="cl-hero cl-wrap" aria-labelledby="cleaning-title">
+        <div className="cl-hero-copy"><h1 id="cleaning-title">{copy.title}<em>{copy.emphasis}</em></h1><p>{copy.subtitle}</p></div>
+        <div className="cl-implementation"><p className="cl-implementation-label">HOW WE HELP BRING CUSTOMERS TO YOU</p><CleaningFlow /><a className="cl-demo-link" href="#how-it-works">Watch it in action <span aria-hidden="true">↓</span></a></div>
       </section>
-      <section id="growth-plan" className="cl-form-panel" aria-label="Request your cleaning growth plan"><GrowthForm callbackRequest={callbackRequest} chatContext={chatContext} clearChatContext={() => setChatContext(undefined)} /></section>
-    </div>
-    <section className="cl-wrap cl-reassurance" aria-label="Before you commit"><div><strong>Start with what you have.</strong><p>We review your current tools first.</p></div><div><strong>See the costs upfront.</strong><p>Scope, ads and software priced separately.</p></div><div><strong>Keep a person in control.</strong><p>Your team handles quotes and sales decisions.</p></div></section>
-    <CleaningDemo />
+      <CleaningDemo />
+      <section className="cl-wrap cl-reassurance" aria-label="Before you commit"><div><strong>Start with what you have.</strong><p>We review your current tools first.</p></div><div><strong>See the costs upfront.</strong><p>Scope, ads and software priced separately.</p></div><div><strong>Keep a person in control.</strong><p>Your team handles quotes and sales decisions.</p></div></section>
     </main>
-    <footer className="cl-wrap cl-footer">
-      <p>Scope and pricing agreed first. Advertising and software costs are separate.</p>
-      <details id="privacy"><summary>Privacy & contact</summary><div>
-        <p>Scotting stores the details you submit in Airtable to review and respond to your request by your chosen channel. This does not enroll you in SMS or AI voice marketing.</p>
-        <p>The guided chat uses prepared answers in your browser. If AI chat is enabled, it identifies itself and explains that messages go to our AI provider. Qualification choices are included only when you choose to use them in the form; full chat transcripts are not automatically attached.</p>
-        <p>Google Analytics measures page activity and campaign interactions. Our custom events exclude names, contact details and form text. Campaign identifiers may accompany your inquiry.</p>
-        <p>To correct or remove your details or stop further contact, <a href={waLink('en')} target="_blank" rel="noopener noreferrer">contact Eduardo on WhatsApp</a>.</p>
-      </div></details>
-    </footer>
+    <footer className="cl-wrap cl-footer"><p>Scope and pricing agreed first. Advertising and software costs are separate.</p><details id="privacy"><summary>Privacy & contact</summary><div>
+      <p>Scotting stores the details you submit in Airtable to review and respond to your request. We detect whether you provided an email address or phone number. This does not enroll you in SMS or AI voice marketing.</p>
+      <p>The guided chat uses prepared answers in your browser. If AI chat is enabled, it identifies itself and explains that messages go to our AI provider. Qualification choices are included only when you choose to use them in the form; full chat transcripts are not automatically attached.</p>
+      <p>Google Analytics measures page activity and campaign interactions. Our custom events exclude names, contact details and form text. Campaign identifiers and the headline version may accompany your inquiry.</p>
+      <p>To correct or remove your details or stop further contact, <a href={waLink('en')} target="_blank" rel="noopener noreferrer">contact Eduardo on WhatsApp</a>.</p>
+    </div></details></footer>
+    <section ref={dock} id="growth-plan" className="cl-contact-dock" aria-label="Contact Scotting"><div className="cl-wrap"><GrowthForm chatContext={chatContext} clearChatContext={() => setChatContext(undefined)} headline={headline} /></div></section>
     <ChatWidget lang="en" context="commercial_cleaning" openRequest={chatRequest} onCleaningHandoff={setChatContext} />
   </div>;
 }

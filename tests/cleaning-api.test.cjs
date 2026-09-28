@@ -46,3 +46,15 @@ test('cleaning chat uses bounded vertical context and does not invent booking to
   assert.match(prompt, /Pricing follows a review/);
   assert.match(prompt, /no live booking tool/);
 });
+test('CRM retains demo intent and headline version while rejecting unknown values', async () => {
+  const { saveLead } = await import('../server/mvp.mjs');
+  let saved;
+  const result = await saveLead({ ...inquiry, request_kind: 'demo', headline_variant: 'follow-up' }, { env, fetch: async (_, init) => { saved = JSON.parse(JSON.parse(init.body).records[0].fields['Scotting Inquiry']); return { ok: true, json: async () => ({ records: [{ id: 'recTest' }] }) }; } });
+  assert.equal(result.status, 200);
+  assert.equal(saved.request_kind, 'demo');
+  assert.equal(saved.headline_variant, 'follow-up');
+  for (const changes of [{ request_kind: 'booked' }, { headline_variant: 'arbitrary text' }]) {
+    const invalid = await saveLead({ ...inquiry, ...changes }, { env, fetch: async () => { throw Error('must not send'); } });
+    assert.equal(invalid.status, 400);
+  }
+});
