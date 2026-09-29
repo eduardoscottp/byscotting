@@ -38,3 +38,20 @@ test('analytics initializes a Google tag only for a valid measurement ID', () =>
   assert.match(appended.src, /googletagmanager\.com\/gtag\/js\?id=G-0M55Y01EM0/);
   assert.equal(initializeAnalytics('not-an-id'), false);
 });
+
+test('Google tag commands use the Arguments protocol for configuration and events', () => {
+  const window = {};
+  const document = { createElement: () => ({}), head: { appendChild() {} } };
+  const { initializeAnalytics } = load({ window, document });
+  initializeAnalytics('G-0M55Y01EM0');
+  window.gtag('event', 'form_start', { landing_id: 'commercial_cleaning' });
+  for (const command of window.dataLayer) {
+    assert.equal(Object.prototype.toString.call(command), '[object Arguments]',
+      'gtag.js requires Arguments commands; arrays are handled as data-layer method calls');
+  }
+  assert.equal(window.dataLayer[0][0], 'js');
+  assert.deepEqual(Array.from(window.dataLayer[1]), ['config', 'G-0M55Y01EM0']);
+  assert.equal(window.dataLayer[2][1], 'form_start');
+  initializeAnalytics('G-0M55Y01EM0');
+  assert.equal(window.dataLayer.length, 3, 'reinitializing must not duplicate configuration');
+});

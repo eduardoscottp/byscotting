@@ -8,7 +8,7 @@ let analyticsMeasurementId: string | null = null;
 
 declare global {
   interface Window {
-    dataLayer?: unknown[][];
+    dataLayer?: unknown[];
     gtag?: (...args: unknown[]) => void;
   }
 }
@@ -18,7 +18,8 @@ export function initializeAnalytics(measurementId: string | undefined) {
   if (analyticsMeasurementId === measurementId) return true;
   analyticsMeasurementId = measurementId;
   window.dataLayer = window.dataLayer || [];
-  window.gtag = (...args: unknown[]) => window.dataLayer?.push(args);
+  // gtag.js recognizes Arguments commands; plain arrays use a different protocol.
+  window.gtag = function () { window.dataLayer?.push(arguments); };
   const script = document.createElement('script');
   script.async = true;
   script.src = `https://www.googletagmanager.com/gtag/js?id=${encodeURIComponent(measurementId)}`;
