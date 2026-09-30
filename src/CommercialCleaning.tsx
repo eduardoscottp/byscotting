@@ -85,9 +85,9 @@ export default function CommercialCleaning() {
     <main id="main">
       <section className="cl-hero cl-wrap" aria-labelledby="cleaning-title">
         <div className="cl-hero-copy"><h1 id="cleaning-title">{copy.title}<em>{copy.emphasis}</em></h1><p>{copy.subtitle}</p></div>
-        <div className="cl-implementation"><p className="cl-implementation-label">HOW WE HELP BRING CUSTOMERS TO YOU</p><CleaningFlow /><section id="growth-plan" className="cl-contact-inline" aria-label="Contact Scotting"><GrowthForm headline={headline} /></section><a className="cl-demo-link" href="#how-it-works">Watch it in action <span aria-hidden="true">↓</span></a></div>
+        <div className="cl-implementation"><p className="cl-implementation-label">HOW WE HELP BRING CUSTOMERS TO YOU</p><CleaningFlow /><a className="cl-demo-link" href="#how-it-works">Watch it in action <span aria-hidden="true">↓</span></a></div>
       </section>
-      <CleaningDemo />
+      <CleaningDemo><section id="growth-plan" className="cl-contact-inline" aria-label="Contact Scotting"><GrowthForm headline={headline} /></section></CleaningDemo>
       <section className="cl-wrap cl-about" aria-labelledby="about-title">
         <img src={eduardoHero} alt="Eduardo Scott of Scotting in his Miami office" loading="lazy" width="800" height="640" />
         <div><h2 id="about-title">Who we are.</h2><p>I’m <strong>Eduardo Scott</strong>, a Miami-based engineer with 15 years of experience in software, including a decade working with data and leading technology teams.</p><p>At Scotting, I bring that experience to your business. You work directly with me to connect your landing page, AI Agents and follow-up into a practical system for reaching new customers.</p><a className="cl-about-link" href="https://byscotting.com/">Visit our website <span aria-hidden="true">↗</span></a></div>

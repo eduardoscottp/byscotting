@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { waLink, type Lang } from '@/copy';
 import { getAttribution, trackMetric } from '@/lib/attribution';
+import eduardoPortrait from '@/assets/eduardo-hero-oficina.webp';
 
 type Message = { role: 'user' | 'assistant'; content: string };
 type Status = 'chat' | 'collecting' | 'confirmation_required' | 'saved' | 'booking_collecting' | 'booking_options' | 'booking_pending' | 'booked';
@@ -56,7 +57,6 @@ export default function ChatWidget({ lang, context = 'homepage', openRequest = 0
   const [error, setError] = useState('');
   const [status, setStatus] = useState<Status>('chat');
   const [saveUncertain, setSaveUncertain] = useState(false);
-  const [crmSaved, setCrmSaved] = useState(false);
   const [bookingAvailable, setBookingAvailable] = useState(false);
   const [slots, setSlots] = useState<Slot[]>([]);
   const [appointment, setAppointment] = useState<Appointment>();
@@ -83,8 +83,8 @@ export default function ChatWidget({ lang, context = 'homepage', openRequest = 0
   const meetUrl = appointmentLink(appointment?.meetUrl, 'meet.google.com');
   const calendarUrl = appointmentLink(appointment?.calendarUrl, 'calendar.google.com');
   const consent = es
-    ? 'Al confirmar, autorizas guardar tu nombre, contacto, empresa, web y resumen de la solicitud en Airtable únicamente para responder a tu solicitud, no para marketing futuro.'
-    : 'By confirming, you consent to storing your name, contact details, company, website and request summary in Airtable only to respond to your request, not for future marketing.';
+    ? 'Al confirmar, autorizas guardar tu nombre, contacto, empresa, web y resumen de la solicitud únicamente para responder a tu solicitud, no para marketing futuro.'
+    : 'By confirming, you consent to storing your name, contact details, company, website and request summary only to respond to your request, not for future marketing.';
   useEffect(() => {
     if (openRequest > 0) {
       setOpen(true);
@@ -98,9 +98,10 @@ export default function ChatWidget({ lang, context = 'homepage', openRequest = 0
   useEffect(() => { if (open && !busy && bookingFlow) bookingPanel.current?.scrollIntoView?.({ block: 'start' }); }, [open, busy, status, slots]);
 
   function close() { setOpen(false); toggle.current?.focus(); }
-  async function request(action?: Action, slot?: string) {
+  async function request(action?: Action, slot?: string, suggestedText?: string) {
     if (inFlight.current || busy) return;
     if (bookingUncertain.current && action !== 'check_booking') return;
+    if (suggestedText && (capturing || bookingFlow)) return;
     if (action === 'confirm_save' && status !== 'confirmation_required') return;
     if (action === 'start_capture' && (capturing || bookingFlow)) return;
     if (action === 'cancel_capture' && !capturing) return;
@@ -108,9 +109,9 @@ export default function ChatWidget({ lang, context = 'homepage', openRequest = 0
     if (action === 'book_slot' && (!bookingAvailable || status !== 'booking_options' || !slots.some(option => option.id === slot))) return;
     if (action === 'refresh_slots' && (!bookingAvailable || status !== 'booking_options')) return;
     if (action === 'check_booking' && !bookingUncertain.current) return;
-    const message = action ? undefined : draft.trim();
+    const message = action ? undefined : (suggestedText ?? draft).trim();
     if (!action && !message) return;
-    if (!action && draft.length > 1500) {
+    if (message && message.length > 1500) {
       setError(es ? 'Usa un máximo de 1500 caracteres por mensaje.' : 'Use no more than 1500 characters per message.'); return;
     }
     if (!action && !capturing && !bookingFlow && faqTurns.current >= maxFaqTurns) {
@@ -146,7 +147,6 @@ export default function ChatWidget({ lang, context = 'homepage', openRequest = 0
       // Commit only a complete, successful response. Failures keep the draft and the prior token for retries.
       state.current = result.state;
       recoverySlot.current = undefined;
-      setCrmSaved(result.crmSaved === true || result.status === 'saved');
       setBookingAvailable(result.bookingAvailable === true);
       setSlots(result.status === 'booking_options' ? result.slots as Slot[] : []);
       const receipt = result.status === 'booked' ? result.appointment as Appointment | undefined : undefined;
@@ -160,7 +160,7 @@ export default function ChatWidget({ lang, context = 'homepage', openRequest = 0
       if (result.crmSaved === true || result.status === 'saved') setSaveUncertain(false);
       const reply = result.reply;
       setMessages(previous => [...previous, ...(message ? [{ role: 'user' as const, content: message }] : []), { role: 'assistant', content: reply }]);
-      if (message) setDraft('');
+      if (message && !suggestedText) setDraft('');
       if ((result.crmSaved === true || result.status === 'saved') && !leadTracked.current) {
         leadTracked.current = true;
         trackMetric('generate_lead', lang, 'chat', context);
@@ -181,15 +181,15 @@ export default function ChatWidget({ lang, context = 'homepage', openRequest = 0
   const field = 'w-full rounded-xl border border-ink/20 bg-white px-3 py-2 text-sm text-ink focus:outline-2 focus:outline-blue';
   return (
     <div className="pointer-events-none fixed inset-x-0 bottom-0 z-50" onKeyDown={e => { if (e.key === 'Escape') close(); }}>
-      {open && <section id={`scotting-chat-${context}`} aria-label={es ? 'Asistente de Scotting' : 'Scotting assistant'} className="pointer-events-auto absolute bottom-[calc(100%+0.75rem)] right-4 flex w-[calc(100vw-2rem)] max-w-sm max-h-[calc(100dvh-8rem-env(safe-area-inset-bottom))] flex-col overflow-hidden rounded-2xl border border-ink/15 bg-white text-ink shadow-lg sm:right-6">
+      {open && <section id={`scotting-chat-${context}`} aria-label={es ? 'Asistente de Eduardo' : 'Eduardo’s assistant'} className="pointer-events-auto absolute bottom-[calc(100%+0.75rem)] right-4 flex w-[calc(100vw-2rem)] max-w-sm max-h-[calc(100dvh-8rem-env(safe-area-inset-bottom))] flex-col overflow-hidden rounded-2xl border border-ink/15 bg-white text-ink shadow-lg sm:right-6">
         <header className="flex items-center justify-between bg-ink px-4 py-3 text-white">
-          <div><p className="font-display font-semibold">Scotting</p><p className="text-xs">{es ? 'Asistente de IA' : 'AI assistant'}</p></div>
+          <div className="flex items-center gap-3"><span className="h-10 w-10 shrink-0 overflow-hidden rounded-full"><img src={eduardoPortrait} alt="Eduardo Scott" className="h-full w-full origin-top scale-[1.65] object-cover object-top" /></span><p className="font-display font-semibold">{es ? 'Asistente de Eduardo' : 'Eduardo’s assistant'}</p></div>
           <button type="button" onClick={close} className="rounded px-3 py-2 text-sm" aria-label={es ? 'Cerrar chat' : 'Close chat'}>×</button>
         </header>
         <div className="overflow-y-auto p-4">
-          <p className="mb-3 text-xs text-ink/70">{es ? 'Tus mensajes se envían al asistente de IA de Scotting para responderte. No compartas datos sensibles. Guardaremos tu solicitud en Airtable solo cuando la confirmes.' : 'Messages are sent to Scotting’s AI assistant to answer you. Please avoid sensitive information. We will save your request in Airtable only when you confirm.'}</p>
+          <p className="mb-3 text-xs text-ink/70">{es ? 'Este asistente usa IA para responderte. No compartas datos sensibles. Guardaremos tu solicitud solo cuando la confirmes.' : 'This assistant uses AI to answer you. Please avoid sensitive information. We will save your request only when you confirm.'}</p>
           <div ref={log} tabIndex={-1} role="log" aria-live="polite" aria-relevant="additions text" className="max-h-52 space-y-3 overflow-y-auto">
-            <p className="text-sm">{cleaning ? (es ? '¡Hola! Soy el asistente de IA de Scotting. ¿Cómo puedo ayudarte con tu negocio hoy?' : 'Hi! I’m Scotting’s AI assistant. How can I help with your business today?') : es ? '¿Qué te gustaría mejorar en tu página o en cómo recibes clientes?' : 'What would you like to improve about your website or how you receive inquiries?'}</p>
+            <p className="text-sm">{cleaning ? (es ? '¡Hola! Soy el asistente de Eduardo. ¿Cómo puedo ayudarte con tu negocio hoy?' : 'Hi! I’m Eduardo’s assistant. How can I help with your business today?') : es ? '¿Qué te gustaría mejorar en tu página o en cómo recibes clientes?' : 'What would you like to improve about your website or how you receive inquiries?'}</p>
             {messages.map((m, i) => <p key={i} className={`whitespace-pre-wrap break-words rounded-xl p-3 text-sm ${m.role === 'user' ? 'bg-blue text-white' : 'bg-warm text-ink'}`}><span className="sr-only">{m.role === 'user' ? (es ? 'Tú: ' : 'You: ') : 'Scotting: '}</span>{m.content}</p>)}
             {busy && <p role="status" className="text-sm">{es ? 'Escribiendo…' : 'Writing…'}</p>}
           </div>
@@ -199,7 +199,7 @@ export default function ChatWidget({ lang, context = 'homepage', openRequest = 0
           </form>
           {error && <p role="alert" className="mt-3 text-sm text-blue">{error}</p>}
           <div className="mt-4 flex flex-wrap gap-3 text-sm underline">
-            {cleaning && <a href="#growth-plan" onClick={close}>{es ? 'Solicitar mi plan de crecimiento' : 'Request my growth plan'}</a>}
+            {cleaning && <button type="button" disabled={busy || capturing || bookingFlow} className="disabled:opacity-50" onClick={() => request(undefined, undefined, es ? 'Me gustaría un plan de crecimiento para mi empresa de limpieza comercial. ¿Cómo podemos empezar?' : 'I would like a growth plan for my commercial cleaning business. How can we get started?')}>{es ? 'Solicitar mi plan de crecimiento' : 'Request my growth plan'}</button>}
             <button type="button" disabled={busy || capturing || bookingFlow} onClick={() => request('start_capture')} className="disabled:opacity-50">{es ? 'Hablar con Eduardo' : 'Talk to Eduardo'}</button>
             <a href={waLink(lang)} target="_blank" rel="noopener noreferrer">WhatsApp</a>
             {bookingAvailable && !bookingFlow && !capturing && <button type="button" disabled={busy || saveUncertain} onClick={() => request('start_booking')} className="disabled:opacity-50">{es ? 'Agendar llamada' : 'Book a call'}</button>}
@@ -223,19 +223,7 @@ export default function ChatWidget({ lang, context = 'homepage', openRequest = 0
             {calendarUrl && <a href={calendarUrl} target="_blank" rel="noopener noreferrer" className="block underline">{es ? 'Ver cita en Google Calendar' : 'View appointment in Google Calendar'}</a>}
           </div>}
           <div className="mt-4 space-y-2 border-t border-ink/10 pt-4">
-            <p role="status" data-operation-status className="text-xs font-semibold text-ink/80">{pending
-              ? (es ? 'Estado real: reserva sin verificar.' : 'Actual status: booking unverified.')
-              : status === 'booked'
-                ? (es ? 'Estado real: reserva confirmada por el sistema.' : 'Actual status: booking confirmed by the system.')
-                : saveUncertain
-              ? (es ? 'Estado real: guardado sin verificar. Cancelar solo cierra la captura; no borra una solicitud que pudo guardarse.' : 'Actual status: save unverified. Canceling only closes collection; it does not delete a request that may have been saved.')
-              : crmSaved || status === 'saved'
-                ? (es ? 'Estado real: guardado confirmado por el sistema.' : 'Actual status: save confirmed by the system.')
-                : (es ? 'Estado real: sin confirmación de guardado del sistema.' : 'Actual status: no save confirmation from the system.')}
-              {' '}{bookingAvailable || bookingFlow
-                ? (es ? 'No se activa seguimiento automático ni marketing. Solo el estado de reserva confirmada acredita una cita.' : 'Automatic follow-up and marketing are not enabled. Only a confirmed booking status verifies an appointment.')
-                : (es ? 'Este chat no reserva citas ni activa seguimiento automático.' : 'This chat does not book appointments or enable automatic follow-up.')}
-            </p>
+            {saveUncertain && <p role="status" className="text-xs font-semibold text-ink/80">{es ? 'Guardado sin verificar. Cancelar solo cierra la captura; no borra una solicitud que pudo guardarse.' : 'Save unverified. Canceling only closes collection; it does not delete a request that may have been saved.'}</p>}
             {status === 'saved' && <p role="status" className="text-sm">{es ? 'Solicitud guardada. Eduardo podrá revisar tu proyecto.' : 'Request saved. Eduardo can review your project.'}</p>}
             {status === 'confirmation_required' && <>
               <p className="text-xs text-ink/70">{consent}</p>
@@ -249,13 +237,13 @@ export default function ChatWidget({ lang, context = 'homepage', openRequest = 0
       </section>}
       <div data-chat-bar role="region" aria-label={es ? 'Barra de chat' : 'Chat bar'} className="pointer-events-auto border-t border-ink/10 bg-white/95 shadow-[0_-8px_30px_-16px_rgba(15,23,42,0.3)] backdrop-blur" style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}>
         <div className="mx-auto flex min-h-20 max-w-[1180px] items-center gap-3 px-4 py-3 sm:gap-6 sm:px-6">
-          <div className="shrink-0">
-            <p className="font-display text-base font-bold text-ink sm:text-lg">Scotting</p>
-            <p className="text-xs text-ink/65">{es ? 'Asistente de IA' : 'AI assistant'}</p>
+          <div className="flex shrink-0 items-center gap-2 sm:gap-3">
+            <span className="h-10 w-10 shrink-0 overflow-hidden rounded-full sm:h-12 sm:w-12"><img src={eduardoPortrait} alt="Eduardo Scott" className="h-full w-full origin-top scale-[1.65] object-cover object-top" /></span>
+            <p className="max-w-28 font-display text-sm font-bold leading-tight text-ink sm:max-w-none sm:text-base">{es ? 'Asistente de Eduardo' : 'Eduardo’s assistant'}</p>
           </div>
           <p className="hidden text-sm text-ink/65 lg:block">{es ? 'Cuéntame qué necesita tu negocio.' : 'Tell me what your business needs.'}</p>
           <button ref={toggle} type="button" aria-expanded={open} aria-controls={`scotting-chat-${context}`} onClick={() => { if (open) close(); else { setOpen(true); trackMetric('chat_started', lang, 'chat', context); } }} className="ml-auto inline-flex min-h-12 flex-1 items-center justify-between gap-2 rounded-full bg-blue px-4 py-3 text-left font-display text-sm font-semibold text-white transition-colors hover:bg-blue-dark focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue sm:max-w-md sm:px-6">
-            {es ? 'Pregúntale a Scotting' : 'Ask Scotting'}
+            {es ? 'Abrir chat' : 'Let’s chat'}
             <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className="h-5 w-5 shrink-0"><path d={open ? 'm6 9 6 6 6-6' : 'M7 17 17 7M7 7h10v10'} /></svg>
           </button>
         </div>

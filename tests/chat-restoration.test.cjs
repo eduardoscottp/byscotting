@@ -26,7 +26,7 @@ test('restored chat uses the stateful endpoint, retains replies and forwards att
   const context = { exports: {}, URL, Date, Intl, AbortSignal, fetch: async (url, init) => {
     requests.push({ url, body: JSON.parse(init.body) });
     return Response.json({ reply: 'Live agent reply', status: 'chat', state: 'server-state', bookingAvailable: true, lang: 'en' });
-  }, require: id => id === 'react' ? react : id === '@/lib/attribution' ? { getAttribution: () => ({ last: { utm_campaign: 'restore-test' } }), trackMetric() {} } : id === '@/copy' ? { waLink: () => 'https://example.invalid' } : require(id) };
+  }, require: id => id === 'react' ? react : id === '@/lib/attribution' ? { getAttribution: () => ({ last: { utm_campaign: 'restore-test' } }), trackMetric() {} } : id === '@/copy' ? { waLink: () => 'https://example.invalid' } : id.endsWith('.webp') ? 'eduardo.webp' : require(id) };
   vm.runInNewContext(js, context);
   const render = () => { cursor = 0; return context.exports.default({ lang: 'en', context: 'commercial_cleaning' }); };
   const get = predicate => nodes(render()).find(predicate);
@@ -42,6 +42,13 @@ test('restored chat uses the stateful endpoint, retains replies and forwards att
   get(n => n.type === 'input').props.onChange({ target: { value: 'Tell me more' } });
   await get(n => n.type === 'form').props.onSubmit({ preventDefault() {} });
   assert.equal(requests[1].body.state, 'server-state');
+  const growthPlan = get(n => n.type === 'button' && n.props.children === 'Request my growth plan');
+  assert.ok(growthPlan, 'Growth-plan CTA must act inside the chat');
+  await growthPlan.props.onClick();
+  assert.equal(requests[2].body.message, 'I would like a growth plan for my commercial cleaning business. How can we get started?');
+  assert.equal(requests[2].body.state, 'server-state');
+  assert.equal(requests[2].body.attribution.last.utm_campaign, 'restore-test');
+  assert.ok(get(n => n.type === 'section'), 'Chat remains open after the CTA');
 });
 
 test('restored gateway rejects incomplete booking confirmations', async () => {
