@@ -30,8 +30,9 @@ test('restored chat uses the stateful endpoint, retains replies and forwards att
   vm.runInNewContext(js, context);
   const render = () => { cursor = 0; return context.exports.default({ lang: 'en', context: 'commercial_cleaning' }); };
   const get = predicate => nodes(render()).find(predicate);
-  get(n => n.type === 'button' && n.props['aria-controls']).props.onClick();
-  get(n => n.type === 'input').props.onChange({ target: { value: 'What do you offer?' } });
+  const entry = get(n => n.type === 'input' && n.props['aria-label'] === 'Write to start chatting');
+  assert.ok(entry, 'Keep the restored deployment’s direct-entry chat bar');
+  entry.props.onChange({ target: { value: 'What do you offer?' } });
   await get(n => n.type === 'form').props.onSubmit({ preventDefault() {} });
   assert.equal(requests[0].url, '/api/chat');
   assert.equal(requests[0].body.message, 'What do you offer?');
@@ -39,6 +40,8 @@ test('restored chat uses the stateful endpoint, retains replies and forwards att
   assert.equal(requests[0].body.attribution.last.utm_campaign, 'restore-test');
   assert.ok(get(n => n.type === 'p' && Array.isArray(n.props.children) && n.props.children.includes('Live agent reply')));
   assert.ok(get(n => n.type === 'button' && n.props.children === 'Book a call'));
+  assert.ok(get(n => n.type === 'section' && n.props.className.includes('sc-chat-panel')));
+  assert.ok(get(n => n.type === 'details'), 'Keep collapsible privacy information');
   get(n => n.type === 'input').props.onChange({ target: { value: 'Tell me more' } });
   await get(n => n.type === 'form').props.onSubmit({ preventDefault() {} });
   assert.equal(requests[1].body.state, 'server-state');
@@ -49,6 +52,11 @@ test('restored chat uses the stateful endpoint, retains replies and forwards att
   assert.equal(requests[2].body.state, 'server-state');
   assert.equal(requests[2].body.attribution.last.utm_campaign, 'restore-test');
   assert.ok(get(n => n.type === 'section'), 'Chat remains open after the CTA');
+  get(n => n.type === 'button' && n.props['aria-label'] === 'Minimize chat').props.onClick();
+  assert.equal(get(n => n.type === 'section'), undefined);
+  assert.ok(get(n => n.type === 'input' && n.props['aria-label'] === 'Write to start chatting'));
+  get(n => n.type === 'button' && n.props['aria-controls']).props.onClick();
+  assert.ok(get(n => n.type === 'p' && Array.isArray(n.props.children) && n.props.children.includes('Live agent reply')), 'Conversation survives minimize and reopen');
 });
 
 test('restored gateway rejects incomplete booking confirmations', async () => {

@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, type ReactNode } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import googleAds from '@/assets/google-ads.svg';
 import aiAgent from '@/assets/ai-agent.svg';
 import '@/cleaning-simulation.css';
@@ -23,7 +23,7 @@ function Scene({ step }: { step: number }) {
   return <div className="cl-sim-close"><div className="cl-sim-call"><span aria-hidden="true">☎</span><div><strong>Your team + Sofia</strong><small>A personal conversation</small></div></div><div className="cl-sim-salessteps"><span>Call & confirm ✓</span><span>Walkthrough & quote ✓</span><span className="cl-sim-won">Agreement signed ✓</span></div><h4>A new cleaning account.</h4><p>Illustrative outcome. Your team handles pricing, the proposal and the close.</p><span className="cl-sim-tag">Sample outcome · not a guarantee</span></div>;
 }
 
-export default function CleaningDemo({ children }: { children?: ReactNode } = {}) {
+export default function CleaningDemo() {
   const [step, setStep] = useState(0);
   const [playing, setPlaying] = useState(() => !window.matchMedia('(prefers-reduced-motion: reduce)').matches);
   const [visible, setVisible] = useState(false);
@@ -55,7 +55,7 @@ export default function CleaningDemo({ children }: { children?: ReactNode } = {}
           <div className="cl-sim-controls"><button type="button" className="cl-sim-play" onClick={() => { if (!playing && step === steps.length - 1) select(0); else setPlaying(!playing); }}>{playing ? 'Pause' : step === steps.length - 1 ? 'Replay' : 'Play simulation'} <span aria-hidden="true">{playing ? 'Ⅱ' : '▶'}</span></button><div><button type="button" disabled={step === 0} onClick={() => select(step - 1)} aria-label="Previous simulation step">←</button><button type="button" disabled={step === steps.length - 1} onClick={() => select(step + 1)} aria-label="Next simulation step">→</button></div></div>
         </div>
       </div>
-      {children}
+      <div className="cl-demo-bottom"><p>Illustrative workflow, not a client result. No real messages, bookings or CRM records are created. AI booking requires connected tools; your team owns the sale. Results vary.</p><a href="#growth-plan">Build my customer journey <span aria-hidden="true">↗</span></a></div>
     </div>
   </section>;
 }

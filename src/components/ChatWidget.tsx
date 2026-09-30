@@ -54,6 +54,10 @@ export default function ChatWidget({ lang, context = 'homepage', openRequest = 0
   const [messages, setMessages] = useState<Message[]>([]);
   const [draft, setDraft] = useState('');
   const [busy, setBusy] = useState(false);
+  const [outgoing, setOutgoing] = useState('');
+  const [unread, setUnread] = useState(false);
+  const visible = useRef(false);
+  visible.current = open;
   const [error, setError] = useState('');
   const [status, setStatus] = useState<Status>('chat');
   const [saveUncertain, setSaveUncertain] = useState(false);
@@ -76,7 +80,16 @@ export default function ChatWidget({ lang, context = 'homepage', openRequest = 0
   const confirmButton = useRef<HTMLButtonElement>(null);
   const checkButton = useRef<HTMLButtonElement>(null);
   const toggle = useRef<HTMLButtonElement>(null);
+  const restoreFocus = useRef(false);
+  useEffect(() => {
+    if (!open && restoreFocus.current) {
+      restoreFocus.current = false;
+      toggle.current?.focus({ preventScroll: true });
+    }
+  }, [open]);
+  const minimize = useRef<HTMLButtonElement>(null);
   const log = useRef<HTMLDivElement>(null);
+  const thread = useRef<HTMLDivElement>(null);
   const capturing = status === 'collecting' || status === 'confirmation_required' || status === 'booking_collecting';
   const bookingFlow = status.startsWith('booking_') || status === 'booked';
   const pending = status === 'booking_pending';
@@ -87,17 +100,39 @@ export default function ChatWidget({ lang, context = 'homepage', openRequest = 0
     : 'By confirming, you consent to storing your name, contact details, company, website and request summary only to respond to your request, not for future marketing.';
   useEffect(() => {
     if (openRequest > 0) {
-      setOpen(true);
+      setOpen(true); setUnread(false);
       // The CTA prepares an editable message only. Never send or replace an active conversation.
       if (suggestedMessage && !draft && messages.length === 0 && status === 'chat') setDraft(suggestedMessage.slice(0, 1500));
       trackMetric('chat_started', lang, 'chat', context);
     }
   }, [openRequest, lang, context]);
-  useEffect(() => { if (open && !busy) { if (status === 'confirmation_required') confirmButton.current?.focus(); else if (pending) checkButton.current?.focus(); else input.current?.focus(); } }, [open, busy, status]);
-  useEffect(() => { log.current?.scrollTo({ top: log.current.scrollHeight }); }, [messages, busy]);
+  useEffect(() => { if (open && busy && cleaning) minimize.current?.focus({ preventScroll: true }); if (open && !busy) { if (status === 'confirmation_required') confirmButton.current?.focus(); else if (pending) checkButton.current?.focus(); else input.current?.focus(); } }, [open, busy, status]);
+  useEffect(() => { const el = cleaning ? thread.current : log.current; el?.scrollTo({ top: el.scrollHeight }); }, [messages, busy, open]);
+  useEffect(() => {
+    if (!cleaning || !open || typeof window.matchMedia !== 'function') return;
+    const media = window.matchMedia('(max-width: 1023px)');
+    const previous = document.body.style.overflow;
+    const update = () => { document.body.style.overflow = media.matches ? 'hidden' : previous; };
+    update(); media.addEventListener('change', update);
+    return () => { document.body.style.overflow = previous; media.removeEventListener('change', update); };
+  }, [cleaning, open]);
   useEffect(() => { if (open && !busy && bookingFlow) bookingPanel.current?.scrollIntoView?.({ block: 'start' }); }, [open, busy, status, slots]);
+  useEffect(() => {
+    if (!open || typeof document.addEventListener !== 'function') return;
+    const escape = (event: KeyboardEvent) => { if (event.key === 'Escape' && !event.defaultPrevented) { event.preventDefault(); close(); } };
+    document.addEventListener('keydown', escape);
+    return () => document.removeEventListener('keydown', escape);
+  }, [open]);
 
-  function close() { setOpen(false); toggle.current?.focus(); }
+
+  function close() { visible.current = false; restoreFocus.current = true; setOpen(false); toggle.current?.focus({ preventScroll: true }); }
+  function openChat() { visible.current = true; setOpen(true); setUnread(false); trackMetric('chat_started', lang, 'chat', context); }
+  function startFromBar(event: React.FormEvent) {
+    event.preventDefault();
+    if (!draft.trim() || busy || pending || inFlight.current) return;
+    openChat();
+    return request();
+  }
   async function request(action?: Action, slot?: string, suggestedText?: string) {
     if (inFlight.current || busy) return;
     if (bookingUncertain.current && action !== 'check_booking') return;
@@ -117,7 +152,7 @@ export default function ChatWidget({ lang, context = 'homepage', openRequest = 0
     if (!action && !capturing && !bookingFlow && faqTurns.current >= maxFaqTurns) {
       setError(es ? 'Llegaste al límite de 24 preguntas. Puedes dejar tus datos o hablar con Eduardo.' : 'You reached the 24-question limit. You can leave your details or talk to Eduardo.'); return;
     }
-    inFlight.current = true; setBusy(true); setError('');
+    inFlight.current = true; setBusy(true); setError(''); setOutgoing(message ?? '');
     // A sent confirmation can succeed even if its HTTP response is lost.
     if (action === 'confirm_save') setSaveUncertain(true);
     if (action === 'book_slot') {
@@ -159,6 +194,7 @@ export default function ChatWidget({ lang, context = 'homepage', openRequest = 0
       setStatus(result.status as Status);
       if (result.crmSaved === true || result.status === 'saved') setSaveUncertain(false);
       const reply = result.reply;
+      if (!visible.current) setUnread(true);
       setMessages(previous => [...previous, ...(message ? [{ role: 'user' as const, content: message }] : []), { role: 'assistant', content: reply }]);
       if (message && !suggestedText) setDraft('');
       if ((result.crmSaved === true || result.status === 'saved') && !leadTracked.current) {
@@ -171,7 +207,7 @@ export default function ChatWidget({ lang, context = 'homepage', openRequest = 0
         : action === 'confirm_save'
         ? (es ? 'No pudimos confirmar el guardado: puede haberse completado. Reintenta la misma confirmación o escribe a Eduardo por WhatsApp. Cancelar no borra registros.' : 'We could not confirm the save: it may have completed. Retry the same confirmation or contact Eduardo on WhatsApp. Canceling does not delete records.')
         : (es ? 'El asistente no está disponible. Reintenta o escribe a Eduardo por WhatsApp.' : 'The assistant is unavailable. Retry or contact Eduardo on WhatsApp.'));
-    } finally { inFlight.current = false; setBusy(false); }
+    } finally { inFlight.current = false; setBusy(false); setOutgoing(''); }
   }
   function send(event: React.FormEvent) {
     event.preventDefault();
@@ -179,26 +215,38 @@ export default function ChatWidget({ lang, context = 'homepage', openRequest = 0
   }
 
   const field = 'w-full rounded-xl border border-ink/20 bg-white px-3 py-2 text-sm text-ink focus:outline-2 focus:outline-blue';
+  const composer = <form onSubmit={send} className={cleaning ? 'sc-chat-composer' : 'mt-3 flex gap-2'}>
+    <input ref={input} value={draft} onChange={e => setDraft(e.target.value)} maxLength={1500} disabled={busy || pending} aria-label={es ? 'Tu mensaje' : 'Your message'} placeholder={capturing ? (es ? 'Escribe tu respuesta' : 'Type your answer') : status === 'booking_options' ? 'DD/MM/AAAA HH:mm' : (es ? 'Escribe tu mensaje…' : 'Type your message…')} className={field} />
+    <button disabled={busy || pending || !draft.trim()} className="rounded-xl bg-blue px-3 py-2 text-sm text-white disabled:opacity-50">{es ? 'Enviar' : 'Send'}</button>
+  </form>;
   return (
-    <div className="pointer-events-none fixed inset-x-0 bottom-0 z-50" onKeyDown={e => { if (e.key === 'Escape') close(); }}>
-      {open && <section id={`scotting-chat-${context}`} aria-label={es ? 'Asistente de Eduardo' : 'Eduardo’s assistant'} className="pointer-events-auto absolute bottom-[calc(100%+0.75rem)] right-4 flex w-[calc(100vw-2rem)] max-w-sm max-h-[calc(100dvh-8rem-env(safe-area-inset-bottom))] flex-col overflow-hidden rounded-2xl border border-ink/15 bg-white text-ink shadow-lg sm:right-6">
+    <div className="pointer-events-none fixed inset-x-0 bottom-0 z-50" onKeyDown={e => {
+      if (e.key === 'Escape') { e.preventDefault(); close(); }
+      if (e.key === 'Tab' && cleaning && open && window.matchMedia?.('(max-width: 1023px)').matches) {
+        const controls = Array.from(e.currentTarget.querySelectorAll<HTMLElement>('section button:not(:disabled), section input:not(:disabled), section a[href], section summary')).filter(node => node.getClientRects().length > 0);
+        const first = controls[0], last = controls[controls.length - 1];
+        if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last?.focus(); }
+        else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first?.focus(); }
+      }
+    }}>
+      {open && <section id={`scotting-chat-${context}`} aria-label={es ? 'Asistente de Eduardo' : 'Eduardo’s assistant'} className={cleaning ? "sc-chat-panel pointer-events-auto" : "pointer-events-auto absolute bottom-[calc(100%+0.75rem)] right-4 flex w-[calc(100vw-2rem)] max-w-sm max-h-[calc(100dvh-8rem-env(safe-area-inset-bottom))] flex-col overflow-hidden rounded-2xl border border-ink/15 bg-white text-ink shadow-lg sm:right-6"}>
         <header className="flex items-center justify-between bg-ink px-4 py-3 text-white">
           <div className="flex items-center gap-3"><span className="h-10 w-10 shrink-0 overflow-hidden rounded-full"><img src={eduardoPortrait} alt="Eduardo Scott" className="h-full w-full origin-top scale-[1.65] object-cover object-top" /></span><p className="font-display font-semibold">{es ? 'Asistente de Eduardo' : 'Eduardo’s assistant'}</p></div>
-          <button type="button" onClick={close} className="rounded px-3 py-2 text-sm" aria-label={es ? 'Cerrar chat' : 'Close chat'}>×</button>
+          <button ref={minimize} type="button" onClick={close} className="rounded px-3 py-2 text-sm" aria-label={cleaning ? (es ? 'Minimizar chat' : 'Minimize chat') : (es ? 'Cerrar chat' : 'Close chat')}>{cleaning ? (es ? '— Minimizar' : '— Minimize') : '×'}</button>
         </header>
-        <div className="overflow-y-auto p-4">
+        <div ref={thread} className={cleaning ? "sc-chat-body" : "overflow-y-auto p-4"}>
+          <details open={!cleaning || undefined} className="mb-3 text-xs text-ink/70"><summary className={cleaning ? "mb-2 cursor-pointer" : "hidden"}>{es ? 'Privacidad y uso del chat' : 'Privacy & how this chat works'}</summary>
           <p className="mb-3 text-xs text-ink/70">{es ? 'Este asistente usa IA para responderte. No compartas datos sensibles. Guardaremos tu solicitud solo cuando la confirmes.' : 'This assistant uses AI to answer you. Please avoid sensitive information. We will save your request only when you confirm.'}</p>
-          <div ref={log} tabIndex={-1} role="log" aria-live="polite" aria-relevant="additions text" className="max-h-52 space-y-3 overflow-y-auto">
+          </details>
+          <div ref={log} tabIndex={-1} role="log" aria-live="polite" aria-relevant="additions text" className={cleaning ? "sc-chat-log" : "max-h-52 space-y-3 overflow-y-auto"}>
             <p className="text-sm">{cleaning ? (es ? '¡Hola! Soy el asistente de Eduardo. ¿Cómo puedo ayudarte con tu negocio hoy?' : 'Hi! I’m Eduardo’s assistant. How can I help with your business today?') : es ? '¿Qué te gustaría mejorar en tu página o en cómo recibes clientes?' : 'What would you like to improve about your website or how you receive inquiries?'}</p>
-            {messages.map((m, i) => <p key={i} className={`whitespace-pre-wrap break-words rounded-xl p-3 text-sm ${m.role === 'user' ? 'bg-blue text-white' : 'bg-warm text-ink'}`}><span className="sr-only">{m.role === 'user' ? (es ? 'Tú: ' : 'You: ') : 'Scotting: '}</span>{m.content}</p>)}
+            {messages.map((m, i) => <p key={i} data-message-role={m.role} className={`whitespace-pre-wrap break-words rounded-xl p-3 text-sm ${m.role === 'user' ? 'bg-blue text-white' : 'bg-warm text-ink'} ${cleaning ? (m.role === 'user' ? 'sc-chat-user' : 'sc-chat-assistant') : ''}`}><span className="sr-only">{m.role === 'user' ? (es ? 'Tú: ' : 'You: ') : 'Scotting: '}</span>{m.content}</p>)}
+            {busy && outgoing && <p data-message-role="user" className={cleaning ? 'sc-chat-user rounded-xl bg-blue p-3 text-sm text-white' : 'rounded-xl bg-blue p-3 text-sm text-white'}><span className="sr-only">{es ? 'Tú: ' : 'You: '}</span>{outgoing}</p>}
             {busy && <p role="status" className="text-sm">{es ? 'Escribiendo…' : 'Writing…'}</p>}
           </div>
-          <form onSubmit={send} className="mt-3 flex gap-2">
-            <input ref={input} value={draft} onChange={e => setDraft(e.target.value)} maxLength={1500} disabled={busy || pending} aria-label={es ? 'Tu mensaje' : 'Your message'} placeholder={capturing ? (es ? 'Escribe tu respuesta' : 'Type your answer') : status === 'booking_options' ? 'DD/MM/AAAA HH:mm' : (es ? 'Escribe tu pregunta' : 'Ask a question')} className={field} />
-            <button disabled={busy || pending || !draft.trim()} className="rounded-xl bg-blue px-3 py-2 text-sm text-white disabled:opacity-50">{es ? 'Enviar' : 'Send'}</button>
-          </form>
+          {!cleaning && composer}
           {error && <p role="alert" className="mt-3 text-sm text-blue">{error}</p>}
-          <div className="mt-4 flex flex-wrap gap-3 text-sm underline">
+          <div className={cleaning ? "sc-chat-options" : "mt-4 flex flex-wrap gap-3 text-sm underline"}>
             {cleaning && <button type="button" disabled={busy || capturing || bookingFlow} className="disabled:opacity-50" onClick={() => request(undefined, undefined, es ? 'Me gustaría un plan de crecimiento para mi empresa de limpieza comercial. ¿Cómo podemos empezar?' : 'I would like a growth plan for my commercial cleaning business. How can we get started?')}>{es ? 'Solicitar mi plan de crecimiento' : 'Request my growth plan'}</button>}
             <button type="button" disabled={busy || capturing || bookingFlow} onClick={() => request('start_capture')} className="disabled:opacity-50">{es ? 'Hablar con Eduardo' : 'Talk to Eduardo'}</button>
             <a href={waLink(lang)} target="_blank" rel="noopener noreferrer">WhatsApp</a>
@@ -234,8 +282,22 @@ export default function ChatWidget({ lang, context = 'homepage', openRequest = 0
               : !bookingFlow && <button type="button" disabled={busy} onClick={() => request('start_capture')} className="rounded-xl bg-blue px-4 py-2 text-sm text-white disabled:opacity-50">{es ? 'Dejar mis datos' : 'Leave my details'}</button>}
           </div>
         </div>
+        {cleaning && composer}
       </section>}
-      <div data-chat-bar role="region" aria-label={es ? 'Barra de chat' : 'Chat bar'} className="pointer-events-auto border-t border-ink/10 bg-white/95 shadow-[0_-8px_30px_-16px_rgba(15,23,42,0.3)] backdrop-blur" style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}>
+      {cleaning ? <div data-chat-bar role="region" aria-label={es ? 'Barra de chat' : 'Chat bar'} className={`sc-chat-entry pointer-events-auto ${open ? 'sc-chat-entry-open' : ''}`}>
+        <div className="sc-chat-entry-inner">
+          <div className="sc-chat-entry-identity">
+            <div className="sc-chat-avatar"><img src={eduardoPortrait} alt="Eduardo Scott" /></div>
+            <div><strong>{es ? 'Asistente de Eduardo' : 'Eduardo’s assistant'}</strong><span role="status">{busy ? (es ? 'Escribiendo…' : 'Writing…') : unread ? (es ? 'Nueva respuesta' : 'New reply') : error ? (es ? 'Revisa el chat' : 'Check chat') : (es ? '¿Cómo puedo ayudarte?' : 'How can I help?')}</span></div>
+            <button ref={toggle} type="button" aria-expanded={open} aria-controls={`scotting-chat-${context}`} onClick={open ? close : openChat}>{open ? (es ? 'Minimizar' : 'Minimize') : messages.length || busy || error ? (es ? 'Retomar chat' : 'Resume chat') : (es ? 'Abrir chat' : 'Open chat')}</button>
+          </div>
+          {!open && <form onSubmit={startFromBar} className="sc-chat-entry-form">
+            <input value={draft} onChange={e => setDraft(e.target.value)} maxLength={1500} disabled={busy || pending} aria-label={es ? 'Escribe para comenzar el chat' : 'Write to start chatting'} placeholder={es ? '¿Cómo podemos ayudarte?' : 'How can we help you?'} autoComplete="off" />
+            <button type="submit" disabled={busy || pending || !draft.trim()}>Ask now <span aria-hidden="true">↗</span></button>
+          </form>}
+          {open && <p className="sc-chat-entry-hint">{es ? 'Tu conversación está abierta a la derecha. Puedes seguir navegando.' : 'Your conversation is open on the right. You can keep browsing.'}</p>}
+        </div>
+      </div> : <div data-chat-bar role="region" aria-label={es ? 'Barra de chat' : 'Chat bar'} className="pointer-events-auto border-t border-ink/10 bg-white/95 shadow-[0_-8px_30px_-16px_rgba(15,23,42,0.3)] backdrop-blur" style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}>
         <div className="mx-auto flex min-h-20 max-w-[1180px] items-center gap-3 px-4 py-3 sm:gap-6 sm:px-6">
           <div className="flex shrink-0 items-center gap-2 sm:gap-3">
             <span className="h-10 w-10 shrink-0 overflow-hidden rounded-full sm:h-12 sm:w-12"><img src={eduardoPortrait} alt="Eduardo Scott" className="h-full w-full origin-top scale-[1.65] object-cover object-top" /></span>
@@ -247,7 +309,7 @@ export default function ChatWidget({ lang, context = 'homepage', openRequest = 0
             <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className="h-5 w-5 shrink-0"><path d={open ? 'm6 9 6 6 6-6' : 'M7 17 17 7M7 7h10v10'} /></svg>
           </button>
         </div>
-      </div>
+      </div>}
     </div>
   );
 }
