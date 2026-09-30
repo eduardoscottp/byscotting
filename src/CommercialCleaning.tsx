@@ -84,8 +84,8 @@ export default function CommercialCleaning() {
     <header className="cl-header cl-wrap"><img src={logo} alt="Scotting" width="150" height="42" /><button id="cleaning-chat-button" type="button" onClick={() => setChatRequest(n => n + 1)}>Chat with us <span aria-hidden="true">↗</span></button></header>
     <main id="main">
       <section className="cl-hero cl-wrap" aria-labelledby="cleaning-title">
-        <div className="cl-hero-copy"><h1 id="cleaning-title">{copy.title}<em>{copy.emphasis}</em></h1><p>{copy.subtitle}</p></div>
-        <div className="cl-implementation"><p className="cl-implementation-label">HOW WE HELP BRING CUSTOMERS TO YOU</p><CleaningFlow /><a className="cl-demo-link" href="#how-it-works">Watch it in action <span aria-hidden="true">↓</span></a></div>
+        <div className="cl-hero-copy"><h1 id="cleaning-title">{copy.title}<em>{copy.emphasis}</em></h1></div>
+        <div className="cl-implementation"><p className="cl-implementation-label">HOW WE HELP BRING CUSTOMERS TO YOU</p><CleaningFlow /><p className="cl-hero-subtitle">{copy.subtitle}</p><a className="cl-demo-link" href="#how-it-works">Watch it in action <span aria-hidden="true">↓</span></a></div>
       </section>
       <CleaningDemo><section id="growth-plan" className="cl-contact-inline" aria-label="Contact Scotting"><GrowthForm headline={headline} /></section></CleaningDemo>
       <section className="cl-wrap cl-about" aria-labelledby="about-title">
