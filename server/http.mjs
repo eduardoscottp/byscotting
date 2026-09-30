@@ -42,7 +42,7 @@ export async function serve(req, res, handler, env = process.env) {
     if (Buffer.byteLength(typeof body === 'string' ? body : JSON.stringify(body)) > 32768) return send(413, { error: 'request_too_large' });
     if (typeof body === 'string') body = JSON.parse(body);
     if (!body || typeof body !== 'object' || Array.isArray(body)) return send(400, { error: 'invalid_request' });
-    const result = await handler(body, { env });
+    const result = await handler(body, { env, clientAddress: ip });
     return send(result.status, result.body);
   } catch { return send(400, { error: 'invalid_request' }); }
 }

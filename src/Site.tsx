@@ -1,8 +1,7 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { copy, waLink, type Lang } from "@/copy";
 import ProcessFlow from "@/components/ProcessFlow";
 import PainForm from "@/components/PainForm";
-import StickyWhatsApp from "@/components/StickyWhatsApp";
 import ChatWidget from "@/components/ChatWidget";
 import { initializeAnalytics, initializeAttribution, trackMetric } from "@/lib/attribution";
 import WhatsAppIcon from "@/components/WhatsAppIcon";
@@ -61,6 +60,7 @@ function Eyebrow({ children, tone = "dark" }: { children: React.ReactNode; tone?
 
 export default function Site({ lang }: { lang: Lang }) {
   const t = copy[lang];
+  const [demoRequest, setDemoRequest] = useState(0);
   useEffect(() => {
     initializeAttribution(import.meta.env.VITE_ATTRIBUTION_STORAGE === 'true');
     initializeAnalytics(import.meta.env.VITE_GA_MEASUREMENT_ID);
@@ -88,7 +88,7 @@ export default function Site({ lang }: { lang: Lang }) {
   }, [t]);
 
   return (
-    <div className="min-h-screen bg-warm font-body text-ink antialiased">
+    <div className="min-h-screen bg-warm pb-[calc(7rem+env(safe-area-inset-bottom))] font-body text-ink antialiased">
       {/* ---------- Header ---------- */}
       <header className="sticky top-0 z-40 border-b border-ink/[0.06] bg-warm/85 backdrop-blur">
         <div className="mx-auto flex max-w-[1180px] items-center justify-between px-6 py-3.5">
@@ -125,7 +125,7 @@ export default function Site({ lang }: { lang: Lang }) {
           </p>
 
           <h1
-            className="animate-rise text-balance font-display text-[2.9rem] font-bold leading-[0.98] tracking-[-0.035em] md:text-[4.4rem]"
+            className="animate-rise text-balance font-display text-[clamp(2.3rem,10vw,2.9rem)] font-bold leading-[0.98] tracking-[-0.035em] md:text-[4.4rem]"
             style={{ animationDelay: ".14s" }}
           >
             {t.hero.headline}
@@ -289,7 +289,7 @@ export default function Site({ lang }: { lang: Lang }) {
       </section>
 
       {/* ---------- Banda oscura: el diferenciador + el flujo ---------- */}
-      <section className="relative overflow-hidden bg-ink py-20 text-white md:py-28">
+      <section id="como-trabajo" className="relative scroll-mt-20 overflow-hidden bg-ink py-20 text-white md:py-28">
         <img
           src="/node-wave.svg"
           alt=""
@@ -310,6 +310,19 @@ export default function Site({ lang }: { lang: Lang }) {
           <Spine tone="light" height={64} />
 
           <ProcessFlow steps={t.process.steps} hint={t.process.hint} loop={t.process.loop} tone="light" />
+          <div data-process-actions className="flex flex-col items-center gap-5 border-t border-white/15 pt-10 text-center">
+            <p className="font-display text-xl font-semibold md:text-2xl">{lang === "es" ? "¿Lo ponemos en marcha en tu negocio?" : "Ready to put this to work for your business?"}</p>
+            <div className="flex w-full flex-col justify-center gap-3 sm:w-auto sm:flex-row">
+              <a href="#contacto" className="inline-flex min-h-12 items-center justify-center gap-2.5 rounded-full bg-white px-7 py-3.5 font-display font-semibold text-ink transition-colors hover:bg-white/90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-teal">
+                <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" className="h-5 w-5"><rect x="3" y="5" width="18" height="14" rx="3" /><path d="m4 7 8 6 8-6" /></svg>
+                {lang === "es" ? "Contáctame" : "Contact me"}
+              </a>
+              <button type="button" onClick={() => setDemoRequest(value => value + 1)} aria-controls="scotting-chat-homepage" className="inline-flex min-h-12 items-center justify-center gap-2.5 rounded-full bg-teal px-7 py-3.5 font-display font-semibold text-ink transition-colors hover:bg-teal/90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white">
+                <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" className="h-5 w-5"><rect x="3" y="4" width="18" height="13" rx="3" /><path d="m10 8 5 3-5 3V8ZM8 21h8m-4-4v4" /></svg>
+                {lang === "es" ? "Solicitar demo" : "Request a demo"}
+              </button>
+            </div>
+          </div>
         </div>
       </section>
 
@@ -484,8 +497,7 @@ export default function Site({ lang }: { lang: Lang }) {
         </div>
       </footer>
 
-      <StickyWhatsApp lang={lang} label={t.sticky.label} />
-      <ChatWidget lang={lang} />
+      <ChatWidget lang={lang} openRequest={demoRequest} suggestedMessage={lang === "es" ? "Me gustaría solicitar una demo para mi negocio." : "I'd like to request a demo for my business."} />
     </div>
   );
 }

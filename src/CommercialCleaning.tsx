@@ -2,7 +2,6 @@ import { useEffect, useRef, useState, type FormEvent } from 'react';
 import ChatWidget from '@/components/ChatWidget';
 import CleaningDemo from '@/components/CleaningDemo';
 import CleaningFlow from '@/components/CleaningFlow';
-import type { CleaningHandoff } from '@/components/CleaningGuide';
 import { contactChannel, cleaningHeadlines, selectCleaningHeadline, type CleaningHeadlineKey } from '@/lib/cleaningCampaign';
 import { getAttribution, initializeAnalytics, initializeAttribution, trackMetric } from '@/lib/attribution';
 import { waLink } from '@/copy';
@@ -10,7 +9,9 @@ import logo from '@/assets/scotting-wordmark-blue.png';
 import eduardoHero from '@/assets/eduardo-hero-oficina.webp';
 import '@/cleaning.css';
 
-export function GrowthForm({ chatContext, clearChatContext, headline = 'default' }: { chatContext?: CleaningHandoff; clearChatContext?: () => void; headline?: CleaningHeadlineKey } = {}) {
+type ChatContext = { serviceMix?: 'commercial' | 'mixed'; summary?: string };
+
+export function GrowthForm({ chatContext, clearChatContext, headline = 'default' }: { chatContext?: ChatContext; clearChatContext?: () => void; headline?: CleaningHeadlineKey } = {}) {
   const [state, setState] = useState<'idle' | 'saving' | 'saved' | 'error'>('idle');
   const [error, setError] = useState('');
   const [submittedKind, setSubmittedKind] = useState('contact');
@@ -59,15 +60,13 @@ export function GrowthForm({ chatContext, clearChatContext, headline = 'default'
 
 export default function CommercialCleaning() {
   const [chatRequest, setChatRequest] = useState(0);
-  const [chatContext, setChatContext] = useState<CleaningHandoff>();
   const [headline] = useState(() => selectCleaningHeadline(window.location.search));
   const copy = cleaningHeadlines[headline];
   const page = useRef<HTMLDivElement>(null);
-  const dock = useRef<HTMLElement>(null);
   useEffect(() => {
-    const element = dock.current;
+    const element = page.current?.querySelector('[data-chat-bar]');
     if (!element) return;
-    const resize = () => page.current?.style.setProperty('--cl-dock-height', `${element.getBoundingClientRect().height}px`);
+    const resize = () => page.current?.style.setProperty('--cl-chat-height', `${element.getBoundingClientRect().height}px`);
     resize();
     const observer = new ResizeObserver(resize); observer.observe(element);
     return () => observer.disconnect();
@@ -86,7 +85,7 @@ export default function CommercialCleaning() {
     <main id="main">
       <section className="cl-hero cl-wrap" aria-labelledby="cleaning-title">
         <div className="cl-hero-copy"><h1 id="cleaning-title">{copy.title}<em>{copy.emphasis}</em></h1><p>{copy.subtitle}</p></div>
-        <div className="cl-implementation"><p className="cl-implementation-label">HOW WE HELP BRING CUSTOMERS TO YOU</p><CleaningFlow /><a className="cl-demo-link" href="#how-it-works">Watch it in action <span aria-hidden="true">↓</span></a></div>
+        <div className="cl-implementation"><p className="cl-implementation-label">HOW WE HELP BRING CUSTOMERS TO YOU</p><CleaningFlow /><section id="growth-plan" className="cl-contact-inline" aria-label="Contact Scotting"><GrowthForm headline={headline} /></section><a className="cl-demo-link" href="#how-it-works">Watch it in action <span aria-hidden="true">↓</span></a></div>
       </section>
       <CleaningDemo />
       <section className="cl-wrap cl-about" aria-labelledby="about-title">
@@ -96,11 +95,10 @@ export default function CommercialCleaning() {
     </main>
     <footer className="cl-wrap cl-footer"><details id="privacy"><summary>Privacy & contact</summary><div>
       <p>Scotting stores the details you submit in Airtable to review and respond to your request. We detect whether you provided an email address or phone number. This does not enroll you in SMS or AI voice marketing.</p>
-      <p>The guided chat uses prepared answers in your browser. If AI chat is enabled, it identifies itself and explains that messages go to our AI provider. Qualification choices are included only when you choose to use them in the form; full chat transcripts are not automatically attached.</p>
+      <p>The website assistant uses the Scotting AI agent to answer your questions. Full chat transcripts are not automatically attached to your form request.</p>
       <p>Google Analytics measures page activity and campaign interactions. Our custom events exclude names, contact details and form text. Campaign identifiers and the headline version may accompany your inquiry.</p>
       <p>To correct or remove your details or stop further contact, <a href={waLink('en')} target="_blank" rel="noopener noreferrer">contact Eduardo on WhatsApp</a>.</p>
     </div></details></footer>
-    <section ref={dock} id="growth-plan" className="cl-contact-dock" aria-label="Contact Scotting"><div className="cl-wrap"><GrowthForm chatContext={chatContext} clearChatContext={() => setChatContext(undefined)} headline={headline} /></div></section>
-    <ChatWidget lang="en" context="commercial_cleaning" openRequest={chatRequest} onCleaningHandoff={setChatContext} />
+    <ChatWidget lang="en" context="commercial_cleaning" openRequest={chatRequest} />
   </div>;
 }

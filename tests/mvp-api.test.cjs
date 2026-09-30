@@ -3,7 +3,7 @@ const assert = require('node:assert/strict');
 const { pathToFileURL } = require('node:url');
 const path = require('node:path');
 const load = () => import(pathToFileURL(path.join(__dirname, '../server/mvp.mjs')));
-const env = { OPENAI_API_KEY: 'test-key', OPENAI_MODEL: 'test-model', AIRTABLE_TOKEN: 'test-token', AIRTABLE_BASE_ID: 'appzlRmQyj1x5whWw', AIRTABLE_LEADS_TABLE_ID: 'tblwEZIGfrWk7egUS', LEAD_SIGNING_SECRET: 'test-only-secret-with-at-least-32-characters' };
+const env = { HERMES_AGENT_URL: 'https://agent.example.invalid', HERMES_AGENT_KEY: 'test-only-agent-key-at-least-32-characters', HERMES_AGENT_MODEL: 'test-model', AIRTABLE_TOKEN: 'test-token', AIRTABLE_BASE_ID: 'appzlRmQyj1x5whWw', AIRTABLE_LEADS_TABLE_ID: 'tblwEZIGfrWk7egUS', LEAD_SIGNING_SECRET: 'test-only-secret-with-at-least-32-characters' };
 const lead = { submission_id: '705621f9-a693-469e-bf85-e0667b637a95', name: 'Test visitor', contact: 'visitor@example.invalid', chips: ['Website'], detail: 'Need a website', lang: 'en' };
 
 test('chat rejects privileged roles without a provider call', async () => {
@@ -21,15 +21,15 @@ test('chat bounds input and refuses overlong conversations', async () => {
   const result = await chat({ messages: Array.from({ length: 25 }, () => ({ role: 'user', content: 'hello' })) }, { env });
   assert.equal(result.status, 400);
 });
-test('chat calls the stateless API with approved instructions and returns only text', async () => {
+test('chat calls the configured Hermes agent and returns only reply text', async () => {
   const { chat } = await load();
   let sent;
   const result = await chat({ messages: [{ role: 'user', content: 'Can I book?' }], lang: 'en' }, { env, fetch: async (url, options) => {
-    assert.equal(url, 'https://api.openai.com/v1/responses'); sent = JSON.parse(options.body);
-    return Response.json({ status: 'completed', output: [{ type: 'message', content: [{ type: 'output_text', text: 'Use the booking button.' }] }], private: 'hidden' });
+    assert.equal(url, 'https://agent.example.invalid/v1/chat/completions'); sent = JSON.parse(options.body);
+    return Response.json({ choices: [{ message: { content: 'Use the booking button.' } }], private: 'hidden' });
   } });
-  assert.equal(sent.store, false); assert.equal(sent.model, 'test-model');
-  assert.match(sent.instructions, /Never claim.*booked/);
+  assert.equal(sent.stream, false); assert.equal(sent.model, 'test-model');
+  assert.deepEqual(sent.messages, [{ role: 'user', content: 'Can I book?' }]);
   assert.deepEqual(result, { status: 200, body: { reply: 'Use the booking button.' } });
 });
 test('provider failures do not reveal tokens or raw error contents', async () => {
@@ -39,7 +39,7 @@ test('provider failures do not reveal tokens or raw error contents', async () =>
 });
 test('a longer assistant answer can be included in the next bounded turn', async () => {
   const { chat } = await load();
-  const result = await chat({ messages: [{ role: 'assistant', content: 'x'.repeat(2500) }, { role: 'user', content: 'Thanks' }] }, { env, fetch: async () => Response.json({ status: 'completed', output: [{ type: 'message', content: [{ type: 'output_text', text: 'You are welcome.' }] }] }) });
+  const result = await chat({ messages: [{ role: 'assistant', content: 'x'.repeat(2500) }, { role: 'user', content: 'Thanks' }] }, { env, fetch: async () => Response.json({ choices: [{ message: { content: 'You are welcome.' } }] }) });
   assert.equal(result.status, 200);
 });
 test('lead requires a usable contact and valid submission identifier', async () => {
