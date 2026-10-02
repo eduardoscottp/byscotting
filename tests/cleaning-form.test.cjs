@@ -46,7 +46,7 @@ test('cleaning form sends campaign details and records a conversion only after a
   assert.equal(payload.contact, 'test@example.invalid');
   assert.equal(payload.landing, 'commercial_cleaning');
   assert.equal(payload.attribution.first.utm_campaign, 'cleaning-test');
-  assert.deepEqual(form.metrics, [['generate_lead', 'en', 'form', 'commercial_cleaning']]);
+  assert.deepEqual(JSON.parse(JSON.stringify(form.metrics)), [['generate_lead', 'en', 'form', 'commercial_cleaning', { headline_variant: 'default' }]]);
 });
 
 test('a 200 response without acceptance keeps the form and does not count a conversion', async () => {

@@ -55,3 +55,14 @@ test('Google tag commands use the Arguments protocol for configuration and event
   initializeAnalytics('G-0M55Y01EM0');
   assert.equal(window.dataLayer.length, 3, 'reinitializing must not duplicate configuration');
 });
+
+test('cleaning conversion metrics include the selected headline without contact or query data', () => {
+  const commands = [];
+  const window = { gtag: (...args) => commands.push(args), dispatchEvent() {} };
+  const { trackMetric } = load({ window, CustomEvent: class {} });
+  trackMetric('whatsapp_click', 'en', 'whatsapp', 'commercial_cleaning', { headline_variant: 'c01-h04' });
+  assert.equal(commands[0][1], 'whatsapp_click');
+  assert.equal(commands[0][2].headline_variant, 'c01-h04');
+  assert.equal(commands[0][2].landing_id, 'commercial_cleaning');
+  assert.deepEqual(Object.keys(commands[0][2]).sort(), ['headline_variant', 'landing_id', 'language', 'offer_id', 'surface']);
+});

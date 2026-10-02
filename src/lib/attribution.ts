@@ -57,8 +57,8 @@ export function initializeAttribution(persist: boolean) {
 export function getAttribution() { return current; }
 
 type Metric = 'chat_started' | 'generate_lead' | 'booking_click' | 'form_start' | 'whatsapp_click';
-export function trackMetric(name: Metric, language: string, surface: 'chat' | 'form' | 'whatsapp', landing: 'homepage' | 'commercial_cleaning' = 'homepage') {
-  const data = { language: language === 'es' ? 'es' : 'en', surface, landing_id: landing, offer_id: landing === 'commercial_cleaning' ? 'cleaning_growth_plan_v1' : 'premium_quote_v1' };
+export function trackMetric(name: Metric, language: string, surface: 'chat' | 'form' | 'whatsapp', landing: 'homepage' | 'commercial_cleaning' = 'homepage', context?: { headline_variant: string }) {
+  const data = { language: language === 'es' ? 'es' : 'en', surface, landing_id: landing, offer_id: landing === 'commercial_cleaning' ? 'cleaning_growth_plan_v1' : 'premium_quote_v1', ...(context ? { headline_variant: context.headline_variant } : {}) };
   // Deliberately excludes message text, contacts, URLs, UTMs and click IDs.
   const analytics = window as Window & { gtag?: (...args: unknown[]) => void };
   try {

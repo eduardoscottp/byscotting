@@ -40,7 +40,7 @@ export function GrowthForm({ chatContext, clearChatContext, headline = 'default'
       }) });
       const result = await response.json();
       if (!response.ok || result.accepted !== true) throw new Error('not_saved');
-      setState('saved'); trackMetric('generate_lead', 'en', 'form', 'commercial_cleaning');
+      setState('saved'); trackMetric('generate_lead', 'en', 'form', 'commercial_cleaning', { headline_variant: headline });
     } catch { setState('error'); setError('Your request has not been saved. Please try again, or contact Eduardo on WhatsApp.'); }
   }
   if (state === 'saved') return <div className="cl-dock-success" role="status"><span aria-hidden="true">✓</span><div><strong>{submittedKind === 'demo' ? 'Demo request received.' : 'Request received.'}</strong><p>Eduardo will follow up using the contact you provided. A meeting time is agreed separately.</p></div></div>;
@@ -64,18 +64,23 @@ export default function CommercialCleaning() {
   const page = useRef<HTMLDivElement>(null);
   useEffect(() => {
     initializeAttribution(import.meta.env.VITE_ATTRIBUTION_STORAGE === 'true');
-    initializeAnalytics(import.meta.env.VITE_GA_MEASUREMENT_ID);
     document.documentElement.lang = 'en';
     document.title = cleaningPageTitle(headline);
     document.querySelector('meta[name="description"]')?.setAttribute('content', copy.subtitle);
     document.querySelector('link[rel="canonical"]')?.setAttribute('href', `${window.location.origin}/landingpage_leads`);
+    initializeAnalytics(import.meta.env.VITE_GA_MEASUREMENT_ID);
   }, [copy.subtitle, headline]);
-  return <div ref={page} className="cleaning-page">
+  return <div ref={page} className="cleaning-page" onClick={e => {
+    const link = (e.target as Element).closest('a[href]');
+    if (link && new URL(link.getAttribute('href') || '', window.location.href).hostname === 'wa.me') {
+      trackMetric('whatsapp_click', 'en', 'whatsapp', 'commercial_cleaning', { headline_variant: headline });
+    }
+  }}>
     <a className="cl-skip" href="#main">Skip to content</a>
     <header className="cl-header cl-wrap"><img src={logo} alt="Scotting" width="150" height="42" /><a id="cleaning-chat-button" href={waLink('en')} target="_blank" rel="noopener noreferrer">Chat with us <span aria-hidden="true">↗</span></a></header>
     <main id="main">
       <section className="cl-hero cl-wrap" aria-labelledby="cleaning-title">
-        <div className="cl-hero-copy"><h1 id="cleaning-title">{copy.title}<em>{copy.emphasis}</em></h1><div className="cl-hero-contact"><a href={waLink('en')} target="_blank" rel="noopener noreferrer" onClick={() => trackMetric('whatsapp_click', 'en', 'whatsapp', 'commercial_cleaning')}>Contact us on WhatsApp <span aria-hidden="true">↗</span></a></div></div>
+        <div className="cl-hero-copy"><h1 id="cleaning-title">{copy.title}<em>{copy.emphasis}</em></h1><div className="cl-hero-contact"><a href={waLink('en')} target="_blank" rel="noopener noreferrer">Contact us on WhatsApp <span aria-hidden="true">↗</span></a></div></div>
         <div className="cl-implementation"><p className="cl-implementation-label">HOW WE HELP BRING CUSTOMERS TO YOU</p><CleaningFlow /><p className="cl-hero-subtitle">{copy.subtitle}</p><a className="cl-demo-link" href="#how-it-works">Watch it in action <span aria-hidden="true">↓</span></a></div>
       </section>
       <CleaningDemo><section id="growth-plan" className="cl-contact-inline" aria-label="Contact Scotting"><GrowthForm headline={headline} /></section></CleaningDemo>
