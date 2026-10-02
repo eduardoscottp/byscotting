@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState, type FormEvent } from 'react';
-import ChatWidget from '@/components/ChatWidget';
+import StickyWhatsApp from '@/components/StickyWhatsApp';
 import CleaningDemo from '@/components/CleaningDemo';
 import CleaningFlow from '@/components/CleaningFlow';
 import { contactChannel, cleaningHeadlines, selectCleaningHeadline, type CleaningHeadlineKey } from '@/lib/cleaningCampaign';
@@ -59,18 +59,9 @@ export function GrowthForm({ chatContext, clearChatContext, headline = 'default'
 }
 
 export default function CommercialCleaning() {
-  const [chatRequest, setChatRequest] = useState(0);
   const [headline] = useState(() => selectCleaningHeadline(window.location.search));
   const copy = cleaningHeadlines[headline];
   const page = useRef<HTMLDivElement>(null);
-  useEffect(() => {
-    const element = page.current?.querySelector('[data-chat-bar]');
-    if (!element) return;
-    const resize = () => page.current?.style.setProperty('--cl-chat-height', `${element.getBoundingClientRect().height}px`);
-    resize();
-    const observer = new ResizeObserver(resize); observer.observe(element);
-    return () => observer.disconnect();
-  }, []);
   useEffect(() => {
     initializeAttribution(import.meta.env.VITE_ATTRIBUTION_STORAGE === 'true');
     initializeAnalytics(import.meta.env.VITE_GA_MEASUREMENT_ID);
@@ -81,7 +72,7 @@ export default function CommercialCleaning() {
   }, [copy.subtitle]);
   return <div ref={page} className="cleaning-page">
     <a className="cl-skip" href="#main">Skip to content</a>
-    <header className="cl-header cl-wrap"><img src={logo} alt="Scotting" width="150" height="42" /><button id="cleaning-chat-button" type="button" onClick={() => setChatRequest(n => n + 1)}>Chat with us <span aria-hidden="true">↗</span></button></header>
+    <header className="cl-header cl-wrap"><img src={logo} alt="Scotting" width="150" height="42" /><a id="cleaning-chat-button" href={waLink('en')} target="_blank" rel="noopener noreferrer">Chat with us <span aria-hidden="true">↗</span></a></header>
     <main id="main">
       <section className="cl-hero cl-wrap" aria-labelledby="cleaning-title">
         <div className="cl-hero-copy"><h1 id="cleaning-title">{copy.title}<em>{copy.emphasis}</em></h1></div>
@@ -99,6 +90,6 @@ export default function CommercialCleaning() {
       <p>Google Analytics measures page activity and campaign interactions. Our custom events exclude names, contact details and form text. Campaign identifiers and the headline version may accompany your inquiry.</p>
       <p>To correct or remove your details or stop further contact, <a href={waLink('en')} target="_blank" rel="noopener noreferrer">contact Eduardo on WhatsApp</a>.</p>
     </div></details></footer>
-    <ChatWidget lang="en" context="commercial_cleaning" openRequest={chatRequest} />
+    <StickyWhatsApp lang="en" label="Message me on WhatsApp" />
   </div>;
 }
