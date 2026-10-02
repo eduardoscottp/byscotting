@@ -212,7 +212,7 @@ export const copy = {
       whatsappRetry: "Abrir WhatsApp",
     },
 
-    sticky: { label: "Escríbeme" },
+    sticky: { label: "Escríbeme por WhatsApp" },
 
     footer: {
       tagline: "Smart systems. Real impact.",
@@ -432,7 +432,7 @@ export const copy = {
       whatsappRetry: "Open WhatsApp",
     },
 
-    sticky: { label: "Chat on WhatsApp" },
+    sticky: { label: "Message me on WhatsApp" },
 
     footer: {
       tagline: "Less busywork. More good work.",

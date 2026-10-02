@@ -22,7 +22,7 @@ export default function StickyWhatsApp({ lang, label }: { lang: Lang; label: str
 
   return (
     <a
-      href={waLink(lang, lang === "es" ? label : undefined)}
+      href={waLink(lang)}
       target="_blank"
       rel="noopener noreferrer"
       aria-hidden={hidden}

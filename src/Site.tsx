@@ -1,8 +1,8 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { copy, waLink, type Lang } from "@/copy";
 import ProcessFlow from "@/components/ProcessFlow";
 import PainForm from "@/components/PainForm";
-import ChatWidget from "@/components/ChatWidget";
+import StickyWhatsApp from "@/components/StickyWhatsApp";
 import { initializeAnalytics, initializeAttribution, trackMetric } from "@/lib/attribution";
 import WhatsAppIcon from "@/components/WhatsAppIcon";
 import Spine from "@/components/Spine";
@@ -60,7 +60,6 @@ function Eyebrow({ children, tone = "dark" }: { children: React.ReactNode; tone?
 
 export default function Site({ lang }: { lang: Lang }) {
   const t = copy[lang];
-  const [demoRequest, setDemoRequest] = useState(0);
   useEffect(() => {
     initializeAttribution(import.meta.env.VITE_ATTRIBUTION_STORAGE === 'true');
     initializeAnalytics(import.meta.env.VITE_GA_MEASUREMENT_ID);
@@ -317,10 +316,10 @@ export default function Site({ lang }: { lang: Lang }) {
                 <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" className="h-5 w-5"><rect x="3" y="5" width="18" height="14" rx="3" /><path d="m4 7 8 6 8-6" /></svg>
                 {lang === "es" ? "Contáctame" : "Contact me"}
               </a>
-              <button type="button" onClick={() => setDemoRequest(value => value + 1)} aria-controls="scotting-chat-homepage" className="inline-flex min-h-12 items-center justify-center gap-2.5 rounded-full bg-teal px-7 py-3.5 font-display font-semibold text-ink transition-colors hover:bg-teal/90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white">
+              <a href={waLink(lang, lang === "es" ? "solicitar una demo" : "a demo for my business")} target="_blank" rel="noopener noreferrer" className="inline-flex min-h-12 items-center justify-center gap-2.5 rounded-full bg-teal px-7 py-3.5 font-display font-semibold text-ink transition-colors hover:bg-teal/90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white">
                 <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" className="h-5 w-5"><rect x="3" y="4" width="18" height="13" rx="3" /><path d="m10 8 5 3-5 3V8ZM8 21h8m-4-4v4" /></svg>
                 {lang === "es" ? "Solicitar demo" : "Request a demo"}
-              </button>
+              </a>
             </div>
           </div>
         </div>
@@ -497,7 +496,7 @@ export default function Site({ lang }: { lang: Lang }) {
         </div>
       </footer>
 
-      <ChatWidget lang={lang} openRequest={demoRequest} suggestedMessage={lang === "es" ? "Me gustaría solicitar una demo para mi negocio." : "I'd like to request a demo for my business."} />
+      <StickyWhatsApp lang={lang} label={t.sticky.label} />
     </div>
   );
 }
