@@ -48,3 +48,45 @@
 .sc-chat-entry-identity>div:not(.sc-chat-avatar){display:block;min-width:0}
 
 .cl-hero-contact{display:flex;justify-content:center;flex-wrap:wrap;gap:12px;margin-top:24px}.cl-hero-contact a{display:inline-flex;align-items:center;justify-content:center;gap:12px;min-height:48px;padding:12px 20px;border-radius:10px;background:var(--cl-blue);color:#fff;font-weight:600;font-size:15px;text-decoration:none}
+
+/* Acquisition ownership and the campaign optimization feedback loop. */
+.cl-flow-ownership{display:grid;grid-template-columns:4fr 1fr;gap:18px;margin-bottom:20px;text-align:center}
+.cl-flow-ownership span{padding:9px 8px;border-radius:8px;background:#eaf0ff;color:#0038fc;font:600 10px/1.4 Inter,sans-serif;letter-spacing:.09em}
+.cl-flow-ownership span:last-child{background:#e2f5ee;color:#23765b}
+.cl-managed-flow .cl-flow{margin-bottom:0}
+.cl-managed-flow .cl-flow small{display:block}
+.cl-flow-client-label{display:none}
+.cl-flow-feedback{position:relative;padding-top:34px;padding-bottom:8px}
+.cl-flow-loop{position:absolute;inset:0 0 auto;width:100%;height:100px;fill:none;stroke:#8da4c5;stroke-width:1.5;vector-effect:non-scaling-stroke}
+.cl-flow-optimizer{position:relative;display:flex;align-items:center;gap:16px;width:fit-content;max-width:76%;margin:auto;padding:16px 22px;border:1px solid #ccdcfc;border-radius:14px;background:#f7f9fc;text-align:left;box-shadow:0 4px 16px #0038fc08}
+.cl-flow-optimizer .cl-flow-icon{width:56px;height:56px;margin:0;flex-shrink:0}
+.cl-flow-optimizer .cl-flow-icon img{width:50px;height:50px}
+.cl-flow-optimizer span{display:block;color:#0038fc;font:600 9px/1.5 Inter,sans-serif;letter-spacing:.06em;margin-bottom:4px}
+.cl-flow-optimizer strong{display:block;color:#0f172a;font:600 17px/1.4 Inter,sans-serif}
+.cl-flow-optimizer p{margin:5px 0 0;color:#596c85;font-size:12px;line-height:1.6}
+@media(max-width:640px){
+  .cl-flow-ownership{grid-template-columns:1fr;margin-bottom:16px}
+  .cl-flow-ownership span:last-child{display:none}
+  .cl-managed-flow .cl-flow{grid-template-columns:repeat(2,minmax(0,1fr));gap:22px 18px}
+  .cl-managed-flow .cl-flow-icon{width:48px;height:48px}
+  .cl-managed-flow .cl-flow strong{font-size:12px}
+  .cl-managed-flow .cl-flow small{font-size:11px}
+  .cl-managed-flow .cl-flow li::after{display:none}
+  .cl-managed-flow .cl-flow li:first-child::after,.cl-managed-flow .cl-flow li:nth-child(3)::after{display:block;top:12px;left:calc(100% - 1px);font-size:20px}
+  .cl-managed-flow .cl-flow-client{grid-column:1/-1;padding:14px;border:1px solid #c2e5d7;border-radius:12px;background:#eff8f4}
+  .cl-flow-client-label{display:block;margin-bottom:10px;color:#23765b;font:600 9px/1.4 Inter,sans-serif;letter-spacing:.09em}
+  .cl-flow-feedback{padding-top:30px;margin-top:0}
+  .cl-flow-loop{height:80px}
+  .cl-flow-optimizer{max-width:90%;gap:12px;padding:14px}
+  .cl-flow-optimizer strong{font-size:15px}
+  .cl-flow-optimizer p{font-size:11px}
+  .cl-flow-optimizer span{font-size:8px}
+  .cl-flow-optimizer .cl-flow-icon{width:42px;height:42px}
+  .cl-flow-optimizer .cl-flow-icon img{width:38px;height:38px}
+}
+@media(max-width:640px){
+  .cl-managed-flow{position:relative}
+  .cl-managed-flow::before{content:'';position:absolute;left:-8px;top:70px;bottom:72px;width:26px;border-left:1.5px solid #8da4c5;border-bottom:1.5px solid #8da4c5;border-bottom-left-radius:14px}
+  .cl-managed-flow::after{content:'↑';position:absolute;left:-14px;top:54px;color:#8da4c5;font-size:20px;line-height:1}
+  .cl-flow-feedback .cl-flow-loop{display:none}
+}
