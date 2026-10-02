@@ -68,14 +68,14 @@ export default function CommercialCleaning() {
     document.documentElement.lang = 'en';
     document.title = 'Marketing for Commercial Cleaning Companies | Scotting';
     document.querySelector('meta[name="description"]')?.setAttribute('content', copy.subtitle);
-    document.querySelector('link[rel="canonical"]')?.setAttribute('href', `${window.location.origin}/comercial_cleaning`);
+    document.querySelector('link[rel="canonical"]')?.setAttribute('href', `${window.location.origin}/landingpage_leads`);
   }, [copy.subtitle]);
   return <div ref={page} className="cleaning-page">
     <a className="cl-skip" href="#main">Skip to content</a>
     <header className="cl-header cl-wrap"><img src={logo} alt="Scotting" width="150" height="42" /><a id="cleaning-chat-button" href={waLink('en')} target="_blank" rel="noopener noreferrer">Chat with us <span aria-hidden="true">↗</span></a></header>
     <main id="main">
       <section className="cl-hero cl-wrap" aria-labelledby="cleaning-title">
-        <div className="cl-hero-copy"><h1 id="cleaning-title">{copy.title}<em>{copy.emphasis}</em></h1></div>
+        <div className="cl-hero-copy"><h1 id="cleaning-title">{copy.title}<em>{copy.emphasis}</em></h1><div className="cl-hero-contact"><a href={waLink('en')} target="_blank" rel="noopener noreferrer" onClick={() => trackMetric('whatsapp_click', 'en', 'whatsapp', 'commercial_cleaning')}>Contact us on WhatsApp <span aria-hidden="true">↗</span></a></div></div>
         <div className="cl-implementation"><p className="cl-implementation-label">HOW WE HELP BRING CUSTOMERS TO YOU</p><CleaningFlow /><p className="cl-hero-subtitle">{copy.subtitle}</p><a className="cl-demo-link" href="#how-it-works">Watch it in action <span aria-hidden="true">↓</span></a></div>
       </section>
       <CleaningDemo><section id="growth-plan" className="cl-contact-inline" aria-label="Contact Scotting"><GrowthForm headline={headline} /></section></CleaningDemo>

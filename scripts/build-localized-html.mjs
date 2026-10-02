@@ -31,8 +31,8 @@ let cleaning = html.replace(/<title>[^<]*<\/title>/, `<title>${cleaningTitle}</t
   .replace(/<meta\s+name="description"\s+content="[^"]*"\s*\/?>/, `<meta name="description" content="${cleaningDescription}" />`)
   .replace(/<meta\s+property="og:title"\s+content="[^"]*"\s*\/?>/, `<meta property="og:title" content="${cleaningTitle}" />`)
   .replace(/<meta\s+property="og:description"\s+content="[^"]*"\s*\/?>/, `<meta property="og:description" content="${cleaningDescription}" />`)
-  .replaceAll('https://byscotting.com/en', 'https://byscotting.com/comercial_cleaning')
+  .replaceAll('https://byscotting.com/en', 'https://byscotting.com/landingpage_leads')
   .replace(/<link rel="alternate"[^>]*>/g, '')
   .replace('</head>', '<meta name="robots" content="noindex,follow" /></head>');
-await mkdir(new URL('../dist/comercial_cleaning/', import.meta.url), { recursive: true });
-await writeFile(new URL('../dist/comercial_cleaning/index.html', import.meta.url), cleaning);
+await mkdir(new URL('../dist/landingpage_leads/', import.meta.url), { recursive: true });
+await writeFile(new URL('../dist/landingpage_leads/index.html', import.meta.url), cleaning);

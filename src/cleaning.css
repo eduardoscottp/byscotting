@@ -46,3 +46,5 @@
 
 .sc-chat-entry-identity>.sc-chat-avatar{display:block;width:42px;height:42px;flex-shrink:0;overflow:hidden;border-radius:50%}.sc-chat-avatar img{width:100%;height:100%;object-fit:cover;object-position:top;transform:scale(1.65);transform-origin:top}
 .sc-chat-entry-identity>div:not(.sc-chat-avatar){display:block;min-width:0}
+
+.cl-hero-contact{display:flex;justify-content:center;flex-wrap:wrap;gap:12px;margin-top:24px}.cl-hero-contact a{display:inline-flex;align-items:center;justify-content:center;gap:12px;min-height:48px;padding:12px 20px;border-radius:10px;background:var(--cl-blue);color:#fff;font-weight:600;font-size:15px;text-decoration:none}

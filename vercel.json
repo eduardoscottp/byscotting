@@ -1,7 +1,11 @@
 {
+  "redirects": [
+    { "source": "/comercial_cleaning", "destination": "/landingpage_leads", "permanent": true },
+    { "source": "/cleaning_comercial", "destination": "/landingpage_leads", "permanent": true }
+  ],
   "rewrites": [
-    { "source": "/comercial_cleaning", "destination": "/comercial_cleaning/index.html" },
-    { "source": "/comercial_cleaning/", "destination": "/comercial_cleaning/index.html" },
+    { "source": "/landingpage_leads", "destination": "/landingpage_leads/index.html" },
+    { "source": "/landingpage_leads/", "destination": "/landingpage_leads/index.html" },
     { "source": "/api/:path*", "destination": "/api/:path*" },
     { "source": "/en", "destination": "/en/index.html" },
     { "source": "/en/", "destination": "/en/index.html" },
