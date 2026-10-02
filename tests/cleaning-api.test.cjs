@@ -2,6 +2,21 @@ const test = require('node:test');
 const assert = require('node:assert/strict');
 const env = { AIRTABLE_TOKEN: 'test', AIRTABLE_BASE_ID: 'appTest', AIRTABLE_LEADS_TABLE_ID: 'tblTest', LEAD_SIGNING_SECRET: 'test-signing-secret-at-least-32-characters', OPENAI_API_KEY: 'test', OPENAI_MODEL: 'test-model' };
 const inquiry = { submission_id: '12345678-1234-1234-1234-123456789012', name: 'Test Owner', contact: 'owner@example.com', detail: 'More walkthroughs', lang: 'en', landing: 'commercial_cleaning', company: 'Test Cleaning', service_mix: 'commercial', response_channel: 'email' };
+test('every C01 landing variant is accepted and retained in the CRM; unknown variants are rejected', async () => {
+  const { saveLead } = await import('../server/mvp.mjs');
+  for (let index = 1; index <= 12; index++) {
+    const variant = `c01-h${String(index).padStart(2, '0')}`;
+    let saved;
+    const result = await saveLead({ ...inquiry, headline_variant: variant }, { env, fetch: async (_, init) => {
+      saved = JSON.parse(JSON.parse(init.body).records[0].fields['Scotting Inquiry']);
+      return { ok: true, json: async () => ({ records: [{ id: 'recTest' }] }) };
+    } });
+    assert.equal(result.status, 200, variant);
+    assert.equal(saved.headline_variant, variant);
+  }
+  const rejected = await saveLead({ ...inquiry, headline_variant: 'c01-h99' }, { env, fetch: async () => { throw Error('must not send'); } });
+  assert.equal(rejected.status, 400);
+});
 
 test('cleaning lead saves business and campaign context without overwriting unrelated CRM fields', async () => {
   const { saveLead } = await import('../server/mvp.mjs');

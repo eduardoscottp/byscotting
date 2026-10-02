@@ -88,6 +88,8 @@ export async function saveLead(body, { env = process.env, fetch: request = globa
   const phone = contact && /^[+\d() .-]+$/.test(contact) && contact.replace(/\D/g, '').length >= 8 && contact.replace(/\D/g, '').length <= 15;
   const chips = Array.isArray(body?.chips) && body.chips.length <= 8 ? body.chips.map(c => text(c, 150)) : [];
   if (!submission || !/^[a-f0-9-]{36}$/i.test(submission) || name === null || detail === null || (!email && !phone) || chips.some(c => !c)) return failure(400, 'invalid_inquiry');
+  if (body.landing !== undefined && !['homepage', 'commercial_cleaning'].includes(body.landing)) return failure(400, 'invalid_inquiry');
+  if (body.capture_surface !== undefined && !['form', 'chat'].includes(body.capture_surface)) return failure(400, 'invalid_inquiry');
   let cleaning;
   if (body.landing === 'commercial_cleaning') {
     const company = text(body.company ?? '', 160);
@@ -97,7 +99,7 @@ export async function saveLead(body, { env = process.env, fetch: request = globa
     if (body.response_channel === 'callback' && (!callback || !/^[+\d() .-]+$/.test(callback) || callback.replace(/\D/g, '').length < 8 || callback.replace(/\D/g, '').length > 15)) return failure(400, 'invalid_inquiry');
     if (body.website_trap) return failure(400, 'invalid_inquiry');
     if (body.request_kind !== undefined && !['contact', 'demo'].includes(body.request_kind)) return failure(400, 'invalid_inquiry');
-    if (body.headline_variant !== undefined && !['default', 'more-leads', 'follow-up', 'ai-agents', 'walkthroughs'].includes(body.headline_variant)) return failure(400, 'invalid_inquiry');
+    if (body.headline_variant !== undefined && !['default', 'more-leads', 'follow-up', 'ai-agents', 'walkthroughs', 'c01-h01', 'c01-h02', 'c01-h03', 'c01-h04', 'c01-h05', 'c01-h06', 'c01-h07', 'c01-h08', 'c01-h09', 'c01-h10', 'c01-h11', 'c01-h12'].includes(body.headline_variant)) return failure(400, 'invalid_inquiry');
     cleaning = { landing: 'commercial_cleaning', ...(company ? { company } : {}), ...(body.service_mix ? { service_mix: body.service_mix } : {}), response_channel: body.response_channel, ...(body.response_channel === 'callback' ? { phone: callback } : {}) };
     if (body.request_kind) cleaning.request_kind = body.request_kind;
     if (body.headline_variant) cleaning.headline_variant = body.headline_variant;
@@ -116,12 +118,24 @@ export async function saveLead(body, { env = process.env, fetch: request = globa
   }
   const inquiry = { project: 'scotting', name, contact, detail, topics: chips, language: body.lang === 'es' ? 'es' : 'en', ...(company ? { company } : {}), ...(website !== undefined ? { website } : {}), ...cleaning, ...(messages ? { shared_chat: messages } : {}), ...(chatConsent ? { consent: chatConsent, source: 'Landing page / chat web', stage: 'New inquiry — not qualified' } : {}) };
   const attribution = sanitizeAttribution(body.attribution);
+  const landingId = body.landing === 'commercial_cleaning' ? 'commercial_cleaning' : body.lang === 'es' ? 'homepage_es' : 'homepage_en';
+  const landingPath = landingId === 'commercial_cleaning' ? '/landingpage_leads' : landingId === 'homepage_es' ? '/' : '/en';
+  const campaignFields = {};
+  for (const [field, key] of Object.entries({ 'Scotting UTM Source': 'utm_source', 'Scotting UTM Medium': 'utm_medium', 'Scotting UTM Campaign': 'utm_campaign', 'Scotting UTM ID': 'utm_id', 'Scotting UTM Content': 'utm_content', 'Scotting UTM Term': 'utm_term', 'Scotting Ad Group ID': 'adgroup_id' })) {
+    if (attribution.last?.[key]) campaignFields[field] = attribution.last[key];
+  }
   // Bind the idempotency key to content so a changed payload cannot overwrite an unrelated inquiry.
   const key = createHmac('sha256', env.LEAD_SIGNING_SECRET).update(JSON.stringify({ submission, inquiry, attribution })).digest('hex');
   const fields = {
     'Scotting Submission ID': key,
     'Scotting Inquiry': JSON.stringify(inquiry),
     'Scotting Attribution': JSON.stringify(attribution),
+    ...campaignFields,
+    'Scotting Lead Origin': 'website',
+    'Scotting Landing Page ID': landingId,
+    'Scotting Landing Page Path': landingPath,
+    ...(body.capture_surface ? { 'Scotting Capture Surface': body.capture_surface } : {}),
+    ...(cleaning?.headline_variant ? { 'Scotting Headline Variant': cleaning.headline_variant } : {}),
     ...(chatConsent ? { 'Scotting Lead Origin': 'Landing page / chat web', 'Scotting Capture Surface': 'conversational_chat', 'Scotting Landing Page ID': chatConsent.context } : {}),
     ...(email ? { Email: contact } : { Phone: contact }),
     ...(name ? { 'Contact First Name': name.split(/\s+/)[0], 'Contact Last Name': name.split(/\s+/).slice(1).join(' ') } : {}),

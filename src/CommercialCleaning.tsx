@@ -2,7 +2,7 @@ import { useEffect, useRef, useState, type FormEvent } from 'react';
 import StickyWhatsApp from '@/components/StickyWhatsApp';
 import CleaningDemo from '@/components/CleaningDemo';
 import CleaningFlow from '@/components/CleaningFlow';
-import { contactChannel, cleaningHeadlines, selectCleaningHeadline, type CleaningHeadlineKey } from '@/lib/cleaningCampaign';
+import { contactChannel, cleaningHeadlines, cleaningPageTitle, selectCleaningHeadline, type CleaningHeadlineKey } from '@/lib/cleaningCampaign';
 import { getAttribution, initializeAnalytics, initializeAttribution, trackMetric } from '@/lib/attribution';
 import { waLink } from '@/copy';
 import logo from '@/assets/scotting-wordmark-blue.png';
@@ -36,7 +36,7 @@ export function GrowthForm({ chatContext, clearChatContext, headline = 'default'
       const response = await fetch(import.meta.env.VITE_FORM_ENDPOINT || '/api/leads', { method: 'POST', headers: { 'Content-Type': 'application/json' }, signal: AbortSignal.timeout(20000), body: JSON.stringify({
         submission_id: id.current, name, contact, ...(chatContext ? { service_mix: chatContext.serviceMix } : {}), response_channel: channel,
         request_kind: requestKind === 'demo' ? 'demo' : 'contact', headline_variant: headline,
-        detail: chatContext?.summary || '', website_trap: fields.get('website_trap') || '', landing: 'commercial_cleaning', chips: [requestKind === 'demo' ? 'Commercial cleaning demo' : 'Commercial cleaning growth plan'], lang: 'en', attribution: getAttribution(),
+        detail: chatContext?.summary || '', website_trap: fields.get('website_trap') || '', landing: 'commercial_cleaning', capture_surface: 'form', chips: [requestKind === 'demo' ? 'Commercial cleaning demo' : 'Commercial cleaning growth plan'], lang: 'en', attribution: getAttribution(),
       }) });
       const result = await response.json();
       if (!response.ok || result.accepted !== true) throw new Error('not_saved');
@@ -66,10 +66,10 @@ export default function CommercialCleaning() {
     initializeAttribution(import.meta.env.VITE_ATTRIBUTION_STORAGE === 'true');
     initializeAnalytics(import.meta.env.VITE_GA_MEASUREMENT_ID);
     document.documentElement.lang = 'en';
-    document.title = 'Marketing for Commercial Cleaning Companies | Scotting';
+    document.title = cleaningPageTitle(headline);
     document.querySelector('meta[name="description"]')?.setAttribute('content', copy.subtitle);
     document.querySelector('link[rel="canonical"]')?.setAttribute('href', `${window.location.origin}/landingpage_leads`);
-  }, [copy.subtitle]);
+  }, [copy.subtitle, headline]);
   return <div ref={page} className="cleaning-page">
     <a className="cl-skip" href="#main">Skip to content</a>
     <header className="cl-header cl-wrap"><img src={logo} alt="Scotting" width="150" height="42" /><a id="cleaning-chat-button" href={waLink('en')} target="_blank" rel="noopener noreferrer">Chat with us <span aria-hidden="true">↗</span></a></header>
