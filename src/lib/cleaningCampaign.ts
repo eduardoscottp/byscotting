@@ -6,6 +6,12 @@ export function contactChannel(value: string): 'email' | 'callback' | null {
 }
 
 export const cleaningHeadlines = {
+  'c01-skag-01': { title: "Commercial Cleaning Leads", emphasis: ' — For Your Miami-Dade Business', subtitle: "Google Ads, a focused landing page and lead follow-up for commercial cleaning companies in Miami-Dade." },
+  'c01-skag-02': { title: "Commercial Cleaning Lead Generation Companies", emphasis: ' — For Your Miami-Dade Business', subtitle: "Google Ads, a focused landing page and lead follow-up for commercial cleaning companies in Miami-Dade." },
+  'c01-skag-03': { title: "Commercial Cleaning Lead Generation", emphasis: ' — For Your Miami-Dade Business', subtitle: "Google Ads, a focused landing page and lead follow-up for commercial cleaning companies in Miami-Dade." },
+  'c01-skag-04': { title: "Janitorial Leads", emphasis: ' — For Your Miami-Dade Business', subtitle: "Google Ads, a focused landing page and lead follow-up for commercial cleaning companies in Miami-Dade." },
+  'c01-skag-05': { title: "Office Cleaning Leads", emphasis: ' — For Your Miami-Dade Business', subtitle: "Google Ads, a focused landing page and lead follow-up for commercial cleaning companies in Miami-Dade." },
+  'c01-skag-06': { title: "Janitorial Lead Generation", emphasis: ' — For Your Miami-Dade Business', subtitle: "Google Ads, a focused landing page and lead follow-up for commercial cleaning companies in Miami-Dade." },
   'c01-h01': { title: 'Leads For Cleaning Companies', emphasis: 'A clear next step for every inquiry.', subtitle: 'Google Ads, a focused landing page and lead follow-up for commercial cleaning companies in Miami-Dade.' },
   'c01-h02': { title: 'For Commercial Cleaning Firms', emphasis: 'Marketing connected to your sales process.', subtitle: 'Connect inquiry capture and follow-up around the way your cleaning team sells.' },
   'c01-h03': { title: 'Commercial Cleaning Growth', emphasis: 'Start with a clearer sales process.', subtitle: 'Bring targeted Google Ads, lead capture and follow-up together for your commercial cleaning company.' },
@@ -26,7 +32,7 @@ export const cleaningHeadlines = {
 } as const;
 export type CleaningHeadlineKey = keyof typeof cleaningHeadlines;
 export function cleaningPageTitle(key: CleaningHeadlineKey): string {
-  return key.startsWith('c01-h') ? `${cleaningHeadlines[key].title} | Scotting` : 'Marketing for Commercial Cleaning Companies | Scotting';
+  return (key.startsWith('c01-h') || key.startsWith('c01-skag-')) ? `${cleaningHeadlines[key].title} | Scotting` : 'Marketing for Commercial Cleaning Companies | Scotting';
 }
 const campaignKeys: Record<string, CleaningHeadlineKey> = { 'sc_cleaning_leads_md_en': 'more-leads', 'cleaning-leads': 'more-leads', 'cleaning-follow-up': 'follow-up', 'cleaning-ai-agents': 'ai-agents', 'cleaning-walkthroughs': 'walkthroughs' };
 export function selectCleaningHeadline(search: string): CleaningHeadlineKey {

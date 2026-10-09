@@ -4,8 +4,11 @@ const env = { AIRTABLE_TOKEN: 'test', AIRTABLE_BASE_ID: 'appTest', AIRTABLE_LEAD
 const inquiry = { submission_id: '12345678-1234-1234-1234-123456789012', name: 'Test Owner', contact: 'owner@example.com', detail: 'More walkthroughs', lang: 'en', landing: 'commercial_cleaning', company: 'Test Cleaning', service_mix: 'commercial', response_channel: 'email' };
 test('every C01 landing variant is accepted and retained in the CRM; unknown variants are rejected', async () => {
   const { saveLead } = await import('../server/mvp.mjs');
-  for (let index = 1; index <= 12; index++) {
-    const variant = `c01-h${String(index).padStart(2, '0')}`;
+  const variants = [
+    ...Array.from({ length: 12 }, (_, index) => `c01-h${String(index + 1).padStart(2, '0')}`),
+    ...Array.from({ length: 6 }, (_, index) => `c01-skag-${String(index + 1).padStart(2, '0')}`),
+  ];
+  for (const variant of variants) {
     let saved;
     const result = await saveLead({ ...inquiry, headline_variant: variant }, { env, fetch: async (_, init) => {
       saved = JSON.parse(JSON.parse(init.body).records[0].fields['Scotting Inquiry']);

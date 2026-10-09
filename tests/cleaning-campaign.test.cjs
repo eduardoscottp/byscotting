@@ -7,6 +7,18 @@ const source = fs.readFileSync(require('node:path').join(__dirname, '../src/lib/
 const context = { exports: {}, URLSearchParams };
 vm.runInNewContext(ts.transpileModule(source, { compilerOptions: { module: ts.ModuleKind.CommonJS } }).outputText, context);
 const { contactChannel, selectCleaningHeadline } = context.exports;
+
+test('approved SKAG links preserve the full keyword in H1 and browser title', () => {
+  const phrases = ['Commercial Cleaning Leads', 'Commercial Cleaning Lead Generation Companies', 'Commercial Cleaning Lead Generation', 'Janitorial Leads', 'Office Cleaning Leads', 'Janitorial Lead Generation'];
+  for (const [index, phrase] of phrases.entries()) {
+    const key = `c01-skag-${String(index + 1).padStart(2, '0')}`;
+    assert.equal(selectCleaningHeadline(`?utm_campaign=sc_cleaning_leads_md_en&utm_content=${key}`), key);
+    const copy = context.exports.cleaningHeadlines[key];
+    assert.equal(copy.title, phrase);
+    assert.equal(copy.emphasis, ' — For Your Miami-Dade Business');
+    assert.equal(context.exports.cleaningPageTitle(key), `${phrase} | Scotting`);
+  }
+});
 test('C01 ad links select matching landing and browser titles without overriding legacy variants', () => {
   const headlines = ['Leads For Cleaning Companies', 'For Commercial Cleaning Firms', 'Commercial Cleaning Growth', 'Google Ads And Follow-Up', 'Built For Cleaning Owners', 'A Clear Next Step For Leads', 'Connect Ads And Your Pipeline', 'Less Manual Follow-Up', 'See Your Sales Pipeline', 'Request A Scotting Demo', 'Scotting Revenue Engine', 'Miami-Dade Business Owners'];
   for (const [index, title] of headlines.entries()) {
