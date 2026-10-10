@@ -81,11 +81,12 @@ test('invalid contact stays in the form without transmission or conversion', asy
   assert.equal(form.metrics.length, 0);
   assert.match(nodes(form.render()).find(n => n.props.role === 'alert').props.children, /phone|email/);
 });
-test('demo button saves demo intent instead of claiming an appointment', async () => {
+test('contact form hides demo and saves contact intent', async () => {
   let payload;
   const form = harness(async (_, options) => { payload = JSON.parse(options.body); return { ok: true, json: async () => ({ accepted: true }) }; });
-  await form.submit('test@example.invalid', 'demo');
-  assert.equal(payload.request_kind, 'demo');
+  assert.equal(nodes(form.render()).some(n => n.type === 'button' && n.props.value === 'demo'), false);
+  await form.submit('test@example.invalid');
+  assert.equal(payload.request_kind, 'contact');
 });
 
 test('explicit chat handoff saves only the selected summary and never the full transcript', async () => {
