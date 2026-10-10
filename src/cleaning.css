@@ -83,3 +83,6 @@
 @media(max-width:640px){.cl-contact-fixed .cl-dock-submit{grid-column:1/-1}.cl-contact-fixed{padding-top:10px;padding-bottom:calc(10px + env(safe-area-inset-bottom))}}
 
 .cl-dock-response{margin:0 0 10px;color:var(--cl-ink);font-size:15px;font-weight:600;text-align:center}
+
+.cl-contact-toggle{display:none}
+@media(max-width:640px){.cl-contact-toggle{display:flex;width:100%;min-height:46px;align-items:center;justify-content:space-between;gap:10px;padding:10px 16px;border:0;border-radius:7px;background:var(--cl-blue);color:white;font-size:14px;font-weight:600;cursor:pointer}.cl-contact-time{font-size:12px;font-weight:400}.cl-contact-panel{display:none}.cl-contact-panel.is-expanded{display:block;margin-top:12px}}
