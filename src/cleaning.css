@@ -86,3 +86,17 @@
 
 .cl-contact-toggle{display:none}
 @media(max-width:640px){.cl-contact-toggle{display:flex;width:100%;min-height:46px;align-items:center;justify-content:space-between;gap:10px;padding:10px 16px;border:0;border-radius:7px;background:var(--cl-blue);color:white;font-size:14px;font-weight:600;cursor:pointer}.cl-contact-time{font-size:12px;font-weight:400}.cl-contact-panel{display:none}.cl-contact-panel.is-expanded{display:block;margin-top:12px}}
+
+.cl-contact-options{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:24px;align-items:center}
+.cl-contact-whatsapp{display:flex;align-items:center;justify-content:center;gap:8px;min-height:46px;padding:10px 18px;border:1px solid var(--cl-blue);border-radius:7px;background:var(--cl-blue);color:white;font-size:13px;font-weight:600;text-decoration:none}
+.cl-contact-whatsapp svg{flex-shrink:0}
+.cl-contact-whatsapp:focus-visible,.cl-contact-toggle:focus-visible{outline:3px solid #8aabff;outline-offset:3px}
+@media(max-width:640px){
+  .cl-contact-options{grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:10px;align-items:stretch}
+  .cl-contact-toggle{grid-column:1;grid-row:1;padding:10px;gap:4px;text-align:left;font-size:13px}
+  .cl-contact-time{display:block;font-size:11px}
+  .cl-contact-whatsapp{grid-column:2;grid-row:1;padding:10px;font-size:13px}
+  .cl-contact-whatsapp-desktop{display:none}
+  .cl-contact-panel{grid-column:1/-1;grid-row:2;min-width:0}
+  .cl-contact-panel.is-expanded{margin-top:2px}
+}

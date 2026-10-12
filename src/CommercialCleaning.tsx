@@ -101,11 +101,12 @@ export default function CommercialCleaning() {
       <p>Google Analytics measures page activity and campaign interactions. Our custom events exclude names, contact details and form text. Campaign identifiers and the headline version may accompany your inquiry.</p>
       <p>To correct or remove your details or stop further contact, <a href={waLink('en')} target="_blank" rel="noopener noreferrer">contact Eduardo on WhatsApp</a>.</p>
     </div></details></footer>
-    <section ref={dock} id="growth-plan" className="cl-contact-fixed" aria-label="Contact Scotting"><div className="cl-wrap">
+    <section ref={dock} id="growth-plan" className="cl-contact-fixed" aria-label="Contact Scotting"><div className="cl-wrap cl-contact-options">
       <button className="cl-contact-toggle" type="button" aria-expanded={contactExpanded} aria-controls="cleaning-contact-panel" onClick={() => setContactExpanded(expanded => !expanded)}>
         <span>{contactExpanded ? 'Close form' : 'Contact me'} <span className="cl-contact-time">— less than 5 min.</span></span><span aria-hidden="true">{contactExpanded ? '⌄' : '⌃'}</span>
       </button>
       <div id="cleaning-contact-panel" className={contactExpanded ? 'cl-contact-panel is-expanded' : 'cl-contact-panel'}><GrowthForm headline={headline} /></div>
+      <a className="cl-contact-whatsapp" href={waLink('en')} target="_blank" rel="noopener noreferrer"><WhatsAppIcon className="h-5 w-5" /><span><span className="cl-contact-whatsapp-desktop">Contact us on </span>WhatsApp</span></a>
     </div></section>
   </div>;
 }
