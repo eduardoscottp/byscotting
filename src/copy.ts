@@ -1,6 +1,6 @@
 export type Lang = "es" | "en";
 
-export const WHATSAPP = "17865779275";
+export const WHATSAPP = "17865206981";
 
 export const copy = {
   es: {
@@ -452,5 +452,5 @@ export function waLink(lang: Lang, context?: string) {
       ? `Hi Eduardo, I’d like to ask about ${context}.`
       : `${copy[lang].waIntro}.`
     : `${copy[lang].waIntro}${context ? ` — ${context}` : ""}`;
-  return `https://wa.me/${WHATSAPP}?text=${encodeURIComponent(text)}`;
+  return `https://wa.me/${WHATSAPP}?text=${encodeURIComponent(`[ByScotting] ${text}`)}`;
 }

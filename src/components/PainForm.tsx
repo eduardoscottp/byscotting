@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { WHATSAPP, type Copy, type Lang } from "@/copy";
+import { WHATSAPP, waLink, type Copy, type Lang } from "@/copy";
 import { getAttribution, trackMetric } from "@/lib/attribution";
 
 const ENDPOINT = import.meta.env.VITE_FORM_ENDPOINT as string | undefined;
@@ -26,7 +26,7 @@ export default function PainForm({ t, lang }: { t: Copy["form"]; lang: Lang }) {
 
     // Sin endpoint configurado, el mensaje se abre en WhatsApp para que nada se pierda.
     if (!ENDPOINT) {
-      const intro = lang === "en" ? "Hi Eduardo, I’d like help with:" : "Hola Eduardo, me gustaría recibir ayuda con:";
+      const intro = lang === "en" ? "[ByScotting] Hi Eduardo, I’d like help with:" : "[ByScotting] Hola Eduardo, me gustaría recibir ayuda con:";
       const lines = [intro, ...chips.map((c) => `→ ${c}`), detail && `“${detail}”`, name && `— ${name}`, contact]
         .filter(Boolean)
         .join("\n");
@@ -143,7 +143,7 @@ export default function PainForm({ t, lang }: { t: Copy["form"]; lang: Lang }) {
         <p role="alert" className="font-body text-sm text-blue">
           {error}
           {error === t.failure && (
-            <> <a href={`https://wa.me/${WHATSAPP}`} target="_blank" rel="noopener noreferrer" className="underline">{t.whatsappRetry}</a></>
+            <> <a href={waLink(lang)} target="_blank" rel="noopener noreferrer" className="underline">{t.whatsappRetry}</a></>
           )}
         </p>
       )}
